@@ -31,7 +31,7 @@ namespace NetLib.Core.Test.Collections.Test
         public void EnumerableCount()
         {
             IEnumerable target = new List<string> { "test", "test2" };
-            Assert.Equal(3, target.Count());
+            Assert.Equal(2, target.Count());
         }
     }
 }
