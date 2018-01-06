@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace FrHello.NetLib.Core.Collections
 {
+    /// <summary>
+    /// 扩展方法
+    /// </summary>
     public static partial class Extensions
     {
         /// <summary>

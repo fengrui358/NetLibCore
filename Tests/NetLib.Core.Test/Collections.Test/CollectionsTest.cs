@@ -5,8 +5,14 @@ using Xunit;
 
 namespace NetLib.Core.Test.Collections.Test
 {
+    /// <summary>
+    /// 单元测试
+    /// </summary>
     public class CollectionsTest
     {
+        /// <summary>
+        /// EnumerableIsNullOrEmpty
+        /// </summary>
         [Fact]
         public void EnumerableIsNullOrEmpty()
         {
@@ -17,6 +23,9 @@ namespace NetLib.Core.Test.Collections.Test
             Assert.True(target.IsNullOrEmpty());
         }
 
+        /// <summary>
+        /// EnumerableIsNotNullOrEmpty
+        /// </summary>
         [Fact]
         public void EnumerableIsNotNullOrEmpty()
         {
@@ -27,6 +36,9 @@ namespace NetLib.Core.Test.Collections.Test
             Assert.False(target2.IsNullOrEmpty());
         }
 
+        /// <summary>
+        /// EnumerableCount
+        /// </summary>
         [Fact]
         public void EnumerableCount()
         {
