@@ -1,14 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FrHello.NetLib.Core.Collections;
 using Xunit;
 
-namespace NetLib.Core.Test.Collections.Test
+namespace NetLib.Core.Test.Collections.IEnumerable.Test
 {
     /// <summary>
     /// 单元测试
     /// </summary>
-    public class CollectionsTest
+    public class EnumerableTest
     {
         /// <summary>
         /// EnumerableIsNullOrEmpty
@@ -16,7 +15,7 @@ namespace NetLib.Core.Test.Collections.Test
         [Fact]
         public void EnumerableIsNullOrEmpty()
         {
-            IEnumerable target = new List<string>();
+            System.Collections.IEnumerable target = new List<string>();
             Assert.True(target.IsNullOrEmpty());
 
             target = null;
@@ -32,7 +31,7 @@ namespace NetLib.Core.Test.Collections.Test
             var target = new List<string> {"test"};
             Assert.False(target.IsNullOrEmpty());
 
-            IEnumerable target2 = target;
+            System.Collections.IEnumerable target2 = target;
             Assert.False(target2.IsNullOrEmpty());
         }
 
@@ -42,7 +41,7 @@ namespace NetLib.Core.Test.Collections.Test
         [Fact]
         public void EnumerableCount()
         {
-            IEnumerable target = new List<string> { "test", "test2" };
+            System.Collections.IEnumerable target = new List<string> { "test", "test2" };
             Assert.Equal(2, target.Count());
 
             target = null;
