@@ -44,6 +44,9 @@ namespace NetLib.Core.Test.Collections.Test
         {
             IEnumerable target = new List<string> { "test", "test2" };
             Assert.Equal(2, target.Count());
+
+            target = null;
+            Assert.Equal(0, target.Count());
         }
     }
 }
