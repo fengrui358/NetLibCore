@@ -3,6 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>FrHello.NetLib.Core</RootNamespace>
+	<PackageId>FrHello.NetLib.Core</PackageId>
+    <Authors>rui feng</Authors>
+    <Description>Dotnet core utility</Description>
+    <PackageTags>Dotnet core utility</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
