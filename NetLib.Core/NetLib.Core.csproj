@@ -1,25 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>FrHello.NetLib.Core</RootNamespace>
-	<PackageId>FrHello.NetLib.Core</PackageId>
-    <Authors>rui feng</Authors>
-    <Description>Dotnet core utility</Description>
-    <PackageTags>Dotnet core utility</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageId>FrHello.NetLib.Core</PackageId>
+    <Authors>rui feng</Authors>
+    <Company>rui feng</Company>
+    <Description>Dotnet core utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.0\NetLib.Core.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp2.0\NetLib.Core.xml</DocumentationFile>
+    <PackageTags>Dotnet core utility</PackageTags>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
 </Project>
