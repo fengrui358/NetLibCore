@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace FrHello.NetLib.Core.Collections
+namespace FrHello.NetLib.Core
 {
     /// <summary>
     /// 扩展方法

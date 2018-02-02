@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FrHello.NetLib.Core.Collections
+namespace FrHello.NetLib.Core
 {
     public static partial class Extensions
     {
