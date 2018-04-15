@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FrHello.NetLib.Core.Collections;
+using FrHello.NetLib.Core;
 using Xunit;
 
 namespace NetLib.Core.Test.Collections.IDictionary.Test
