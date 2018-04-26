@@ -10,12 +10,7 @@
     <Description>Dotnet core framework utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core Framework utility</PackageTags>
+    <Version>1.0.1</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
-    <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
-    <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
-  </ItemGroup>
 
 </Project>
