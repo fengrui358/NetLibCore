@@ -9,6 +9,7 @@
     <Description>Dotnet core utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core utility</PackageTags>
+    <PackageId>FrHello.NetLib.Core.Serialization</PackageId>
   </PropertyGroup>
 
 </Project>
