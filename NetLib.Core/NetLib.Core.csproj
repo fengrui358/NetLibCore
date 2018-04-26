@@ -12,6 +12,11 @@
     <PackageTags>Dotnet core utility</PackageTags>
     <Version>1.0.2</Version>
     <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <AssemblyName>NetLib.Core</AssemblyName>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Serialization\" />
+  </ItemGroup>
 
 </Project>
