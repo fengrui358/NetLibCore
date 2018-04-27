@@ -6,9 +6,9 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
-    <Description>Dotnet core utility</Description>
+    <Description>Dotnet core serialization utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <PackageTags>Dotnet core utility</PackageTags>
+    <PackageTags>Dotnet core serialization utility</PackageTags>
     <PackageId>FrHello.NetLib.Core.Serialization</PackageId>
   </PropertyGroup>
 

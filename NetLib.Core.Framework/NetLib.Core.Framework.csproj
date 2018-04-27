@@ -15,9 +15,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FrHello.NetLib.Core" Version="1.0.2" />
-    <PackageReference Include="FrHello.NetLib.Core.IO" Version="1.0.0" />
-    <PackageReference Include="FrHello.NetLib.Core.Serialization" Version="1.0.0" />
+    <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
+    <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
+    <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,7 @@
     <Description>Dotnet core IO utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core IO utility</PackageTags>
+    <RootNamespace>FrHello.NetLib.Core.IO</RootNamespace>
   </PropertyGroup>
 
 </Project>
