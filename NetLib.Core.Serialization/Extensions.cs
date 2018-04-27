@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 
 namespace FrHello.NetLib.Core.Serialization
 {
@@ -15,12 +14,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字符串</returns>
         public static string ToStringEasy(this char[] chars)
         {
-            if (chars == null)
-            {
-                return null;
-            }
-
-            return new string(chars);
+            return chars == null ? null : new string(chars);
         }
 
         /// <summary>
