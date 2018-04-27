@@ -13,7 +13,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <param name="chars">字符数组</param>
         /// <returns>字符串</returns>
-        public static string ToString(this char[] chars)
+        public static string ToStringEasy(this char[] chars)
         {
             if (chars == null)
             {
@@ -28,15 +28,13 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <param name="bytes">字节数组</param>
         /// <returns>字符串</returns>
-        public static string ToString(this byte[] bytes)
+        public static string ToStringEasy(this byte[] bytes)
         {
             if (bytes == null)
             {
                 return null;
             }
 
-            Char[] x = new[] {'s'};
-            x.ToString();
             return "";
         }
 
@@ -45,7 +43,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <param name="stream">流</param>
         /// <returns>字符串</returns>
-        public static string ToString(this Stream stream)
+        public static string ToStringEasy(this Stream stream)
         {
             return "";
         }

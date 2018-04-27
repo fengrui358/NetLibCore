@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using FrHello.NetLib.Core.Serialization;
 using Xunit;
 
 namespace NetLib.Core.Test.Serialization.Test
@@ -16,11 +17,10 @@ namespace NetLib.Core.Test.Serialization.Test
         [Fact]
         public void ByteToStringTest()
         {
-            var s = new char[] {'a', '4'};
+            var chars = new[] {'a', '4'};
+            var s = chars.ToStringEasy();
             
-
-            var x = new string(s);
-            Assert.Equal("a4", x);
+            Assert.Equal("a4", s);
         }
     }
 }
