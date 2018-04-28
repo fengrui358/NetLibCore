@@ -24,12 +24,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字符串</returns>
         public static string ToStringEasy(this byte[] bytes)
         {
-            if (bytes == null)
-            {
-                return null;
-            }
-
-            return "";
+            return bytes == null ? null : "";
         }
 
         /// <summary>
