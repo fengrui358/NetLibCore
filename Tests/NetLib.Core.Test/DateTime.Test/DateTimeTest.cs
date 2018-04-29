@@ -1,5 +1,5 @@
 ﻿using System;
-using FrHello.NetLib.Core;
+using FrHello.NetLib.Core.Serialization;
 using Xunit;
 
 namespace NetLib.Core.Test.DateTime.Test
