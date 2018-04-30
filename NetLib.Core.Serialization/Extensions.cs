@@ -26,7 +26,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字符串</returns>
         public static string ToStringEasy(this byte[] bytes)
         {
-            return ToStringEasy(bytes, Encoding.UTF8);
+            return ToStringEasy(bytes, GlobalSerializationOptions.DefaultEncoding);
         }
 
         /// <summary>
@@ -39,7 +39,14 @@ namespace FrHello.NetLib.Core.Serialization
         {
             if (encoding == null)
             {
-                throw new ArgumentNullException(nameof(encoding));
+                if (GlobalSerializationOptions.DefaultEncoding != null)
+                {
+                    encoding = GlobalSerializationOptions.DefaultEncoding;
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(encoding));
+                }
             }
 
             return bytes == null ? null : encoding.GetString(bytes);
@@ -52,7 +59,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字符串</returns>
         public static string ToStringEasy(this Stream stream)
         {
-            return stream.ToStringEasy(Encoding.UTF8);
+            return stream.ToStringEasy(GlobalSerializationOptions.DefaultEncoding);
         }
 
         /// <summary>
@@ -63,7 +70,17 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字符串</returns>
         public static string ToStringEasy(this Stream stream, Encoding encoding)
         {
-            return stream?.ToBytes(encoding).ToStringEasy(encoding);
+            return stream?.ToBytes().ToStringEasy(encoding);
+        }
+
+        /// <summary>
+        /// 字符串转字符数组
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns>字符数组</returns>
+        public static char[] ToChars(this string str)
+        {
+            return str.ToCharArray();
         }
 
         /// <summary>
@@ -75,7 +92,8 @@ namespace FrHello.NetLib.Core.Serialization
         public static string ToBase64String(this string str,
             Base64FormattingOptions base64FormattingOptions = Base64FormattingOptions.None)
         {
-            return ToBase64String(str, Encoding.UTF8, base64FormattingOptions);
+            return ToBase64String(str, GlobalSerializationOptions.DefaultEncoding,
+                base64FormattingOptions);
         }
 
         /// <summary>
@@ -90,32 +108,21 @@ namespace FrHello.NetLib.Core.Serialization
         {
             if (encoding == null)
             {
-                throw new ArgumentNullException(nameof(encoding));
+                if (GlobalSerializationOptions.DefaultEncoding != null)
+                {
+                    encoding = GlobalSerializationOptions.DefaultEncoding;
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(encoding));
+                }
             }
 
             return str == null ? null : Convert.ToBase64String(str.ToBytes(encoding), base64FormattingOptions);
         }
 
         /// <summary>
-        /// 字符数组转Base64字符串
-        /// </summary>
-        /// <param name="chars">字符数组</param>
-        /// <returns>Base64字符串</returns>
-        public static string ToBase64String(this char[] chars)
-        {
-            if (chars == null)
-            {
-                return null;
-            }
-
-            
-
-
-            return new string(chars);
-        }
-
-        /// <summary>
-        /// 字节数组转换为Base64字符串
+        /// 字符串转换为Base64字符串
         /// </summary>
         /// <param name="bytes">字节数组</param>
         /// <param name="base64FormattingOptions">base64格式</param>
@@ -123,32 +130,49 @@ namespace FrHello.NetLib.Core.Serialization
         public static string ToBase64String(this byte[] bytes,
             Base64FormattingOptions base64FormattingOptions = Base64FormattingOptions.None)
         {
-            if (bytes == null)
-            {
-                return null;
-            }
-
-            return "";
+            return bytes == null ? null : Convert.ToBase64String(bytes, base64FormattingOptions);
         }
 
         /// <summary>
-        /// 流转换为Base64字符串
+        /// 字符串转换为Base64字符串
         /// </summary>
-        /// <param name="stream">流</param>
+        /// <param name="stream">字节流</param>
+        /// <param name="base64FormattingOptions">base64格式</param>
         /// <returns>Base64字符串</returns>
-        public static string ToBase64String(this Stream stream)
+        public static string ToBase64String(this Stream stream,
+            Base64FormattingOptions base64FormattingOptions = Base64FormattingOptions.None)
         {
-            return "";
+            return stream == null ? null : Convert.ToBase64String(stream.ToBytes(), base64FormattingOptions);
         }
 
         /// <summary>
         /// Base64字符串转换为明文字符串
         /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
+        /// <param name="str">Base64字符串</param>
+        /// <returns>明文字符串</returns>
         public static string ToStringFromBase64(this string str)
         {
             return str == null ? null : Convert.FromBase64String(str).ToStringEasy();
+        }
+
+        /// <summary>
+        /// Base64字符串转换为字节数组
+        /// </summary>
+        /// <param name="str">Base64字符串</param>
+        /// <returns>明文字符串</returns>
+        public static byte[] ToBytesFromBase64(this string str)
+        {
+            return str == null ? null : Convert.FromBase64String(str);
+        }
+
+        /// <summary>
+        /// Base64字符串转换为字节流
+        /// </summary>
+        /// <param name="str">Base64字符串</param>
+        /// <returns>明文字符串</returns>
+        public static Stream ToStreamFromBase64(this string str)
+        {
+            return str == null ? null : Convert.FromBase64String(str).ToStream();
         }
 
         /// <summary>
@@ -158,7 +182,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>字节数组</returns>
         public static byte[] ToBytes(this string str)
         {
-            return str.ToBytes(Encoding.UTF8);
+            return str.ToBytes(GlobalSerializationOptions.DefaultEncoding);
         }
 
         /// <summary>
@@ -178,41 +202,15 @@ namespace FrHello.NetLib.Core.Serialization
         }
 
         /// <summary>
-        /// 字符数组转字节数组
-        /// </summary>
-        /// <param name="chars">字符数组</param>
-        /// <returns>字节数组</returns>
-        public static byte[] ToBytes(this char[] chars)
-        {
-            return null;
-        }
-
-        /// <summary>
         /// 流转字节数组
         /// </summary>
         /// <param name="stream">流</param>
         /// <returns>字节数组</returns>
         public static byte[] ToBytes(this Stream stream)
         {
-            return stream.ToBytes(Encoding.UTF8);
-        }
-
-        /// <summary>
-        /// 流转字节数组
-        /// </summary>
-        /// <param name="stream">流</param>
-        /// <param name="encoding">编码格式</param>
-        /// <returns>字节数组</returns>
-        public static byte[] ToBytes(this Stream stream, Encoding encoding)
-        {
             if (stream == null)
             {
                 return null;
-            }
-
-            if (encoding == null)
-            {
-                throw new ArgumentNullException(nameof(encoding));
             }
 
             var position = stream.Position;
@@ -235,17 +233,30 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>流</returns>
         public static Stream ToStream(this string str)
         {
-            return null;
+            return str == null ? null : ToStream(str, GlobalSerializationOptions.DefaultEncoding);
         }
 
         /// <summary>
-        /// 字符数组转流
+        /// 字符串转流
         /// </summary>
-        /// <param name="chars">字符数组</param>
+        /// <param name="str">字符串</param>
+        /// <param name="encoding">编码规则</param>
         /// <returns>流</returns>
-        public static Stream ToStream(this char[] chars)
+        public static Stream ToStream(this string str, Encoding encoding)
         {
-            return null;
+            if (encoding == null)
+            {
+                if (GlobalSerializationOptions.DefaultEncoding != null)
+                {
+                    encoding = GlobalSerializationOptions.DefaultEncoding;
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(encoding));
+                }
+            }
+
+            return ToStream(str.ToBytes(encoding));
         }
 
         /// <summary>
@@ -255,7 +266,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>流</returns>
         public static Stream ToStream(this byte[] bytes)
         {
-            return null;
+            return bytes == null ? null : new MemoryStream(bytes);
         }
     }
 }
