@@ -7,7 +7,7 @@
     <ProjectGuid>{668B7CB0-6F89-4D51-9ADA-380D5864F42F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetLib.Core.Wpf</RootNamespace>
+    <RootNamespace>FrHello.NetLib.Core.Wpf</RootNamespace>
     <AssemblyName>NetLib.Core.Wpf</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

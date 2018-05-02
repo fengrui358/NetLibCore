@@ -7,7 +7,7 @@
     <ProjectGuid>{B8861CD6-E250-40DC-A21D-61682A2D21F2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NetLib.Core.Windows</RootNamespace>
+    <RootNamespace>FrHello.NetLib.Core.Windows</RootNamespace>
     <AssemblyName>NetLib.Core.Windows</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
+    <ProjectReference Include="..\NetLib.Core.Reflection\NetLib.Core.Reflection.csproj" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
     <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
   </ItemGroup>
