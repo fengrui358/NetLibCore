@@ -14,18 +14,8 @@
     <AssemblyVersion>1.0.2.0</AssemblyVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latest</LangVersion>
-    <DocumentationFile>bin\Debug\netstandard2.0\NetLib.Core.Framework.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\NetLib.Core.Framework.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
-    <ProjectReference Include="..\NetLib.Core.Reflection\NetLib.Core.Reflection.csproj" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
     <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
   </ItemGroup>
