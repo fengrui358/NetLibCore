@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <PackageId>FrHello.NetLib.Core.Reflection</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>rui feng</Authors>
+    <Company>rui feng</Company>
+    <Product>NetLib.Core.Reflection</Product>
+    <Description>Dotnet core reflection utility</Description>
+    <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
+    <PackageTags>Dotnet core reflection utility</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>

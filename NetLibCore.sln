@@ -11,9 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Test", "Tests\N
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.IO", "NetLib.Core.IO\NetLib.Core.IO.csproj", "{EA6DBC4F-0BC8-4A52-AA7D-1D14C7E35C17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Framework", "NetLib.Core.Framework\NetLib.Core.Framework.csproj", "{0563121F-A92A-4D92-AE8D-0438529EF8BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Framework", "NetLib.Core.Framework\NetLib.Core.Framework.csproj", "{0563121F-A92A-4D92-AE8D-0438529EF8BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Serialization", "NetLib.Core.Serialization\NetLib.Core.Serialization.csproj", "{75E44998-1BEC-4371-9C96-3607C3792646}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Serialization", "NetLib.Core.Serialization\NetLib.Core.Serialization.csproj", "{75E44998-1BEC-4371-9C96-3607C3792646}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Windows", "NetLib.Core.Windows\NetLib.Core.Windows.csproj", "{B8861CD6-E250-40DC-A21D-61682A2D21F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Wpf", "NetLib.Core.Wpf\NetLib.Core.Wpf.csproj", "{668B7CB0-6F89-4D51-9ADA-380D5864F42F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Reflection", "NetLib.Core.Reflection\NetLib.Core.Reflection.csproj", "{938CCF18-A5E5-41B0-A880-6A8BD8D55FD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +47,18 @@ Global
 		{75E44998-1BEC-4371-9C96-3607C3792646}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75E44998-1BEC-4371-9C96-3607C3792646}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75E44998-1BEC-4371-9C96-3607C3792646}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8861CD6-E250-40DC-A21D-61682A2D21F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8861CD6-E250-40DC-A21D-61682A2D21F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8861CD6-E250-40DC-A21D-61682A2D21F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8861CD6-E250-40DC-A21D-61682A2D21F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{668B7CB0-6F89-4D51-9ADA-380D5864F42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{668B7CB0-6F89-4D51-9ADA-380D5864F42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{668B7CB0-6F89-4D51-9ADA-380D5864F42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{668B7CB0-6F89-4D51-9ADA-380D5864F42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{938CCF18-A5E5-41B0-A880-6A8BD8D55FD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938CCF18-A5E5-41B0-A880-6A8BD8D55FD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938CCF18-A5E5-41B0-A880-6A8BD8D55FD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938CCF18-A5E5-41B0-A880-6A8BD8D55FD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

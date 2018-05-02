@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FrHello.NetLib.Core.IO
+﻿namespace FrHello.NetLib.Core.IO
 {
     public static class Extensions
     {
