@@ -1,4 +1,6 @@
-﻿using FrHello.NetLib.Core.Reflection.Enum;
+﻿using System;
+using FrHello.NetLib.Core.Enum;
+using FrHello.NetLib.Core.Reflection.Enum;
 using Xunit;
 
 namespace NetLib.Core.Test.Enum.Test
@@ -22,6 +24,36 @@ namespace NetLib.Core.Test.Enum.Test
 
             Assert.Equal("ADescription", a);
             Assert.Equal(mb.EnumTest.ToString(), b);
+        }
+
+        /// <summary>
+        /// EnumCombineTest
+        /// </summary>
+        [Fact]
+        public void EnumCombineTest_ThrowException()
+        {
+            Assert.Throws<ArgumentException>(() => {
+                var create = Permission.Create;
+                create.Combine(Permission.Delete);
+            });
+
+            Assert.Throws<ArgumentException>(() => {
+                var create = Permission.Create;
+                create.Combine(PermissionWithFlag.Delete);
+            });
+        }
+
+        /// <summary>
+        /// EnumCombineTest
+        /// </summary>
+        [Fact(Skip = "未完成")]
+        public void EnumCombineTest()
+        {
+            var create = PermissionWithFlag.Create;
+            var excepted = create | PermissionWithFlag.Update;
+
+            var actual = create.Combine(PermissionWithFlag.Update);
+            Assert.Equal(excepted, actual);
         }
 
         /// <summary>
@@ -50,6 +82,59 @@ namespace NetLib.Core.Test.Enum.Test
             /// B
             /// </summary>
             B
+        }
+
+        /// <summary>
+        /// Permission
+        /// </summary>
+        public enum Permission
+        {
+            /// <summary>
+            /// Create
+            /// </summary>
+            Create = 1,
+
+            /// <summary>
+            /// Read
+            /// </summary>
+            Read = 2,
+
+            /// <summary>
+            /// Update
+            /// </summary>
+            Update = 4,
+
+            /// <summary>
+            /// Delete
+            /// </summary>
+            Delete = 8
+        }
+
+        /// <summary>
+        /// Permission
+        /// </summary>
+        [Flags]
+        public enum PermissionWithFlag
+        {
+            /// <summary>
+            /// Create
+            /// </summary>
+            Create = 0b_0000_0001,
+
+            /// <summary>
+            /// Read
+            /// </summary>
+            Read = 0b_0000_0010,
+
+            /// <summary>
+            /// Update
+            /// </summary>
+            Update = 0b_0000_0100,
+
+            /// <summary>
+            /// Delete
+            /// </summary>
+            Delete = 0b_0000_1000,
         }
     }
 }

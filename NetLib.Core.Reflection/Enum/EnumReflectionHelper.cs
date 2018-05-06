@@ -6,7 +6,7 @@ namespace FrHello.NetLib.Core.Reflection.Enum
     /// <summary>
     /// 枚举辅助类
     /// </summary>
-    public static class EnumHelper
+    public static class EnumReflectionHelper
     {
         /// <summary>
         /// 获取枚举方法的描述文本

@@ -12,7 +12,7 @@ namespace NetLib.Core.Test.Reflection.Test
         /// <summary>
         /// PringTypeTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = "未完成")]
         public void PringTypeTest()
         {
             var type = typeof(MockClass).GetTypeInfo();
