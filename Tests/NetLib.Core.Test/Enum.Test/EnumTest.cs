@@ -119,22 +119,22 @@ namespace NetLib.Core.Test.Enum.Test
             /// <summary>
             /// Create
             /// </summary>
-            Create = 0b_0000_0001,
+            Create = 0b0000_0001,
 
             /// <summary>
             /// Read
             /// </summary>
-            Read = 0b_0000_0010,
+            Read = 0b0000_0010,
 
             /// <summary>
             /// Update
             /// </summary>
-            Update = 0b_0000_0100,
+            Update = 0b0000_0100,
 
             /// <summary>
             /// Delete
             /// </summary>
-            Delete = 0b_0000_1000,
+            Delete = 0b0000_1000,
         }
     }
 }
