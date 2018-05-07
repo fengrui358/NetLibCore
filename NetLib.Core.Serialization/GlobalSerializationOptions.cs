@@ -2,6 +2,9 @@
 
 namespace FrHello.NetLib.Core.Serialization
 {
+    /// <summary>
+    /// 序列化的全局选项
+    /// </summary>
     public static class GlobalSerializationOptions
     {
         /// <summary>

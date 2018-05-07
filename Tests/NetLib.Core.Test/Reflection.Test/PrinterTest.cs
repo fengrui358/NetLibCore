@@ -66,8 +66,12 @@ namespace NetLib.Core.Test.Reflection.Test
 
         internal class InnerMockClass
         {
+#pragma warning disable 169
             private int _intFiled;
+#pragma warning restore 169
+#pragma warning disable 169
             private int? _nullabledIntFiled;
+#pragma warning restore 169
 
             private int PrivateProperty { get; set; }
             protected int? ProtectedNullabledProperty { get; set; }

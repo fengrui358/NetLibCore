@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace FrHello.NetLib.Core.Enum
 {
@@ -68,13 +66,15 @@ namespace FrHello.NetLib.Core.Enum
             }
 
             //校验flags特性标签
-            if (verifyFlagsAttribute && !IsDefineFlagsAttribute(enums.FirstOrDefault()))
+            if (verifyFlagsAttribute && enums.Any() && !IsDefineFlagsAttribute(enums.First()))
             {
                 //如果需要校验Flags特性而枚举又没有定义该特性则直接失败
                 throw new ArgumentException($"param {nameof(enums)} is not contains flags attribute.");
             }
 
             System.Enum resultEnum = null;
+            var enumType = enums.FirstOrDefault()?.GetType();
+
             //拼装
             foreach (var @enum in enums)
             {
@@ -84,43 +84,101 @@ namespace FrHello.NetLib.Core.Enum
                 }
                 else
                 {
-                    //todo:整形转换回枚举
                     var intresultEnum = Convert.ToInt32(resultEnum) | Convert.ToInt32(@enum);
+                    if (enumType != null)
+                    {
+                        resultEnum = (System.Enum) System.Enum.ToObject(enumType, intresultEnum);
+                    }
                 }
             }
 
-            return null;
+            return resultEnum;
         }
 
         /// <summary>
         /// 校验某个枚举组合值里是否包含特定的枚举
         /// </summary>
-        /// <param name="combineEnum">结合的枚举</param>
+        /// <param name="combinedEnum">结合的枚举</param>
         /// <param name="verifyFlagsAttribute"></param>
         /// <param name="enums"></param>
         /// <returns>是否包含指定的枚举值</returns>
-        public static bool Contains(this System.Enum combineEnum, bool verifyFlagsAttribute = true,
+        public static bool Contains(this System.Enum combinedEnum, bool verifyFlagsAttribute = true,
             params System.Enum[] enums)
         {
-            if (combineEnum == null)
+            if (combinedEnum == null)
             {
-                throw new ArgumentNullException(nameof(combineEnum));
+                throw new ArgumentNullException(nameof(combinedEnum));
+            }
+
+            if (enums == null || !enums.Any())
+            {
+                return false;
             }
 
             if (!IsSameEnumDefine(enums))
             {
                 //判断枚举类型是否一致，不一致则直接失败
-                return false;
+                throw new ArgumentException($"param {nameof(enums)} inconsistent parameter type.");
             }
 
-            if (verifyFlagsAttribute && !IsDefineFlagsAttribute(enums.FirstOrDefault()))
+            var isFlag = IsDefineFlagsAttribute(enums.FirstOrDefault());
+            if (verifyFlagsAttribute && !isFlag)
             {
                 //如果需要校验Flags特性而枚举又没有定义该特性则直接失败
-                return false;
+                throw new ArgumentException($"param {nameof(enums)} is not contains flags attribute.");
             }
-            
 
-            return false;
+            var combinedEnumInt = Convert.ToInt32(combinedEnum);
+            foreach (var @enum in enums)
+            {
+                if (isFlag)
+                {
+                    if (!combinedEnum.HasFlag(@enum))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if ((combinedEnumInt & Convert.ToInt32(@enum)) == 0)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 从一个组合枚举中移除某一个枚举项
+        /// todo:
+        /// </summary>
+        /// <param name="combinedEnum">结合的枚举</param>
+        /// <param name="verifyFlagsAttribute"></param>
+        /// <param name="enums"></param>
+        /// <returns>是否包含指定的枚举值</returns>
+        public static void Remove(this System.Enum combinedEnum, bool verifyFlagsAttribute = true,
+            params System.Enum[] enums)
+        {
+            if (combinedEnum == null)
+            {
+                throw new ArgumentNullException(nameof(combinedEnum));
+            }
+
+            if (!IsSameEnumDefine(enums))
+            {
+                //判断枚举类型是否一致，不一致则直接失败
+                throw new ArgumentException($"param {nameof(enums)} inconsistent parameter type.");
+            }
+
+            if (verifyFlagsAttribute && enums.Any() && !IsDefineFlagsAttribute(enums.First()))
+            {
+                //如果需要校验Flags特性而枚举又没有定义该特性则直接失败
+                throw new ArgumentException($"param {nameof(enums)} is not contains flags attribute.");
+            }
+
+
         }
 
         /// <summary>

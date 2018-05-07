@@ -36,7 +36,7 @@ namespace NetLib.Core.Test.Enum.Test
                 var create = Permission.Create;
                 create.Combine(Permission.Delete);
             });
-
+            
             Assert.Throws<ArgumentException>(() => {
                 var create = Permission.Create;
                 create.Combine(PermissionWithFlag.Delete);
@@ -46,14 +46,16 @@ namespace NetLib.Core.Test.Enum.Test
         /// <summary>
         /// EnumCombineTest
         /// </summary>
-        [Fact(Skip = "未完成")]
+        [Fact]
         public void EnumCombineTest()
         {
             var create = PermissionWithFlag.Create;
             var excepted = create | PermissionWithFlag.Update;
-
+            
             var actual = create.Combine(PermissionWithFlag.Update);
             Assert.Equal(excepted, actual);
+
+            Assert.Equal($"{PermissionWithFlag.Create}, {PermissionWithFlag.Update}", actual.ToString());
         }
 
         /// <summary>
