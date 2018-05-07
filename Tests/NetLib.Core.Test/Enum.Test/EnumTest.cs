@@ -59,6 +59,46 @@ namespace NetLib.Core.Test.Enum.Test
         }
 
         /// <summary>
+        /// EnumCombineTest
+        /// </summary>
+        [Fact]
+        public void EnumCombinedContainsTest()
+        {
+            var noFlags = Permission.Delete | Permission.Update;
+            var noFlagsNotContains = noFlags.Contains(false, Permission.Create);
+
+            Assert.False(noFlagsNotContains);
+
+            var noFlagsContains = noFlags.Contains(false, Permission.Delete);
+            Assert.True(noFlagsContains);
+
+            var flags = PermissionWithFlag.Delete | PermissionWithFlag.Update;
+            var flagsNotContains = flags.Contains(PermissionWithFlag.Create);
+
+            Assert.False(flagsNotContains);
+
+            var flagsContains = flags.Contains(PermissionWithFlag.Delete);
+            Assert.True(flagsContains);
+        }
+
+        /// <summary>
+        /// EnumCombineTest
+        /// </summary>
+        [Fact]
+        public void EnumRemoveTest()
+        {
+            var noFlags = Permission.Delete | Permission.Update;
+            var noFlagsDelete = noFlags.Remove(false, Permission.Update);
+
+            Assert.Equal(Permission.Delete, noFlagsDelete);
+
+            var flags = PermissionWithFlag.Delete | PermissionWithFlag.Update;
+            var flagsDelete = flags.Remove(false, PermissionWithFlag.Update);
+
+            Assert.Equal(PermissionWithFlag.Delete, flagsDelete);
+        }
+
+        /// <summary>
         /// MockClass
         /// </summary>
         public class MockClass

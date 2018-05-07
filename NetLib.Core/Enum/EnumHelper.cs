@@ -99,10 +99,21 @@ namespace FrHello.NetLib.Core.Enum
         /// 校验某个枚举组合值里是否包含特定的枚举
         /// </summary>
         /// <param name="combinedEnum">结合的枚举</param>
-        /// <param name="verifyFlagsAttribute"></param>
-        /// <param name="enums"></param>
+        /// <param name="enums">要判断的枚举值</param>
         /// <returns>是否包含指定的枚举值</returns>
-        public static bool Contains(this System.Enum combinedEnum, bool verifyFlagsAttribute = true,
+        public static bool Contains(this System.Enum combinedEnum, params System.Enum[] enums)
+        {
+            return combinedEnum.Contains(true, enums);
+        }
+
+        /// <summary>
+        /// 校验某个枚举组合值里是否包含特定的枚举
+        /// </summary>
+        /// <param name="combinedEnum">结合的枚举</param>
+        /// <param name="verifyFlagsAttribute">是否要校验枚举是否包含Flags特性</param>
+        /// <param name="enums">要判断的枚举值</param>
+        /// <returns>是否包含指定的枚举值</returns>
+        public static bool Contains(this System.Enum combinedEnum, bool verifyFlagsAttribute,
             params System.Enum[] enums)
         {
             if (combinedEnum == null)
@@ -152,13 +163,21 @@ namespace FrHello.NetLib.Core.Enum
 
         /// <summary>
         /// 从一个组合枚举中移除某一个枚举项
-        /// todo:
         /// </summary>
         /// <param name="combinedEnum">结合的枚举</param>
-        /// <param name="verifyFlagsAttribute"></param>
-        /// <param name="enums"></param>
-        /// <returns>是否包含指定的枚举值</returns>
-        public static void Remove(this System.Enum combinedEnum, bool verifyFlagsAttribute = true,
+        /// <param name="enums">要移除的枚举值</param>
+        public static System.Enum Remove(this System.Enum combinedEnum, params System.Enum[] enums)
+        {
+            return combinedEnum.Remove(enums);
+        }
+
+        /// <summary>
+        /// 从一个组合枚举中移除某一个枚举项
+        /// </summary>
+        /// <param name="combinedEnum">结合的枚举</param>
+        /// <param name="verifyFlagsAttribute">是否要校验枚举是否包含Flags特性</param>
+        /// <param name="enums">要移除的枚举值</param>
+        public static System.Enum Remove(this System.Enum combinedEnum, bool verifyFlagsAttribute,
             params System.Enum[] enums)
         {
             if (combinedEnum == null)
@@ -178,7 +197,13 @@ namespace FrHello.NetLib.Core.Enum
                 throw new ArgumentException($"param {nameof(enums)} is not contains flags attribute.");
             }
 
+            var combinedEnumInt = Convert.ToInt32(combinedEnum);
+            foreach (var @enum in enums)
+            {
+                combinedEnumInt = combinedEnumInt & ~Convert.ToInt32(@enum);
+            }
 
+            return (System.Enum) System.Enum.ToObject(combinedEnum.GetType(), combinedEnumInt);
         }
 
         /// <summary>
