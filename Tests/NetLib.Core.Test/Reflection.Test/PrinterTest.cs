@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using FrHello.NetLib.Core.Reflection;
 using Xunit;
 
@@ -12,12 +13,25 @@ namespace NetLib.Core.Test.Reflection.Test
         /// <summary>
         /// PringTypeTest
         /// </summary>
-        [Fact(Skip = "未完成")]
+        [Fact]
         public void PringTypeTest()
         {
-            var type = typeof(MockClass).GetTypeInfo();
+            var output = Printer.Output(typeof(Environment));
+            Assert.NotNull(output);
+        }
 
-            var output = Printer.Output(type);
+        /// <summary>
+        /// PringTypeTest
+        /// </summary>
+        [Fact]
+        public void PringObjectTest()
+        {
+            var obj = new MockClass
+            {
+                PublicProperty = 34
+            };
+
+            var output = Printer.Output(obj, true);
             Assert.NotNull(output);
         }
     }
@@ -26,6 +40,9 @@ namespace NetLib.Core.Test.Reflection.Test
     {
         private int _intFiled;
         private int? _nullabledIntFiled;
+
+        private static int _intStaticFiled;
+        private static int? _nullabledStaticIntFiled;
 
         private int PrivateProperty { get; set; }
         protected int? ProtectedNullabledProperty { get; set; }
