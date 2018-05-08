@@ -64,7 +64,7 @@ namespace NetLib.Core.Test.Enum.Test
         [Fact]
         public void EnumCombinedContainsTest()
         {
-            var noFlags = Permission.Delete | Permission.Update;
+            var noFlags = Permission.Delete.Combine(false, Permission.Update);
             var noFlagsNotContains = noFlags.Contains(false, Permission.Create);
 
             Assert.False(noFlagsNotContains);
@@ -72,7 +72,7 @@ namespace NetLib.Core.Test.Enum.Test
             var noFlagsContains = noFlags.Contains(false, Permission.Delete);
             Assert.True(noFlagsContains);
 
-            var flags = PermissionWithFlag.Delete | PermissionWithFlag.Update;
+            var flags = PermissionWithFlag.Delete.Combine(PermissionWithFlag.Update);
             var flagsNotContains = flags.Contains(PermissionWithFlag.Create);
 
             Assert.False(flagsNotContains);
@@ -87,12 +87,12 @@ namespace NetLib.Core.Test.Enum.Test
         [Fact]
         public void EnumRemoveTest()
         {
-            var noFlags = Permission.Delete | Permission.Update;
+            var noFlags = Permission.Delete.Combine(false, Permission.Update);
             var noFlagsDelete = noFlags.Remove(false, Permission.Update);
 
             Assert.Equal(Permission.Delete, noFlagsDelete);
 
-            var flags = PermissionWithFlag.Delete | PermissionWithFlag.Update;
+            var flags = PermissionWithFlag.Delete.Combine(PermissionWithFlag.Update);
             var flagsDelete = flags.Remove(false, PermissionWithFlag.Update);
 
             Assert.Equal(PermissionWithFlag.Delete, flagsDelete);
