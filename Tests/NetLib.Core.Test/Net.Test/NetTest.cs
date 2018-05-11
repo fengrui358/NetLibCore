@@ -13,7 +13,7 @@ namespace NetLib.Core.Test.Net.Test
         [Fact]
         public void PingTest()
         {
-
+            //todo
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace NetLib.Core.Test.Net.Test
         [Fact]
         public void PingPortTest()
         {
-
+            //todo
         }
     }
 }

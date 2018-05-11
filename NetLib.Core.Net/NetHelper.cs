@@ -12,7 +12,7 @@
         /// <returns></returns>
         public static bool Ping(string address)
         {
-
+            //todo:
 
             return false;
         }
@@ -25,6 +25,7 @@
         /// <returns></returns>
         public static bool Ping(string address, int port)
         {
+            //todo
             return false;
         }
     }
