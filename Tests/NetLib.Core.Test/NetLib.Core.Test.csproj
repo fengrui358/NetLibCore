@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\NetLib.Core.Framework\NetLib.Core.Framework.csproj" />
     <ProjectReference Include="..\..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
+    <ProjectReference Include="..\..\NetLib.Core.Net\NetLib.Core.Net.csproj" />
     <ProjectReference Include="..\..\NetLib.Core.Reflection\NetLib.Core.Reflection.csproj" />
     <ProjectReference Include="..\..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
     <ProjectReference Include="..\..\NetLib.Core\NetLib.Core.csproj" />

@@ -19,7 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Windows", "NetL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Wpf", "NetLib.Core.Wpf\NetLib.Core.Wpf.csproj", "{668B7CB0-6F89-4D51-9ADA-380D5864F42F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Reflection", "NetLib.Core.Reflection\NetLib.Core.Reflection.csproj", "{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Reflection", "NetLib.Core.Reflection\NetLib.Core.Reflection.csproj", "{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Net", "NetLib.Core.Net\NetLib.Core.Net.csproj", "{79A8B113-0E28-44BC-A011-4FFA4B3AF291}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,6 +10,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core IO utility</PackageTags>
     <RootNamespace>FrHello.NetLib.Core.IO</RootNamespace>
+    <Product>NetLib.Core.IO</Product>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
