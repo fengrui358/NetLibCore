@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using FrHello.NetLib.Core.Net;
+using Xunit;
 
 namespace NetLib.Core.Test.Net.Test
 {
@@ -23,6 +24,15 @@ namespace NetLib.Core.Test.Net.Test
         public void PingPortTest()
         {
             //todo
+        }
+
+        /// <summary>
+        /// LocalPortInUse
+        /// </summary>
+        [Fact]
+        public void LocalPortInUse()
+        {
+            Assert.True(NetHelper.CheckPortInUse(80));
         }
     }
 }
