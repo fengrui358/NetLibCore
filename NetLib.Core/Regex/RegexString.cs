@@ -14,6 +14,11 @@ namespace FrHello.NetLib.Core.Regex
         /// </summary>
         public static string NaturalNumber = "^[0-9]*$";
 
+        /// <summary>
+        /// 正整数
+        /// </summary>
+        public static string PositiveInteger = @"^[1-9]\d*$";
+
         private const string ConstNumber = @"^(\-|\+)?\d+(\.\d+)?$";
         /// <summary>
         /// 数字
@@ -22,20 +27,6 @@ namespace FrHello.NetLib.Core.Regex
         public static string Number()
         {
             return ConstNumber;
-        }
-
-        /// <summary>
-        /// 数字
-        /// </summary>
-        /// <returns></returns>
-        public static string Number(int length)
-        {
-            if (length < 0)
-            {
-                throw new ArgumentException("Number of digits cannot be less than 0", nameof(length));
-            }
-
-            return $"^\\d{{{length}}}$";
         }
 
         #endregion
@@ -55,7 +46,7 @@ namespace FrHello.NetLib.Core.Regex
         /// <summary>
         /// 汉字
         /// </summary>
-        public const string Chinese = "^[\u4e00-\u9fa5]{0,}$";
+        public const string Chinese = "[\u4e00-\u9fa5]+";
 
         #endregion
     }

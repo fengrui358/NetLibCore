@@ -10,19 +10,56 @@ namespace FrHello.NetLib.Core.Regex
         #region 数字
 
         /// <summary>
-        /// 校验自然数表达式
-        /// </summary>
-        private static readonly Lazy<System.Text.RegularExpressions.Regex> NaturalNumberRegex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.NaturalNumber));
-
-        /// <summary>
         /// 检查是否为自然数
         /// </summary>
         /// <param name="number">数字</param>
         /// <returns></returns>
         public static bool CheckNaturalNumber(string number)
         {
-            return !string.IsNullOrEmpty(number) && NaturalNumberRegex.Value.IsMatch(number);
+            return !string.IsNullOrEmpty(number) && int.TryParse(number, out var outNumber) && outNumber >= 0;
+        }
+
+        /// <summary>
+        /// 检查是否为数字（所有正负整数和浮点数）
+        /// </summary>
+        /// <param name="number">数字</param>
+        /// <returns></returns>
+        public static bool CheckNumber(string number)
+        {
+            return !string.IsNullOrEmpty(number) && double.TryParse(number, out var _);
+        }
+
+        /// <summary>
+        /// 检查是否为指定位数的数字（如果是浮点数只考虑整数部分）
+        /// </summary>
+        /// <param name="number">数字</param>
+        /// <param name="length">位数</param>
+        /// <returns></returns>
+        public static bool CheckNumber(string number, int length)
+        {
+            if (length < 0)
+            {
+                throw new ArgumentException("Number of digits cannot be less than 0", nameof(length));
+            }
+
+            if (string.IsNullOrEmpty(number))
+            {
+                return false;
+            }
+
+            double.TryParse(number, out var outNumber);
+            var outInt = (int) Math.Abs(outNumber);
+            return outInt.ToString().Length == length;
+        }
+
+        /// <summary>
+        /// 检查是否为正整数
+        /// </summary>
+        /// <param name="number">数字</param>
+        /// <returns></returns>
+        public static bool CheckPositiveInteger(string number)
+        {
+            return !string.IsNullOrEmpty(number) && int.TryParse(number, out var outNumber) && outNumber > 0;
         }
 
         #endregion
@@ -43,6 +80,38 @@ namespace FrHello.NetLib.Core.Regex
         public static bool CheckEmail(string email)
         {
             return !string.IsNullOrEmpty(email) && EmailRegex.Value.IsMatch(email);
+        }
+
+        /// <summary>
+        /// 校验IpV4正则表达式
+        /// </summary>
+        private static readonly Lazy<System.Text.RegularExpressions.Regex> IpV4Regex = new Lazy<System.Text.RegularExpressions.Regex>(
+            () => new System.Text.RegularExpressions.Regex(RegexString.IpV4));
+
+        /// <summary>
+        /// 检查是否为IpV4地址格式
+        /// </summary>
+        /// <param name="address">地址</param>
+        /// <returns></returns>
+        public static bool CheckIpV4(string address)
+        {
+            return !string.IsNullOrEmpty(address) && IpV4Regex.Value.IsMatch(address);
+        }
+
+        /// <summary>
+        /// 中文正则表达式
+        /// </summary>
+        private static readonly Lazy<System.Text.RegularExpressions.Regex> ChineseRegex = new Lazy<System.Text.RegularExpressions.Regex>(
+            () => new System.Text.RegularExpressions.Regex(RegexString.Chinese));
+
+        /// <summary>
+        /// 检查字符串是否包含中文
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns></returns>
+        public static bool CheckChinese(string str)
+        {
+            return !string.IsNullOrEmpty(str) && ChineseRegex.Value.IsMatch(str);
         }
 
         #endregion
