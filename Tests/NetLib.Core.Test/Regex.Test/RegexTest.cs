@@ -74,11 +74,11 @@ namespace NetLib.Core.Test.Regex.Test
         /// CheckPositiveIntegerTest
         /// </summary>
         [Fact]
-        public void CheckIpV4Test()
+        public void CheckIpv4Test()
         {
-            Assert.False(RegexHelper.CheckIpV4("2.43.546.2"));
-            Assert.True(RegexHelper.CheckIpV4("2.43.54.2"));
-            Assert.False(RegexHelper.CheckIpV4("2..54.2"));
+            Assert.False(RegexHelper.CheckIpv4("2.43.546.2"));
+            Assert.True(RegexHelper.CheckIpv4("2.43.54.2"));
+            Assert.False(RegexHelper.CheckIpv4("2..54.2"));
         }
 
         /// <summary>
@@ -89,6 +89,35 @@ namespace NetLib.Core.Test.Regex.Test
         {
             Assert.False(RegexHelper.CheckChinese("sdsdf34grtg_)_#@$$@#1`@!#$!@$dfv dsfERGRETGRT$%65d78598*-+"));
             Assert.True(RegexHelper.CheckChinese("sdsdf34grtg_)_#@$$@#1`@!#$!@$d赢fv dsfERGRETGRT$%65d78598*-+"));
+        }
+
+        /// <summary>
+        /// CheckDomainTest
+        /// </summary>
+        [Fact]
+        public void CheckDomainTest()
+        {
+            Assert.False(RegexHelper.CheckDomain("32.545"));
+            Assert.True(RegexHelper.CheckDomain("baidu.com"));            
+        }
+
+        /// <summary>
+        /// CheckHostNameOrAddressTest
+        /// </summary>
+        [Fact]
+        public void CheckHostNameOrAddressTest()
+        {
+            //Ipv4
+            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1.2"));
+            Assert.True(RegexHelper.CheckHostNameOrAddress("127.0.0.1"));
+            //Assert.True(RegexHelper.CheckHostNameOrAddress("localhost"));
+            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1"));//会被转换为192.168.0.1
+            //Ipv4 error
+            Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1.567"));
+            Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1."));
+
+            //todo
+            Assert.False(RegexHelper.CheckHostNameOrAddress("https://www.baidu.com"));
         }
     }
 }

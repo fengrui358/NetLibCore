@@ -32,17 +32,20 @@ namespace FrHello.NetLib.Core.Net
             {
                 throw new ArgumentException(nameof(timeout));
             }
-
-            //todo:
-            var ping = new System.Net.NetworkInformation.Ping();
-
-            return false;
+            
+            var ping = new Ping();
+            var pingReply = ping.Send(address, timeout);
+            return pingReply?.Status == IPStatus.Success;
         }
 
+        /// <summary>
+        /// Ping某个地址是否正常工作
+        /// </summary>
+        /// <param name="hostNameOrAddress">地址</param>
+        /// <returns>是否连接成功</returns>
         public static bool Ping(string hostNameOrAddress)
         {
-            //todo
-            return false;
+            return Ping(hostNameOrAddress, GlobalNetOptions.DefaultPingTimeOut);
         }
 
         /// <summary>
@@ -53,24 +56,42 @@ namespace FrHello.NetLib.Core.Net
         /// <returns>是否连接成功</returns>
         public static bool Ping(string hostNameOrAddress, int timeout)
         {
+            if (timeout < 0)
+            {
+                throw new ArgumentException(nameof(timeout));
+            }
+
             //todo
             return false;
         }
 
-        ///// <summary>
-        ///// Ping某个地址是否正常工作
-        ///// </summary>
-        ///// <param name="address">地址</param>
-        ///// <param name="port">端口</param>
-        ///// <returns></returns>
-        //public static bool Ping(string address, int port)
-        //{
-        //    //todo
-        //    return false;
-        //}
+        /// <summary>
+        /// 检查某个远程地址的端口是否正在使用
+        /// </summary>
+        /// <param name="address">地址</param>
+        /// <param name="port">端口</param>
+        /// <returns>端口是否正在使用</returns>
+        public static bool CheckPortInUse(string address, int port)
+        {
+            //todo
+            return false;
+        }
 
         /// <summary>
-        /// 本地端口是否在使用
+        /// 检查某个远程地址的端口是否正在使用
+        /// </summary>
+        /// <param name="address">地址</param>
+        /// <param name="port">端口</param>
+        /// <param name="timeout">超时(毫秒)</param>
+        /// <returns>端口是否正在使用</returns>
+        public static bool CheckPortInUse(string address, int port, int timeout)
+        {
+            //todo
+            return false;
+        }
+
+        /// <summary>
+        /// 检查本地端口是否在使用
         /// </summary>
         /// <param name="port">某一个本地端口</param>
         /// <returns></returns>

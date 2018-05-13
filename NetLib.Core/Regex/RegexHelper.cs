@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 
 namespace FrHello.NetLib.Core.Regex
 {
@@ -86,16 +87,28 @@ namespace FrHello.NetLib.Core.Regex
         /// 校验IpV4正则表达式
         /// </summary>
         private static readonly Lazy<System.Text.RegularExpressions.Regex> IpV4Regex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.IpV4));
+            () => new System.Text.RegularExpressions.Regex(RegexString.Ipv4));
 
         /// <summary>
-        /// 检查是否为IpV4地址格式
+        /// 检查是否为Ipv4地址格式
         /// </summary>
-        /// <param name="address">地址</param>
+        /// <param name="address">Ip地址</param>
         /// <returns></returns>
-        public static bool CheckIpV4(string address)
+        public static bool CheckIpv4(string address)
         {
             return !string.IsNullOrEmpty(address) && IpV4Regex.Value.IsMatch(address);
+        }
+
+        /// <summary>
+        /// 检查地址是否有效
+        /// </summary>
+        /// <param name="address">网络地址</param>
+        /// <returns></returns>
+        public static bool CheckHostNameOrAddress(string address)
+        {
+            var s = IPAddress.TryParse(address, out var ip);
+
+            return !string.IsNullOrEmpty(address) && IPAddress.TryParse(address, out _);
         }
 
         /// <summary>
@@ -112,6 +125,22 @@ namespace FrHello.NetLib.Core.Regex
         public static bool CheckChinese(string str)
         {
             return !string.IsNullOrEmpty(str) && ChineseRegex.Value.IsMatch(str);
+        }
+
+        /// <summary>
+        /// 域名正则表达式
+        /// </summary>
+        private static readonly Lazy<System.Text.RegularExpressions.Regex> DomainRegex = new Lazy<System.Text.RegularExpressions.Regex>(
+            () => new System.Text.RegularExpressions.Regex(RegexString.Domain));
+
+        /// <summary>
+        /// 检查域名
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns></returns>
+        public static bool CheckDomain(string str)
+        {
+            return !string.IsNullOrEmpty(str) && DomainRegex.Value.IsMatch(str);
         }
 
         #endregion

@@ -39,14 +39,19 @@ namespace FrHello.NetLib.Core.Regex
         public const string Email = @"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
 
         /// <summary>
-        /// IpV4
+        /// Ipv4
         /// </summary>
-        public const string IpV4 = "^((?:(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d))$";
+        public const string Ipv4 = "^((?:(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d)\\.){3}(?:25[0-5]|2[0-4]\\d|[01]?\\d?\\d))$";
 
         /// <summary>
         /// 汉字
         /// </summary>
         public const string Chinese = "[\u4e00-\u9fa5]+";
+
+        /// <summary>
+        /// 域名
+        /// </summary>
+        public const string Domain = "[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(/.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+/.?";
 
         #endregion
     }
