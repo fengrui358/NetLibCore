@@ -14,25 +14,26 @@ namespace NetLib.Core.Test.Net.Test
         [Fact]
         public void PingTest()
         {
-            //todo
+            Assert.True(NetHelper.PingAsync("baidu.com").GetAwaiter().GetResult());
+            Assert.True(NetHelper.PingAsync("127.0.0.1").GetAwaiter().GetResult());
         }
 
         /// <summary>
-        /// PingPortTest
+        /// CheckRemotePortTest
         /// </summary>
         [Fact]
-        public void PingPortTest()
+        public void CheckRemotePortTest()
         {
-            //todo
+            Assert.True(NetHelper.CheckRemotePortAsync("baidu.com", 80).GetAwaiter().GetResult());
         }
 
         /// <summary>
         /// LocalPortInUse
         /// </summary>
-        [Fact]
+        [Fact(Skip = "需要手动执行")]
         public void LocalPortInUse()
         {
-            Assert.True(NetHelper.CheckPortInUse(80));
+            Assert.True(NetHelper.CheckLocalPort(80));
         }
     }
 }

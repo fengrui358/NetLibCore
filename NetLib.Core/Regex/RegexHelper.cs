@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace FrHello.NetLib.Core.Regex
 {
@@ -84,19 +88,102 @@ namespace FrHello.NetLib.Core.Regex
         }
 
         /// <summary>
-        /// 校验IpV4正则表达式
-        /// </summary>
-        private static readonly Lazy<System.Text.RegularExpressions.Regex> IpV4Regex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.Ipv4));
-
-        /// <summary>
         /// 检查是否为Ipv4地址格式
         /// </summary>
         /// <param name="address">Ip地址</param>
         /// <returns></returns>
         public static bool CheckIpv4(string address)
         {
-            return !string.IsNullOrEmpty(address) && IpV4Regex.Value.IsMatch(address);
+            if (string.IsNullOrEmpty(address))
+            {
+                return false;
+            }
+
+            var ipSections = address.Split('.');
+            if (ipSections.Length != 4)
+            {
+                return false;
+            }
+
+            foreach (var ipSection in ipSections)
+            {
+                if (!int.TryParse(ipSection, out var ip) || ip < 0 || ip > 255)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 检查是否为Ipv6地址格式
+        /// </summary>
+        /// <param name="address">Ip地址</param>
+        /// <returns></returns>
+        public static bool CheckIpv6(string address)
+        {
+            if (string.IsNullOrEmpty(address))
+            {
+                return false;
+            }
+
+            //检查是否有压缩符号
+            var compressionSymbol = address.IndexOf("::", StringComparison.Ordinal);
+            if (compressionSymbol >= 0)
+            {
+                var right = address.Substring(compressionSymbol + 2);
+                if (right.IndexOf("::", StringComparison.Ordinal) >= 0)
+                {
+                    //Ipv6内部只能出现一次"::"压缩符号
+                    return false;
+                }
+
+                var left = address.Substring(0, compressionSymbol);
+                var otherIpSections = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(left))
+                {
+                    otherIpSections.AddRange(left.Split(':'));
+                }
+
+                if (!string.IsNullOrWhiteSpace(right))
+                {
+                    otherIpSections.AddRange(right.Split(':'));
+                }
+
+                //Ipv6分为8段，出去"::"压缩符号后最多还剩下5个":"符号，6段
+                if (otherIpSections.Count > 6)
+                {
+                    return false;
+                }
+
+                foreach (var ipSection in otherIpSections)
+                {
+                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) || ip < 0 || ip > 0xFFFF)
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                var ipSections = address.Split(':');
+                if (ipSections.Length != 8)
+                {
+                    return false;
+                }
+
+                foreach (var ipSection in ipSections)
+                {
+                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) || ip < 0 || ip > 0xFFFF)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -106,9 +193,7 @@ namespace FrHello.NetLib.Core.Regex
         /// <returns></returns>
         public static bool CheckHostNameOrAddress(string address)
         {
-            var s = IPAddress.TryParse(address, out var ip);
-
-            return !string.IsNullOrEmpty(address) && IPAddress.TryParse(address, out _);
+            return !string.IsNullOrEmpty(address) && (CheckIpv4(address) || CheckIpv6(address) || CheckDomain(address));
         }
 
         /// <summary>

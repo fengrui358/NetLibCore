@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
+using System.Net;
 using FrHello.NetLib.Core.Regex;
 using Xunit;
 
@@ -76,9 +78,35 @@ namespace NetLib.Core.Test.Regex.Test
         [Fact]
         public void CheckIpv4Test()
         {
+            Assert.True(RegexHelper.CheckIpv4("0.0.0.0"));
+            Assert.True(RegexHelper.CheckIpv4("255.255.255.255"));
+            Assert.True(RegexHelper.CheckIpv4("192.168.1.1"));
+            Assert.True(RegexHelper.CheckIpv4("0.0.0.1"));
+            Assert.True(RegexHelper.CheckIpv4("01.1.1.1"));
+            Assert.True(RegexHelper.CheckIpv4("5.025.25.25"));
+
             Assert.False(RegexHelper.CheckIpv4("2.43.546.2"));
-            Assert.True(RegexHelper.CheckIpv4("2.43.54.2"));
             Assert.False(RegexHelper.CheckIpv4("2..54.2"));
+            Assert.False(RegexHelper.CheckIpv4("111.111.111.256"));
+        }
+
+        /// <summary>
+        /// CheckPositiveIntegerTest
+        /// </summary>
+        [Fact]
+        public void CheckIpv6Test()
+        {
+            Assert.True(RegexHelper.CheckIpv6("5e:0:0:0:0:0:5668:eeee"));
+            Assert.True(RegexHelper.CheckIpv6("5e:0:0:023:0:0:5668:eeee"));
+            Assert.True(RegexHelper.CheckIpv6("5e::5668:eeee"));
+            Assert.True(RegexHelper.CheckIpv6("::1:8:8888:0:0:8"));
+            Assert.True(RegexHelper.CheckIpv6("1::"));
+            Assert.True(RegexHelper.CheckIpv6("::1:2:2:2"));
+            Assert.True(RegexHelper.CheckIpv6("::"));
+
+            Assert.False(RegexHelper.CheckIpv6("55555:5e:0:0:0:0:0:5668:eeee"));
+            Assert.False(RegexHelper.CheckIpv6("5e::5668::eeee"));
+            Assert.False(RegexHelper.CheckIpv6("5e::5668::eeee"));
         }
 
         /// <summary>
@@ -87,8 +115,9 @@ namespace NetLib.Core.Test.Regex.Test
         [Fact]
         public void CheckChineseTest()
         {
-            Assert.False(RegexHelper.CheckChinese("sdsdf34grtg_)_#@$$@#1`@!#$!@$dfv dsfERGRETGRT$%65d78598*-+"));
             Assert.True(RegexHelper.CheckChinese("sdsdf34grtg_)_#@$$@#1`@!#$!@$d赢fv dsfERGRETGRT$%65d78598*-+"));
+
+            Assert.False(RegexHelper.CheckChinese("sdsdf34grtg_)_#@$$@#1`@!#$!@$dfv dsfERGRETGRT$%65d78598*-+"));
         }
 
         /// <summary>
@@ -97,8 +126,10 @@ namespace NetLib.Core.Test.Regex.Test
         [Fact]
         public void CheckDomainTest()
         {
+            //todo:取消域名校验
+            Assert.True(RegexHelper.CheckDomain("wenku.baidu.com"));
+
             Assert.False(RegexHelper.CheckDomain("32.545"));
-            Assert.True(RegexHelper.CheckDomain("baidu.com"));            
         }
 
         /// <summary>
@@ -111,7 +142,7 @@ namespace NetLib.Core.Test.Regex.Test
             Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1.2"));
             Assert.True(RegexHelper.CheckHostNameOrAddress("127.0.0.1"));
             //Assert.True(RegexHelper.CheckHostNameOrAddress("localhost"));
-            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1"));//会被转换为192.168.0.1
+            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1")); //会被转换为192.168.0.1
             //Ipv4 error
             Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1.567"));
             Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1."));
