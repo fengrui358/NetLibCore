@@ -54,9 +54,9 @@ namespace FrHello.NetLib.Core.Regex
         public const string Chinese = "[\u4e00-\u9fa5]+";
 
         /// <summary>
-        /// 域名
+        /// Url
         /// </summary>
-        public const string Domain = @"^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$";
+        public const string Url = @"^[a-zA-z]+://[^\s]*$";
 
         #endregion
     }

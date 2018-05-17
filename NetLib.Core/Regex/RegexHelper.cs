@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace FrHello.NetLib.Core.Regex
 {
@@ -74,8 +71,9 @@ namespace FrHello.NetLib.Core.Regex
         /// <summary>
         /// 校验邮件正则表达式
         /// </summary>
-        private static readonly Lazy<System.Text.RegularExpressions.Regex> EmailRegex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.Email));
+        private static readonly Lazy<System.Text.RegularExpressions.Regex> EmailRegex =
+            new Lazy<System.Text.RegularExpressions.Regex>(
+                () => new System.Text.RegularExpressions.Regex(RegexString.Email));
 
         /// <summary>
         /// 检查邮件地址是否正确
@@ -160,7 +158,8 @@ namespace FrHello.NetLib.Core.Regex
 
                 foreach (var ipSection in otherIpSections)
                 {
-                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) || ip < 0 || ip > 0xFFFF)
+                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) ||
+                        ip < 0 || ip > 0xFFFF)
                     {
                         return false;
                     }
@@ -176,7 +175,8 @@ namespace FrHello.NetLib.Core.Regex
 
                 foreach (var ipSection in ipSections)
                 {
-                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) || ip < 0 || ip > 0xFFFF)
+                    if (!int.TryParse(ipSection, NumberStyles.HexNumber, NumberFormatInfo.CurrentInfo, out var ip) ||
+                        ip < 0 || ip > 0xFFFF)
                     {
                         return false;
                     }
@@ -187,20 +187,11 @@ namespace FrHello.NetLib.Core.Regex
         }
 
         /// <summary>
-        /// 检查地址是否有效
-        /// </summary>
-        /// <param name="address">网络地址</param>
-        /// <returns></returns>
-        public static bool CheckHostNameOrAddress(string address)
-        {
-            return !string.IsNullOrEmpty(address) && (CheckIpv4(address) || CheckIpv6(address) || CheckDomain(address));
-        }
-
-        /// <summary>
         /// 中文正则表达式
         /// </summary>
-        private static readonly Lazy<System.Text.RegularExpressions.Regex> ChineseRegex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.Chinese));
+        private static readonly Lazy<System.Text.RegularExpressions.Regex> ChineseRegex =
+            new Lazy<System.Text.RegularExpressions.Regex>(
+                () => new System.Text.RegularExpressions.Regex(RegexString.Chinese));
 
         /// <summary>
         /// 检查字符串是否包含中文
@@ -213,19 +204,45 @@ namespace FrHello.NetLib.Core.Regex
         }
 
         /// <summary>
-        /// 域名正则表达式
-        /// </summary>
-        private static readonly Lazy<System.Text.RegularExpressions.Regex> DomainRegex = new Lazy<System.Text.RegularExpressions.Regex>(
-            () => new System.Text.RegularExpressions.Regex(RegexString.Domain));
-
-        /// <summary>
         /// 检查域名
         /// </summary>
         /// <param name="str">字符串</param>
         /// <returns></returns>
-        public static bool CheckDomain(string str)
+        public static bool CheckUrl(string str)
         {
-            return !string.IsNullOrEmpty(str) && DomainRegex.Value.IsMatch(str);
+            if (string.IsNullOrEmpty(str))
+            {
+                return false;
+            }
+
+
+            var symbolIndex = str.IndexOf("://", StringComparison.Ordinal);
+            if (symbolIndex > 0)
+            {
+                var urlContent = str.Substring(symbolIndex, 3);
+                if (urlContent.Length > 0)
+                {
+                    var protocol = str.Substring(0, symbolIndex);
+                    
+                    if (protocol.Length <= 0)
+                    {
+                        return false;
+                    }
+
+                    //协议必须为字母
+                    foreach (var c in protocol)
+                    {
+                        if (!char.IsLetter(c))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

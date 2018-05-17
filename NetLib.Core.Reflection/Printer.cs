@@ -129,7 +129,7 @@ namespace FrHello.NetLib.Core.Reflection
                     try
                     {
                         var fieldValue = fieldInfo.GetValue(obj);
-                        value = fieldValue == null ? string.Empty : fieldValue.ToString().Trim();
+                        value = fieldValue == null ? string.Empty : fieldValue.ToString().Trim().Ellipsis();
                     }
                     catch(Exception)
                     {
@@ -171,7 +171,7 @@ namespace FrHello.NetLib.Core.Reflection
                     try
                     {
                         var propertyValue = propertyInfo.GetValue(obj);
-                        value = propertyValue == null ? string.Empty : propertyValue.ToString().Trim();
+                        value = propertyValue == null ? string.Empty : propertyValue.ToString().Trim().Ellipsis();
                     }
                     catch (Exception)
                     {
@@ -209,16 +209,14 @@ namespace FrHello.NetLib.Core.Reflection
 
                 foreach (var methodInfo in methodInfos)
                 {
-                    //todo:Return Type进行空判断
-
                     //如果没有参数并且有返回值，再求值
-                    if (!methodInfo.GetParameters().Any() && methodInfo.ReturnParameter != null)
+                    if (methodInfo.ReturnType != typeof(void))
                     {
                         string value;
                         try
                         {
                             var returnValue = methodInfo.Invoke(obj, null);
-                            value = returnValue == null ? string.Empty : returnValue.ToString().Trim();
+                            value = returnValue == null ? string.Empty : returnValue.ToString().Trim().Ellipsis();
                         }
                         catch (Exception)
                         {

@@ -124,31 +124,10 @@ namespace NetLib.Core.Test.Regex.Test
         /// CheckDomainTest
         /// </summary>
         [Fact]
-        public void CheckDomainTest()
+        public void CheckUrlTest()
         {
-            //todo:取消域名校验
-            Assert.True(RegexHelper.CheckDomain("wenku.baidu.com"));
-
-            Assert.False(RegexHelper.CheckDomain("32.545"));
-        }
-
-        /// <summary>
-        /// CheckHostNameOrAddressTest
-        /// </summary>
-        [Fact]
-        public void CheckHostNameOrAddressTest()
-        {
-            //Ipv4
-            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1.2"));
-            Assert.True(RegexHelper.CheckHostNameOrAddress("127.0.0.1"));
-            //Assert.True(RegexHelper.CheckHostNameOrAddress("localhost"));
-            Assert.True(RegexHelper.CheckHostNameOrAddress("192.168.1")); //会被转换为192.168.0.1
-            //Ipv4 error
-            Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1.567"));
-            Assert.False(RegexHelper.CheckHostNameOrAddress("192.168.1."));
-
-            //todo
-            Assert.False(RegexHelper.CheckHostNameOrAddress("https://www.baidu.com"));
+            Assert.True(RegexHelper.CheckUrl("http://wenku.baidu.com"));
+            Assert.True(RegexHelper.CheckUrl("h://32.545"));
         }
     }
 }
