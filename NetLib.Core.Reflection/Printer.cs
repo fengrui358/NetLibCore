@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace FrHello.NetLib.Core.Reflection
 {
     /// <summary>
     /// 打印输出类型的静态字段、属性、方法信息
-    /// todo:
     /// </summary>
     public static class Printer
     {
@@ -25,7 +25,7 @@ namespace FrHello.NetLib.Core.Reflection
                 throw new ArgumentNullException(nameof(typeInfo));
             }
 
-            return Output((Type) typeInfo);
+            return Output((Type) typeInfo, includeNonPublic);
         }
 
         /// <summary>
@@ -49,9 +49,7 @@ namespace FrHello.NetLib.Core.Reflection
                 outPutValues.Add(reflectionInfo);
             }
 
-
-
-            return "";
+            return GetPrintStringBuilder(outPutValues).ToString();
         }
 
         /// <summary>
@@ -68,8 +66,14 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             var type = obj.GetType();
+            var outPutValues = new List<Tuple<string, string>>();
+            foreach (var reflectionInfo in GetReflectionInfos(
+                MemberTypes.Field | MemberTypes.Property | MemberTypes.Method, type, obj, includeNonPublic))
+            {
+                outPutValues.Add(reflectionInfo);
+            }
 
-            return "";
+            return GetPrintStringBuilder(outPutValues).ToString();
         }
 
         /// <summary>
@@ -93,107 +97,140 @@ namespace FrHello.NetLib.Core.Reflection
                 throw new Exception($"{nameof(obj)} inconsistent parameter type with {nameof(type)}");
             }
 
-            switch (memberType)
+            var result = new List<Tuple<string, string>>();
+
+            if ((memberType & MemberTypes.Field) != 0)
             {
-                case MemberTypes.Field:
-                    //获取静态字段
-                    var fieldInfos = type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
-                        .ToList();
+                #region Field
+
+                //获取静态字段
+                var fieldInfos = type.GetFields(BindingFlags.Public | BindingFlags.Static)
+                    .ToList();
+                if (includeNonPublic)
+                {
+                    fieldInfos.AddRange(
+                        type.GetFields(BindingFlags.NonPublic | BindingFlags.Static));
+                }
+
+                //获取实例字段
+                if (obj != null)
+                {
+                    fieldInfos.AddRange(type.GetFields(BindingFlags.Instance | BindingFlags.Public));
+
                     if (includeNonPublic)
                     {
-                        fieldInfos.AddRange(
-                            type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static));
+                        fieldInfos.AddRange(type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic));
                     }
+                }
 
-                    //获取实例字段
-                    if (obj != null)
-                    {
-                        fieldInfos.AddRange(
-                            type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance));
-
-                        if (includeNonPublic)
-                        {
-                            fieldInfos.AddRange(type.GetFields(
-                                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance));
-                        }
-                    }
-
-                    foreach (var fieldInfo in fieldInfos)
+                foreach (var fieldInfo in fieldInfos)
+                {
+                    string value;
+                    try
                     {
                         var fieldValue = fieldInfo.GetValue(obj);
-                        yield return new Tuple<string, string>(fieldInfo.ToString(), fieldValue?.ToString());
+                        value = fieldValue == null ? string.Empty : fieldValue.ToString().Trim().Ellipsis();
+                    }
+                    catch(Exception)
+                    {
+                        value = "error";
                     }
 
-                    break;
-                case MemberTypes.Property:
-                    //获取静态属性
-                    var propertyInfos =
-                        type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static).ToList();
+                    result.Add(new Tuple<string, string>(fieldInfo.ToString(), value));
+                }
+
+                #endregion
+            }
+
+            if ((memberType & MemberTypes.Property) != 0)
+            {
+                #region Property
+
+                //获取静态属性
+                var propertyInfos = type.GetProperties(BindingFlags.Public | BindingFlags.Static).ToList();
+                if (includeNonPublic)
+                {
+                    propertyInfos.AddRange(type.GetProperties(BindingFlags.NonPublic | BindingFlags.Static));
+                }
+
+                //获取实例属性
+                if (obj != null)
+                {
+                    propertyInfos.AddRange(
+                        type.GetProperties(BindingFlags.Instance | BindingFlags.Public));
+
                     if (includeNonPublic)
                     {
-                        propertyInfos.AddRange(
-                            type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static));
+                        propertyInfos.AddRange(type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic));
                     }
+                }
 
-                    //获取实例属性
-                    if (obj != null)
-                    {
-                        propertyInfos.AddRange(
-                            type.GetProperties(
-                                BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance));
-
-                        if (includeNonPublic)
-                        {
-                            propertyInfos.AddRange(type.GetProperties(
-                                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance));
-                        }
-                    }
-
-                    foreach (var propertyInfo in propertyInfos)
+                foreach (var propertyInfo in propertyInfos)
+                {
+                    string value;
+                    try
                     {
                         var propertyValue = propertyInfo.GetValue(obj);
-                        yield return new Tuple<string, string>(propertyInfo.ToString(), propertyValue?.ToString());
+                        value = propertyValue == null ? string.Empty : propertyValue.ToString().Trim().Ellipsis();
+                    }
+                    catch (Exception)
+                    {
+                        value = "error";
                     }
 
-                    break;
-                case MemberTypes.Method:
-                    //获取静态方法
-                    var methodInfos = type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static)
-                        .ToList();
+                    result.Add(new Tuple<string, string>(propertyInfo.ToString(), value));
+                }
+
+                #endregion
+            }
+
+            if ((memberType & MemberTypes.Method) != 0)
+            {
+                #region Method
+
+                //获取静态方法
+                var methodInfos = type.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                    .ToList();
+                if (includeNonPublic)
+                {
+                    methodInfos.AddRange(type.GetMethods(BindingFlags.NonPublic | BindingFlags.Static));
+                }
+
+                //获取实例方法
+                if (obj != null)
+                {
+                    methodInfos.AddRange(type.GetMethods(BindingFlags.Instance | BindingFlags.Public));
+
                     if (includeNonPublic)
                     {
-                        methodInfos.AddRange(
-                            type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static));
+                        methodInfos.AddRange(type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic));
                     }
+                }
 
-                    //获取实例方法
-                    if (obj != null)
+                foreach (var methodInfo in methodInfos)
+                {
+                    //如果没有参数并且有返回值，再求值
+                    if (methodInfo.ReturnType != typeof(void))
                     {
-                        methodInfos.AddRange(
-                            type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance));
-
-                        if (includeNonPublic)
-                        {
-                            methodInfos.AddRange(type.GetMethods(
-                                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.CreateInstance));
-                        }
-                    }
-
-                    foreach (var methodInfo in methodInfos)
-                    {
-                        //如果没有参数并且有返回值，再求值
-                        if (!methodInfo.GetGenericArguments().Any() && !methodInfo.ContainsGenericParameters &&
-                            methodInfo.ReturnParameter != null)
+                        string value;
+                        try
                         {
                             var returnValue = methodInfo.Invoke(obj, null);
-                            yield return new Tuple<string, string>(methodInfo.ToString(), returnValue?.ToString());
+                            value = returnValue == null ? string.Empty : returnValue.ToString().Trim().Ellipsis();
                         }
-                    }
+                        catch (Exception)
+                        {
+                            value = "error";
+                        }
 
-                    break;
-                default:
-                    throw new NotSupportedException(nameof(memberType));
+                        result.Add(new Tuple<string, string>(methodInfo.ToString(), value));
+                    }
+                }
+
+                #endregion
             }
+
+            return result;
         }
 
         /// <summary>
@@ -209,6 +246,21 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             var sb = new StringBuilder();
+            
+            var enumerable = values as Tuple<string, string>[] ?? values.ToArray();
+            if (!enumerable.Any())
+            {
+                return sb;
+            }
+
+            var maxKeyLength = enumerable.Max(s => s.Item1.Length);
+            var maxValueLength = enumerable.Max(s => s.Item2.Length);
+
+            foreach (var value in enumerable)
+            {
+                var line = $"|{value.Item1.PadRight(maxKeyLength, ' ')}|{value.Item2.PadRight(maxValueLength, ' ')}|";
+                sb.AppendLine(line);
+            }
 
             return sb;
         }
