@@ -11,7 +11,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Need to be executed manually")]
         public void PingTest()
         {
             Assert.True(NetHelper.PingAsync("baidu.com").GetAwaiter().GetResult());
@@ -30,7 +30,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// LocalPortInUse
         /// </summary>
-        [Fact(Skip = "需要手动执行")]
+        [Fact(Skip = "Need to be executed manually")]
         public void LocalPortInUse()
         {
             Assert.True(NetHelper.CheckLocalPort(80));
