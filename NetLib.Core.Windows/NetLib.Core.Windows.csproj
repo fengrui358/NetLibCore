@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>FrHello.NetLib.Core.Windows</PackageId>
+    <PackageId>FrHello.NetLib.Windows</PackageId>
     <RootNamespace>FrHello.NetLib.Core.Windows</RootNamespace>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>

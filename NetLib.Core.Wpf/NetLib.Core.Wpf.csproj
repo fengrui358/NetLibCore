@@ -3,7 +3,7 @@
     <TargetFramework>net471</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>FrHello.NetLib.Core.Wpf</RootNamespace>
-    <PackageId>FrHello.NetLib.Core.Wpf</PackageId>
+    <PackageId>FrHello.NetLib.Wpf</PackageId>
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
