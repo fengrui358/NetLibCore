@@ -1,12 +1,15 @@
-﻿using System.Windows;
-using MvvmCross.Core;
+﻿using System;
+using System.Reflection;
+using System.Windows;
+using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.Platforms.Wpf.Presenters;
 using MvvmCross.Presenters;
+using MvvmCross.ViewModels;
 
 namespace FrHello.NetLib.Core.Wpf
 {
     /// <summary>
-    /// MvvmCross框架封装辅助方法 //todo
+    /// MvvmCross框架封装辅助方法
     /// </summary>
     public class MvxHelper
     {
@@ -14,49 +17,42 @@ namespace FrHello.NetLib.Core.Wpf
         /// 在程序的Application的OnStartup方法中使用
         /// </summary>
         /// <param name="mainWindow">主窗体</param>
-        public static void Init(Window mainWindow)
-        {
-            Init(mainWindow, null, null);
-        }
-
-        /// <summary>
-        /// 在程序的Application的OnStartup方法中使用
-        /// </summary>
-        /// <param name="mainWindow">主窗体</param>
+        /// <param name="firstViewModel">第一个视图</param>
         /// <param name="mvxViewPresenter">呈现控制器</param>
-        public static void Init(Window mainWindow, IMvxViewPresenter mvxViewPresenter)
+        /// <param name="mvxSetup">启动流程控制器</param>
+        /// <param name="mvxApplication">ViewModelCore当中的</param>
+        /// <param name="mvxAppStart">程序启动控制</param>
+        /// <param name="viewAssemblies">视图程序集</param>
+        /// <param name="viewModelAssemblies">ViewModel程序集</param>
+        public static void Init(Window mainWindow, MvxViewModel firstViewModel, IMvxViewPresenter mvxViewPresenter = null,
+            IMvxWpfSetup mvxSetup = null, IMvxApplication mvxApplication = null, IMvxAppStart mvxAppStart = null, Assembly[] viewAssemblies = null,
+            Assembly[] viewModelAssemblies = null)
         {
+            if (mainWindow == null)
+            {
+                throw new ArgumentNullException(nameof(mainWindow));
+            }
 
-        }
+            if (firstViewModel == null)
+            {
+                throw new ArgumentNullException(nameof(firstViewModel));
+            }
 
-        /// <summary>
-        /// 在程序的Application的OnStartup方法中使用
-        /// </summary>
-        /// <param name="mainWindow">主窗体</param>
-        /// <param name="iMvxSetup">启动控制器</param>
-        public static void Init(Window mainWindow, IMvxSetup iMvxSetup)
-        {
-
-        }
-
-        /// <summary>
-        /// 在程序的Application的OnStartup方法中使用
-        /// </summary>
-        /// <param name="mainWindow">主窗体</param>
-        /// <param name="mvxViewPresenter">呈现控制器</param>
-        /// <param name="iMvxSetup">启动控制器</param>
-        public static void Init(Window mainWindow, IMvxViewPresenter mvxViewPresenter, IMvxSetup iMvxSetup)
-        {
             if (mvxViewPresenter == null)
             {
-                var mvxWpfViewPresenter = new MvxWpfViewPresenter(mainWindow);
-                mvxViewPresenter = (IMvxViewPresenter)mvxWpfViewPresenter;
+                mvxViewPresenter = new MvxWpfViewPresenter(mainWindow);
             }
 
-            if (iMvxSetup == null)
+            if (mvxSetup == null)
             {
-
+                mvxSetup = new BaseSetup();
             }
+
+            mvxSetup.PlatformInitialize(Application.Current.Dispatcher, mainWindow);
+            mvxSetup.InitializePrimary();
+            mvxSetup.InitializeSecondary();
+
+
         }
     }
 }
