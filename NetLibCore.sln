@@ -15,13 +15,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Framework", "Ne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Serialization", "NetLib.Core.Serialization\NetLib.Core.Serialization.csproj", "{75E44998-1BEC-4371-9C96-3607C3792646}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Windows", "NetLib.Core.Windows\NetLib.Core.Windows.csproj", "{B8861CD6-E250-40DC-A21D-61682A2D21F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Windows", "NetLib.Core.Windows\NetLib.Core.Windows.csproj", "{B8861CD6-E250-40DC-A21D-61682A2D21F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Wpf", "NetLib.Core.Wpf\NetLib.Core.Wpf.csproj", "{668B7CB0-6F89-4D51-9ADA-380D5864F42F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Wpf", "NetLib.Core.Wpf\NetLib.Core.Wpf.csproj", "{668B7CB0-6F89-4D51-9ADA-380D5864F42F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Reflection", "NetLib.Core.Reflection\NetLib.Core.Reflection.csproj", "{BEB3F390-2D16-4AF4-86CA-F1B2765929C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Net", "NetLib.Core.Net\NetLib.Core.Net.csproj", "{79A8B113-0E28-44BC-A011-4FFA4B3AF291}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Net", "NetLib.Core.Net\NetLib.Core.Net.csproj", "{79A8B113-0E28-44BC-A011-4FFA4B3AF291}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetLib.Core.Mvx", "NetLib.Core.Mvx\NetLib.Core.Mvx.csproj", "{67CDE947-2F24-415E-AD2A-D9D9345BF772}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79A8B113-0E28-44BC-A011-4FFA4B3AF291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67CDE947-2F24-415E-AD2A-D9D9345BF772}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67CDE947-2F24-415E-AD2A-D9D9345BF772}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67CDE947-2F24-415E-AD2A-D9D9345BF772}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67CDE947-2F24-415E-AD2A-D9D9345BF772}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -24,7 +24,7 @@ namespace FrHello.NetLib.Core.Wpf
         /// <param name="viewModelAssemblies">ViewModel程序集</param>
         public static void Init<TMainWindow, TViewModel>(MvxWpfViewPresenter mvxViewPresenter = null,
             IMvxWpfSetup mvxSetup = null, IMvxApplication mvxApplication = null, IMvxAppStart mvxAppStart = null, Assembly[] viewAssemblies = null,
-            Assembly[] viewModelAssemblies = null) where TMainWindow : Window where TViewModel : BaseViewModel
+            Assembly[] viewModelAssemblies = null) where TMainWindow : Window where TViewModel : MvxViewModel
         {
             var mainWindow = Activator.CreateInstance<TMainWindow>();
 

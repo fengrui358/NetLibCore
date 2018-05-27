@@ -12,7 +12,7 @@ namespace FrHello.NetLib.Core.Wpf
     /// <summary>
     /// MvxWpfSetup重写部分启动流程
     /// </summary>
-    public class BaseSetup<TMainWindow, TViewModel> : MvxWpfSetup where TMainWindow : Window where TViewModel : BaseViewModel
+    public class BaseSetup<TMainWindow, TViewModel> : MvxWpfSetup where TMainWindow : Window where TViewModel : MvxViewModel
     {
         /// <summary>
         /// 视图对应的程序集

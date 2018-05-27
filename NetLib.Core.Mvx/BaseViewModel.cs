@@ -1,16 +1,15 @@
 ﻿using System;
-using MvvmCross;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 
-namespace FrHello.NetLib.Core.Wpf
+namespace FrHello.NetLib.Core.Mvx
 {
     /// <summary>
     /// ViewModel基类
     /// </summary>
     public class BaseViewModel : MvxViewModel
     {
-        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(Mvx.Resolve<IMvxNavigationService>);
+        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(MvvmCross.Mvx.Resolve<IMvxNavigationService>);
 
         /// <summary>
         /// 导航服务
@@ -24,7 +23,7 @@ namespace FrHello.NetLib.Core.Wpf
     /// <typeparam name="TParameter"></typeparam>
     public class BaseViewModel<TParameter> : MvxViewModel<TParameter>
     {
-        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(Mvx.Resolve<IMvxNavigationService>);
+        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(MvvmCross.Mvx.Resolve<IMvxNavigationService>);
 
         /// <summary>
         /// 导航服务
