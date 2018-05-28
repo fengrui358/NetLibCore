@@ -13,6 +13,10 @@
     <Version>1.0.3</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
