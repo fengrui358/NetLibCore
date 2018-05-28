@@ -1,4 +1,5 @@
 ﻿using System;
+using MvvmCross.Logging;
 using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 
@@ -15,6 +16,27 @@ namespace FrHello.NetLib.Core.Mvx
         /// 导航服务
         /// </summary>
         protected IMvxNavigationService NavigationService => _navigationService.Value;
+
+        private IMvxLog _log;
+
+        /// <summary>
+        /// 日志
+        /// </summary>
+        protected IMvxLog Log
+        {
+            get
+            {
+                if (_log == null)
+                {
+                    if (MvvmCross.Mvx.CanResolve<IMvxLogProvider>())
+                    {
+                        _log = MvvmCross.Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                    }
+                }
+
+                return _log;
+            }
+        }
     }
 
     /// <summary>
@@ -29,6 +51,27 @@ namespace FrHello.NetLib.Core.Mvx
         /// 导航服务
         /// </summary>
         protected IMvxNavigationService NavigationService => _navigationService.Value;
+
+        private IMvxLog _log;
+
+        /// <summary>
+        /// 日志
+        /// </summary>
+        protected IMvxLog Log
+        {
+            get
+            {
+                if (_log == null)
+                {
+                    if (MvvmCross.Mvx.CanResolve<IMvxLogProvider>())
+                    {
+                        _log = MvvmCross.Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                    }
+                }
+
+                return _log;
+            }
+        }
 
         /// <summary>
         /// 准备参数
