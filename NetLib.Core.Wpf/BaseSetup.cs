@@ -59,12 +59,13 @@ namespace FrHello.NetLib.Core.Wpf
         /// <summary>
         /// 获取视图程序集
         /// </summary>
-        /// <returns></returns>
+        /// <returns>视图所在的程序集集合</returns>
         public override IEnumerable<Assembly> GetViewAssemblies()
         {
+            var mainWindowAssembly = typeof(TMainWindow).Assembly;
+
             if (_viewAssemblies != null)
             {
-                var mainWindowAssembly = typeof(TMainWindow).Assembly;
                 var viewAssemblies = _viewAssemblies.ToList();
 
                 if (!viewAssemblies.Contains(mainWindowAssembly))
@@ -76,19 +77,20 @@ namespace FrHello.NetLib.Core.Wpf
             }
             else
             {
-                return base.GetViewAssemblies();
+                return new[]{ mainWindowAssembly };
             }
         }
 
         /// <summary>
         /// 获取ViewModel程序集
         /// </summary>
-        /// <returns></returns>
+        /// <returns>ViewModel所在的程序集集合</returns>
         public override IEnumerable<Assembly> GetViewModelAssemblies()
         {
+            var firstViewModelAssembly = typeof(TViewModel).Assembly;
+
             if (_viewModelAssemblies != null)
             {
-                var firstViewModelAssembly = typeof(TViewModel).Assembly;
                 var viewModelAssemblies = _viewModelAssemblies.ToList();
 
                 if (!viewModelAssemblies.Contains(firstViewModelAssembly))
@@ -100,7 +102,7 @@ namespace FrHello.NetLib.Core.Wpf
             }
             else
             {
-                return base.GetViewModelAssemblies();
+                return new[] { firstViewModelAssembly };
             }
         }
     }

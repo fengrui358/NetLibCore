@@ -35,7 +35,7 @@ namespace FrHello.NetLib.Core.Wpf
 
             if (mvxSetup == null)
             {
-                mvxSetup = new BaseSetup<TMainWindow, TViewModel>();
+                mvxSetup = new BaseSetup<TMainWindow, TViewModel>(viewAssemblies, viewModelAssemblies);
             }
 
             mvxSetup.PlatformInitialize(Application.Current.Dispatcher, mvxViewPresenter);
