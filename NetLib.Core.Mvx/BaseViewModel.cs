@@ -37,6 +37,14 @@ namespace FrHello.NetLib.Core.Mvx
                 return _log;
             }
         }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Close()
+        {
+            NavigationService.Close(this);
+        }
     }
 
     /// <summary>
@@ -79,6 +87,14 @@ namespace FrHello.NetLib.Core.Mvx
         /// <param name="parameter"></param>
         public override void Prepare(TParameter parameter)
         {
+        }
+
+        /// <summary>
+        /// 关闭
+        /// </summary>
+        public void Close()
+        {
+            NavigationService.Close(this);
         }
     }
 }
