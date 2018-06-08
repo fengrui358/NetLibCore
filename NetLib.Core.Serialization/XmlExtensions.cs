@@ -8,7 +8,7 @@ namespace FrHello.NetLib.Core.Serialization
     /// <summary>
     /// Xml转换的一些辅助方法
     /// </summary>
-    public static partial class Extensions
+    public static class XmlSerializationExtensions
     {
         /// <summary>
         /// 反序列化

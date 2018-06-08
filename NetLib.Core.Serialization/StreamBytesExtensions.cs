@@ -7,7 +7,7 @@ namespace FrHello.NetLib.Core.Serialization
     /// <summary>
     /// 转换的一些辅助方法
     /// </summary>
-    public static partial class Extensions
+    public static class BaseSerializationExtensions
     {
         /// <summary>
         /// 字符数组转字符串
