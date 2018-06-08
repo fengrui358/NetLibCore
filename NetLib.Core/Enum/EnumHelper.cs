@@ -388,14 +388,14 @@ namespace FrHello.NetLib.Core.Enum
             return enumType.IsDefined(typeof(FlagsAttribute), false);
         }
 
-        ///// <summary>
-        ///// 是否定义了Flags特性
-        ///// </summary>
-        ///// <returns></returns>
-        //private static bool IsDefineFlagsAttribute<T>() where T : System.Enum
-        //{
-        //    return typeof(T).IsDefined(typeof(FlagsAttribute), false);
-        //}
+        /// <summary>
+        /// 是否定义了Flags特性
+        /// </summary>
+        /// <returns></returns>
+        private static bool IsDefineFlagsAttribute<T>() where T : System.Enum
+        {
+            return typeof(T).IsDefined(typeof(FlagsAttribute), false);
+        }
 
         #endregion
     }
