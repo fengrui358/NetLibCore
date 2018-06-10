@@ -36,7 +36,7 @@ namespace FrHello.NetLib.Core.Wpf
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ConverterResultHelper.Convert(true, value, targetType, parameter, culture);
+            return ConverterResultHelper.Convert(false, value, targetType, parameter, culture);
         }
 
         /// <summary>
@@ -58,11 +58,27 @@ namespace FrHello.NetLib.Core.Wpf
     /// </summary>
     public class SuperConverterInverse : IValueConverter
     {
+        /// <summary>
+        /// 从Model到UI转换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ConverterResultHelper.Convert(false, value, targetType, parameter, culture);
+            return ConverterResultHelper.Convert(true, value, targetType, parameter, culture);
         }
 
+        /// <summary>
+        /// 从UI到Model转换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
