@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace FrHello.NetLib.Core.Serialization
+namespace FrHello.NetLib.Core.Serialization.DateTime
 {
-    public static partial class Extensions
+    public static class DateTimeSerializationExtensions
     {
         private static readonly System.DateTime Time19700101 = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
