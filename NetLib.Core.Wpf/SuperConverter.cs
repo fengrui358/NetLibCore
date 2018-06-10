@@ -36,33 +36,7 @@ namespace FrHello.NetLib.Core.Wpf
         /// <returns></returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var result = false;
-
-            if (parameter != null)
-            {
-                if (value != null && value.Equals(parameter))
-                {
-                    result = true;
-                }
-            }
-            else
-            {
-                if (ConverterResultHelper.CanAutoConverterType(targetType))
-                {
-                    result = true;
-                }
-                else
-                {
-                    return value;
-                }
-            }
-
-            if (result)
-            {
-                return ConverterResultHelper.GetResult(targetType);
-
-            }
-            return ConverterResultHelper.GetResult(targetType, true);
+            return ConverterResultHelper.Convert(true, value, targetType, parameter, culture);
         }
 
         /// <summary>
@@ -86,33 +60,7 @@ namespace FrHello.NetLib.Core.Wpf
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var result = true;
-
-            if (parameter != null)
-            {
-                if (value != null && value.Equals(parameter))
-                {
-                    result = false;
-                }
-            }
-            else
-            {
-                if (ConverterResultHelper.CanAutoConverterType(targetType))
-                {
-                    result = false;
-                }
-                else
-                {
-                    return value;
-                }
-            }
-
-            if (result)
-            {
-                return ConverterResultHelper.GetResult(targetType);
-
-            }
-            return ConverterResultHelper.GetResult(targetType, true);
+            return ConverterResultHelper.Convert(false, value, targetType, parameter, culture);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -130,18 +78,18 @@ namespace FrHello.NetLib.Core.Wpf
         /// 根据类型获取结果
         /// </summary>
         /// <param name="resultType">目标类型</param>
-        /// <param name="isInverse">是否取反值</param>
+        /// <param name="value">要转换的值</param>
         /// <returns></returns>
-        internal static object GetResult(Type resultType, bool isInverse = false)
+        internal static object GetResult(Type resultType, bool value)
         {
             if (resultType == typeof(bool) || resultType == typeof(bool?))
             {
-                return !isInverse;
+                return value;
             }
 
             if (resultType == typeof(Visibility) || resultType == typeof(Visibility?))
             {
-                return isInverse ? Visibility.Collapsed : Visibility.Visible;
+                return value ? Visibility.Visible : Visibility.Collapsed;
             }
 
             return null;
@@ -161,6 +109,47 @@ namespace FrHello.NetLib.Core.Wpf
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 转换方法
+        /// </summary>
+        /// <param name="converterValue">将值处理为bool值，在根据真假和目标类型转换为可处理的值</param>
+        /// <param name="value">需要处理的值</param>
+        /// <param name="targetType">目标类型</param>
+        /// <param name="parameter">比较参数</param>
+        /// <param name="culture">文化</param>
+        /// <returns></returns>
+        internal static object Convert(bool converterValue, object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            //判断结果能否进行转换
+            if (CanAutoConverterType(targetType))
+            {
+                if (parameter != null)
+                {
+                    //如果参数不等于空则是判断比较
+                    if (value != null && value.Equals(parameter))
+                    {
+                        converterValue = !converterValue;
+                    }
+                }
+                else
+                {
+                    //如果参数等于空则进行一些基本判断
+                    if (value != null && !string.IsNullOrEmpty(value.ToString()))
+                    {
+                        converterValue = !converterValue;
+                    }
+                }
+
+                var result = GetResult(targetType, converterValue);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return value;
         }
     }
 }
