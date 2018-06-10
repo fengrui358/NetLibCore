@@ -156,6 +156,11 @@ namespace FrHello.NetLib.Core.Wpf
                     {
                         converterValue = !converterValue;
                     }
+
+                    if (value == DependencyProperty.UnsetValue)
+                    {
+                        converterValue = !converterValue;
+                    }
                 }
 
                 var result = GetResult(targetType, converterValue);
