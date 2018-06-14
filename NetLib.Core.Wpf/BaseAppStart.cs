@@ -1,5 +1,4 @@
-﻿using MvvmCross;
-using MvvmCross.Navigation;
+﻿using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 
 namespace FrHello.NetLib.Core.Wpf
@@ -13,20 +12,18 @@ namespace FrHello.NetLib.Core.Wpf
         /// 构造
         /// </summary>
         /// <param name="application"></param>
-        public BaseAppStart(IMvxApplication application) : base(application)
+        /// <param name="navigationService"></param>
+        public BaseAppStart(IMvxApplication application, IMvxNavigationService navigationService) : base(application, navigationService)
         {
         }
 
         /// <summary>
-        /// 程序启动导航到第一个页面
+        /// 打开第一个视图页面
         /// </summary>
         /// <param name="hint"></param>
-        protected override void Startup(object hint = null)
+        protected override void NavigateToFirstViewModel(object hint = null)
         {
-            base.Startup(hint);
-
-            //启动第一个页面
-            Mvx.Resolve<IMvxNavigationService>().Navigate<TFirstViewModel>();
+            NavigationService.Navigate<TFirstViewModel>();
         }
     }
 }

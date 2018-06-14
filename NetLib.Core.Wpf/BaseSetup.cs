@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Windows;
 using MvvmCross;
 using MvvmCross.Logging;
+using MvvmCross.Navigation;
 using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.ViewModels;
 
@@ -41,10 +42,16 @@ namespace FrHello.NetLib.Core.Wpf
         /// <returns></returns>
         protected override IMvxApplication CreateApp()
         {
-            var app = new BaseApp();
-            Mvx.RegisterSingleton<IMvxAppStart>(new BaseAppStart<TViewModel>(app));
+            return new BaseApp();
+        }
 
-            return app;
+        /// <summary>
+        /// 初始化的最后一步，准备启动程序
+        /// </summary>
+        protected override void InitializeLastChance()
+        {
+            Mvx.RegisterSingleton<IMvxAppStart>(new BaseAppStart<TViewModel>(Mvx.Resolve<IMvxApplication>(),
+                Mvx.Resolve<IMvxNavigationService>()));
         }
 
         /// <summary>

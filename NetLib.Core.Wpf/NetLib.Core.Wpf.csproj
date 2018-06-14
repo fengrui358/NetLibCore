@@ -7,7 +7,7 @@
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Wpf.xml</DocumentationFile>
@@ -17,7 +17,8 @@
     <DocumentationFile>bin\Release\net471\NetLib.Core.Wpf.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MvvmCross" Version="6.0.1" />
-    <PackageReference Include="MvvmCross.Platforms.Wpf" Version="6.0.1" />
+    <PackageReference Include="MvvmCross" Version="6.1.1" />
+    <PackageReference Include="MvvmCross.Platforms.Wpf" Version="6.1.1" />
+    <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
 </Project>

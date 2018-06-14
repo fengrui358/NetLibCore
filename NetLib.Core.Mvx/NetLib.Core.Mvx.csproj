@@ -9,7 +9,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core mvx utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -22,7 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MvvmCross" Version="6.0.1" />
+    <PackageReference Include="MvvmCross" Version="6.1.1" />
   </ItemGroup>
 
 </Project>
