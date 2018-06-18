@@ -15,14 +15,14 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 导航服务
         /// </summary>
-        protected IMvxNavigationService NavigationService => _navigationService.Value;
+        public override IMvxNavigationService NavigationService => _navigationService.Value;
 
         private IMvxLog _log;
 
         /// <summary>
         /// 日志
         /// </summary>
-        protected IMvxLog Log
+        protected override IMvxLog Log
         {
             get
             {
@@ -58,14 +58,14 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 导航服务
         /// </summary>
-        protected IMvxNavigationService NavigationService => _navigationService.Value;
+        public override IMvxNavigationService NavigationService => _navigationService.Value;
 
         private IMvxLog _log;
 
         /// <summary>
         /// 日志
         /// </summary>
-        protected IMvxLog Log
+        protected override IMvxLog Log
         {
             get
             {
