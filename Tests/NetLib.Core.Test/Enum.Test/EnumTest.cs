@@ -87,16 +87,15 @@ namespace NetLib.Core.Test.Enum.Test
         [Fact]
         public void EnumRemoveTest()
         {
-            //todo
-            //var noFlags = Permission.Delete.Combine(false, Permission.Update);
-            //var noFlagsDelete = noFlags.Remove(false, Permission.Update);
+            var noFlags = Permission.Delete.Combine(false, Permission.Update);
+            var noFlagsDelete = noFlags.Remove(false, Permission.Update);
 
-            //Assert.Equal(Permission.Delete, noFlagsDelete);
+            Assert.Equal(Permission.Delete, noFlagsDelete);
 
-            //var flags = PermissionWithFlag.Delete.Combine(PermissionWithFlag.Update);
-            //var flagsDelete = flags.Remove(false, PermissionWithFlag.Update);
+            var flags = PermissionWithFlag.Delete.Combine(PermissionWithFlag.Update);
+            var flagsDelete = flags.Remove(false, PermissionWithFlag.Update);
 
-            //Assert.Equal(PermissionWithFlag.Delete, flagsDelete);
+            Assert.Equal(PermissionWithFlag.Delete, flagsDelete);
         }
 
         /// <summary>
