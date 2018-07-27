@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace FrHello.NetLib.Core.Wpf
+namespace FrHello.NetLib.Core.Wpf.UiConverters
 {
     /// <summary>
     /// 超级转换提供器
