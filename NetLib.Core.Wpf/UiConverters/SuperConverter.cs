@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -151,15 +152,42 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                 }
                 else
                 {
-                    //如果参数等于空则进行一些基本判断
-                    if (value != null && !string.IsNullOrEmpty(value.ToString()))
+                    if (value is bool boolValue)
                     {
-                        converterValue = !converterValue;
+                        //如果值为布尔值，则优先进行判断
+                        if (boolValue)
+                        {
+                            converterValue = !converterValue;
+                        }
                     }
-
-                    if (value == DependencyProperty.UnsetValue)
+                    else if (value is IEnumerable enumerableValue)
                     {
-                        converterValue = !converterValue;
+                        //如果值为集合则根据数量进行判断
+                        var notEmpty = false;
+
+                        foreach (var o in enumerableValue)
+                        {
+                            notEmpty = true;
+                            break;
+                        }
+
+                        if (notEmpty)
+                        {
+                            converterValue = !converterValue;
+                        }
+                    }
+                    else
+                    {
+                        //如果参数等于空则进行一些基本判断
+                        if (value != null && !string.IsNullOrEmpty(value.ToString()))
+                        {
+                            converterValue = !converterValue;
+                        }
+
+                        if (value == DependencyProperty.UnsetValue)
+                        {
+                            converterValue = !converterValue;
+                        }
                     }
                 }
 
