@@ -1,1 +1,1 @@
-dotnet CSprojectReferenceSwitchTool.dll "需要屏蔽的目标路径"
+dotnet CSprojectReferenceSwitchTool.dll "Tests"
