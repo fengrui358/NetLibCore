@@ -20,6 +20,23 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// 超级转换（反向）
         /// </summary>
         public static SuperConverterInverse SuperConverterInverse = new SuperConverterInverse();
+
+        /// <summary>
+        /// 枚举值转换器
+        /// </summary>
+        public static EnumToStringConverter EnumToStringConverter = new EnumToStringConverter();
+
+        /// <summary>
+        /// 枚举类型转数据源
+        /// </summary>
+        public static EnumToItemsSourceConverter EnumToItemsSourceConverter =
+            new EnumToItemsSourceConverter();
+
+        /// <summary>
+        /// 枚举描述和枚举值之间转换
+        /// </summary>
+        public static EnumDescriptionToEnumValueConverter EnumDescriptionToEnumValueConverter =
+            new EnumDescriptionToEnumValueConverter();
     }
 
     /// <summary>
