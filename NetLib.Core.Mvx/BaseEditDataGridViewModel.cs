@@ -48,6 +48,8 @@ namespace FrHello.NetLib.Core.Mvx
                         _itemSource = value;
 
                         SubscribeItemSourceOnCollectionChanged(_itemSource);
+                        CollectionCountChanged();
+
                         RaisePropertyChanged(nameof(ItemSource));
                     }
                 }
@@ -107,6 +109,13 @@ namespace FrHello.NetLib.Core.Mvx
                     ItemSource?.Remove(SelectedItem);
                 }
             }
+        }
+
+        /// <summary>
+        /// 集合数据项变更
+        /// </summary>
+        protected virtual void CollectionCountChanged()
+        {
         }
 
         #region IsChecked相关
@@ -175,16 +184,16 @@ namespace FrHello.NetLib.Core.Mvx
         /// </summary>
         private void SubscribeItemSourceOnCollectionChanged(ObservableCollection<T> collection)
         {
-            if (!_supportChecked)
-            {
-                return;
-            }
-
             lock (_lockObj)
             {
                 if (collection != null)
                 {
                     collection.CollectionChanged += ItemSourceOnCollectionChanged;
+
+                    if (!_supportChecked)
+                    {
+                        return;
+                    }
 
                     foreach (var item in collection)
                     {
@@ -199,16 +208,16 @@ namespace FrHello.NetLib.Core.Mvx
         /// </summary>
         private void UnSubscribeItemSourceOnCollectionChanged(ObservableCollection<T> collection)
         {
-            if (!_supportChecked)
-            {
-                return;
-            }
-
             lock (_lockObj)
             {
                 if (collection != null)
                 {
                     collection.CollectionChanged -= ItemSourceOnCollectionChanged;
+
+                    if (!_supportChecked)
+                    {
+                        return;
+                    }
 
                     foreach (var item in collection)
                     {
@@ -225,6 +234,8 @@ namespace FrHello.NetLib.Core.Mvx
         /// <param name="e"></param>
         private void ItemSourceOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            CollectionCountChanged();
+
             if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 if (sender is IEnumerable list)
