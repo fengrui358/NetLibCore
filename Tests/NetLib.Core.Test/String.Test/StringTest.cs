@@ -25,5 +25,19 @@ namespace NetLib.Core.Test.String.Test
 
             GlobalCoreOptions.DefaultStringEllipsisLength = defaultSetting;
         }
+
+        /// <summary>
+        /// EqualAbsoluteTest
+        /// </summary>
+        [Fact]
+        public void EqualAbsoluteTest()
+        {
+            string strA = null;
+            Assert.False(strA.EqualAbsolute(null));
+
+            string strB = "abc";
+            string strC = "abc";
+            Assert.True(strB.EqualAbsolute(strC));
+        }
     }
 }
