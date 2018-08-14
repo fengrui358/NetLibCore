@@ -16,7 +16,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <typeparam name="T"></typeparam>
         /// <param name="xml"></param>
         /// <returns></returns>
-        public static T DeserializeFromXml<T>(this string xml)
+        public static T DeserializeXml<T>(this string xml)
         {
             var xs = new XmlSerializer(typeof(T));
             using (var sr = new StringReader(xml))
@@ -35,20 +35,42 @@ namespace FrHello.NetLib.Core.Serialization
         /// <returns>Xml字符串</returns>
         public static string SerializeXml<T>(this T obj, bool omitXmlDeclaration = false)
         {
-            var sb = new StringBuilder();
-            using (var xw = XmlWriter.Create(sb, new XmlWriterSettings()
+            var textWriter = new CustomTextWriter(GlobalSerializationOptions.DefaultEncoding);
+            var xmlWriterSettings = new XmlWriterSettings
             {
                 Encoding = GlobalSerializationOptions.DefaultEncoding,
                 OmitXmlDeclaration = omitXmlDeclaration,
                 ConformanceLevel = ConformanceLevel.Auto,
                 Indent = GlobalSerializationOptions.XmlIndentFormat
-            }))
+            };
+
+            using (var xw = XmlWriter.Create(textWriter, xmlWriterSettings))
             {
                 var xs = new XmlSerializer(obj.GetType());
                 xs.Serialize(xw, obj);
             }
 
-            return sb.ToString();
+            return textWriter.ToString();
+        }
+
+        /// <summary>
+        /// 用于Xml序列化的文本编码输出控制的过渡类
+        /// </summary>
+        private class CustomTextWriter : StringWriter
+        {
+            /// <summary>
+            /// 构造
+            /// </summary>
+            /// <param name="encoding">文本输出的编码</param>
+            internal CustomTextWriter(Encoding encoding)
+            {
+                Encoding = encoding;
+            }
+
+            /// <summary>
+            /// 文本输出的编码
+            /// </summary>
+            public override Encoding Encoding { get; }
         }
     }
 }
