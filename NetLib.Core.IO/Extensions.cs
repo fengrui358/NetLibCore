@@ -10,9 +10,9 @@
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static string Read(string path)
-        {
-            return null;
-        }
+        //public static string Read(string path)
+        //{
+        //    return null;
+        //}
     }
 }
