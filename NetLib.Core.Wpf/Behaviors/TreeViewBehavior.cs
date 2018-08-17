@@ -308,6 +308,9 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
             _modelHandled = false;
         }
 
+        /// <summary>
+        /// 附加
+        /// </summary>
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -334,6 +337,9 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
             }
         }
 
+        /// <summary>
+        /// 移除
+        /// </summary>
         protected override void OnDetaching()
         {
             base.OnDetaching();

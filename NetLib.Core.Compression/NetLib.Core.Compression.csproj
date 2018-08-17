@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>FrHello.NetLib.Core.Compression</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>FrHello.NetLib.Core.Compression</PackageId>
+    <Authors>rui feng</Authors>
+    <Company>rui feng</Company>
+    <Description>Dotnet core compression utility</Description>
+    <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
+    <PackageTags>Dotnet core compression utility</PackageTags>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="GZip\System.String\" />
+    <Folder Include="GZip\System.Stream\" />
+  </ItemGroup>
+
+</Project>

@@ -195,7 +195,14 @@ namespace FrHello.NetLib.Core.Serialization
         {
             if (encoding == null)
             {
-                throw new ArgumentNullException(nameof(encoding));
+                if (GlobalSerializationOptions.DefaultEncoding != null)
+                {
+                    encoding = GlobalSerializationOptions.DefaultEncoding;
+                }
+                else
+                {
+                    throw new ArgumentNullException(nameof(encoding));
+                }
             }
 
             return encoding.GetBytes(str);
