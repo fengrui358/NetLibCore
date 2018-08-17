@@ -21,9 +21,4 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="GZip\System.String\" />
-    <Folder Include="GZip\System.Stream\" />
-  </ItemGroup>
-
 </Project>

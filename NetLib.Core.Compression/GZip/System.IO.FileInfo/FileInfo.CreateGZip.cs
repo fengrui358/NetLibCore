@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 
 // ReSharper disable once CheckNamespace
@@ -12,14 +13,19 @@ namespace FrHello.NetLib.Core.Compression
         /// <summary>
         ///     A FileInfo extension method that creates a zip file.
         /// </summary>
-        /// <param name="this">The @this to act on.</param>
-        public static void CreateGZip(this FileInfo @this)
+        /// <param name="fileInfo">待压缩的文件</param>
+        public static void CreateGZip(this FileInfo fileInfo)
         {
-            using (FileStream originalFileStream = @this.OpenRead())
+            if (fileInfo == null)
             {
-                using (FileStream compressedFileStream = File.Create(GlobalCompressionOptions.AutoFillFileSuffix
-                    ? AutoFillFileSuffix(@this.FullName)
-                    : @this.FullName))
+                throw new ArgumentNullException(nameof(fileInfo));
+            }
+
+            using (var originalFileStream = fileInfo.OpenRead())
+            {
+                using (var compressedFileStream = File.Create(GlobalCompressionOptions.AutoFillFileSuffix
+                    ? AutoFillFileSuffix(fileInfo.FullName)
+                    : fileInfo.FullName))
                 {
                     using (var compressionStream = new GZipStream(compressedFileStream, CompressionMode.Compress))
                     {
@@ -32,13 +38,18 @@ namespace FrHello.NetLib.Core.Compression
         /// <summary>
         ///     A FileInfo extension method that creates a zip file.
         /// </summary>
-        /// <param name="this">The @this to act on.</param>
+        /// <param name="fileInfo">待压缩的文件</param>
         /// <param name="destination">Destination for the zip.</param>
-        public static void CreateGZip(this FileInfo @this, string destination)
+        public static void CreateGZip(this FileInfo fileInfo, string destination)
         {
-            using (FileStream originalFileStream = @this.OpenRead())
+            if (fileInfo == null)
             {
-                using (FileStream compressedFileStream = File.Create(GlobalCompressionOptions.AutoFillFileSuffix
+                throw new ArgumentNullException(nameof(fileInfo));
+            }
+
+            using (var originalFileStream = fileInfo.OpenRead())
+            {
+                using (var compressedFileStream = File.Create(GlobalCompressionOptions.AutoFillFileSuffix
                     ? AutoFillFileSuffix(destination)
                     : destination))
                 {
@@ -53,22 +64,11 @@ namespace FrHello.NetLib.Core.Compression
         /// <summary>
         ///     A FileInfo extension method that creates a zip file.
         /// </summary>
-        /// <param name="this">The @this to act on.</param>
+        /// <param name="fileInfo">待压缩的文件</param>
         /// <param name="destination">Destination for the zip.</param>
-        public static void CreateGZip(this FileInfo @this, FileInfo destination)
+        public static void CreateGZip(this FileInfo fileInfo, FileInfo destination)
         {
-            using (FileStream originalFileStream = @this.OpenRead())
-            {
-                using (FileStream compressedFileStream = File.Create(GlobalCompressionOptions.AutoFillFileSuffix
-                    ? AutoFillFileSuffix(destination.FullName)
-                    : destination.FullName))
-                {
-                    using (var compressionStream = new GZipStream(compressedFileStream, CompressionMode.Compress))
-                    {
-                        originalFileStream.CopyTo(compressionStream);
-                    }
-                }
-            }
+            CreateGZip(fileInfo, destination?.FullName);
         }
 
         private const string GZipSuffix = ".gzip";

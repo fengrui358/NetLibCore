@@ -29,6 +29,11 @@ namespace FrHello.NetLib.Core.Compression
         /// <returns>The byte array gzip to string.</returns>
         public static string DecompressGZip(this byte[] @this, Encoding encoding)
         {
+            if (@this == null)
+            {
+                return null;
+            }
+
             if (encoding == null)
             {
                 if (GlobalCompressionOptions.DefaultEncoding != null)
@@ -50,7 +55,7 @@ namespace FrHello.NetLib.Core.Compression
                     using (var outStream = new MemoryStream())
                     {
                         var buffer = new byte[bufferSize];
-                        int totalBytes = 0;
+                        var totalBytes = 0;
                         int readBytes;
                         while ((readBytes = zipStream.Read(buffer, 0, bufferSize)) > 0)
                         {
