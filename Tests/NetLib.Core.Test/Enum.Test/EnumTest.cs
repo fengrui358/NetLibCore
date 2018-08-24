@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using FrHello.NetLib.Core.Enum;
 using FrHello.NetLib.Core.Reflection.Enum;
 using Xunit;
@@ -18,12 +19,15 @@ namespace NetLib.Core.Test.Enum.Test
         {
             var ma = new MockClass{EnumTest = TestEnum.A};
             var mb = new MockClass{EnumTest = TestEnum.B};
+            var mc = new MockClass { EnumTest = TestEnum.C };
 
             var a = ma.EnumTest.GetDescription();
             var b = mb.EnumTest.GetDescription();
+            var c = mc.EnumTest.GetDescription();
 
             Assert.Equal("ADescription", a);
-            Assert.Equal(mb.EnumTest.ToString(), b);
+            Assert.Equal("DescriptionB", b);
+            Assert.Equal(nameof(TestEnum.C), c);
         }
 
         /// <summary>
@@ -123,7 +127,14 @@ namespace NetLib.Core.Test.Enum.Test
             /// <summary>
             /// B
             /// </summary>
-            B
+            [Description("DescriptionB")]
+            [EnumDescription("BDescription")]
+            B,
+
+            /// <summary>
+            /// C
+            /// </summary>
+            C
         }
 
         /// <summary>

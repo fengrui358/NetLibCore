@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace FrHello.NetLib.Core.Reflection.Enum
 {
@@ -6,12 +7,12 @@ namespace FrHello.NetLib.Core.Reflection.Enum
     /// 枚举描述
     /// </summary>
     [AttributeUsage(AttributeTargets.Enum | AttributeTargets.Field)]
-    public class EnumDescriptionAttribute : Attribute
+    public class EnumDescriptionAttribute : DescriptionAttribute
     {
         /// <summary>
         /// 描述
         /// </summary>
-        public string Description { get; }
+        public override string Description { get; }
 
         /// <summary>
         /// 构造

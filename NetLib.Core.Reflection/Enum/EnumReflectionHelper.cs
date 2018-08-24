@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 
 namespace FrHello.NetLib.Core.Reflection.Enum
@@ -22,12 +23,29 @@ namespace FrHello.NetLib.Core.Reflection.Enum
 
             var description = enumWithDescription.ToString();
             var fieldInfo = enumWithDescription.GetType().GetField(description);
-            var attribute =
-                (EnumDescriptionAttribute) fieldInfo.GetCustomAttribute(typeof(EnumDescriptionAttribute), false);
 
-            if (attribute != null)
+            var attributes = fieldInfo.GetCustomAttributes();
+
+            foreach (var attribute in attributes)
             {
-                description = attribute.Description;
+                var isMatch = false;
+
+                switch (attribute)
+                {
+                    case EnumDescriptionAttribute enumDescriptionAttribute:
+                        description = enumDescriptionAttribute.Description;
+                        isMatch = true;
+                        break;
+                    case DescriptionAttribute descriptionAttribute:
+                        description = descriptionAttribute.Description;
+                        isMatch = true;
+                        break;
+                }
+
+                if (isMatch)
+                {
+                    break;
+                }
             }
 
             return description;
