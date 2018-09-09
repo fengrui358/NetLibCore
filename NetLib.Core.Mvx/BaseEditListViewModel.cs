@@ -15,19 +15,19 @@ namespace FrHello.NetLib.Core.Mvx
     /// 带列表的基础ViewModel
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class BaseEditListViewModel<T> : BaseEditViewModel where T : class, new()
+    public abstract class BaseEditListViewModel<T> : BaseEditViewModel where T : class
     {
         private readonly object _lockObj = new object();
 
         /// <summary>
         /// 增加数据项命令
         /// </summary>
-        public MvxCommand AddItemCommand { get; private set; }
+        public MvxCommand AddItemCommand { get; }
 
         /// <summary>
         /// 移除数据项命令
         /// </summary>
-        public MvxCommand RemoveItemCommand { get; private set; }
+        public MvxCommand RemoveItemCommand { get; }
 
         private ObservableCollection<T> _itemSource;
 
@@ -89,7 +89,7 @@ namespace FrHello.NetLib.Core.Mvx
                     ItemSource = new ObservableCollection<T>();
                 }
 
-                var newItem = new T();
+                var newItem = Activator.CreateInstance<T>();
                 ItemSource.Add(newItem);
 
                 SelectedItem = newItem;
@@ -142,6 +142,7 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 是否全部选中变更
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private void OnIsCheckedAllChanged()
         {
             if (_checkedAllChangedFromItems)
@@ -384,19 +385,19 @@ namespace FrHello.NetLib.Core.Mvx
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TParameter"></typeparam>
-    public abstract class BaseEditListViewModel<T, TParameter> : BaseEditViewModel<TParameter> where T : class, new()
+    public abstract class BaseEditListViewModel<T, TParameter> : BaseEditViewModel<TParameter> where T : class
     {
         private readonly object _lockObj = new object();
 
         /// <summary>
         /// 增加数据项命令
         /// </summary>
-        public MvxCommand AddItemCommand { get; private set; }
+        public MvxCommand AddItemCommand { get; }
 
         /// <summary>
         /// 移除数据项命令
         /// </summary>
-        public MvxCommand RemoveItemCommand { get; private set; }
+        public MvxCommand RemoveItemCommand { get; }
 
         private ObservableCollection<T> _itemSource;
 
@@ -458,7 +459,7 @@ namespace FrHello.NetLib.Core.Mvx
                     ItemSource = new ObservableCollection<T>();
                 }
 
-                var newItem = new T();
+                var newItem = Activator.CreateInstance<T>();
                 ItemSource.Add(newItem);
 
                 SelectedItem = newItem;
@@ -511,6 +512,7 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 是否全部选中变更
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private void OnIsCheckedAllChanged()
         {
             if (_checkedAllChangedFromItems)
