@@ -161,6 +161,15 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
             {
                 if (parameter != null)
                 {
+                    //如果parameter是传的一个类型，则进行类型是否相等的比较
+                    if (parameter is Type parameterType)
+                    {
+                        if (value != null && value.GetType() == parameterType)
+                        {
+                            converterValue = !converterValue;
+                        }
+                    }
+
                     //如果参数不等于空则是判断比较
                     if (value != null && value.Equals(parameter))
                     {
@@ -182,7 +191,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                         //如果值为集合则根据数量进行判断
                         var notEmpty = false;
 
-                        foreach (var o in enumerableValue)
+                        foreach (var unused in enumerableValue)
                         {
                             notEmpty = true;
                             break;
