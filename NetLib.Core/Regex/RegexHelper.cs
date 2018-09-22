@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace FrHello.NetLib.Core.Regex
 {
@@ -243,6 +245,40 @@ namespace FrHello.NetLib.Core.Regex
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// 检查文件名不包含无效字符
+        /// </summary>
+        /// <param name="fileName">文件名</param>
+        /// <returns></returns>
+        public static bool CheckFileNameNotContainsInvalidChar(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                return false;
+            }
+
+            var intersects = fileName.Intersect(Path.GetInvalidFileNameChars());
+
+            return !intersects.Any();
+        }
+
+        /// <summary>
+        /// 检查文件路径不包含无效字符
+        /// </summary>
+        /// <param name="filePath">文件路径</param>
+        /// <returns></returns>
+        public static bool CheckFilePathNotContainsInvalidChar(string filePath)
+        {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                return false;
+            }
+
+            var intersects = filePath.Intersect(Path.GetInvalidPathChars());
+
+            return !intersects.Any();
         }
 
         #endregion

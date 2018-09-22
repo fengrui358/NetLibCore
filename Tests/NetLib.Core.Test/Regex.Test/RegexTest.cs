@@ -129,5 +129,25 @@ namespace NetLib.Core.Test.Regex.Test
             Assert.True(RegexHelper.CheckUrl("http://wenku.baidu.com"));
             Assert.True(RegexHelper.CheckUrl("h://32.545"));
         }
+
+        /// <summary>
+        /// CheckFileNameTest
+        /// </summary>
+        [Fact]
+        public void CheckFileNameTest()
+        {
+            Assert.True(RegexHelper.CheckFileNameNotContainsInvalidChar("sa.dfa232"));
+            Assert.False(RegexHelper.CheckFileNameNotContainsInvalidChar(".dad\\sa"));
+            Assert.False(RegexHelper.CheckFileNameNotContainsInvalidChar("dad?sa"));
+        }
+
+        /// <summary>
+        /// CheckFilePathTest
+        /// </summary>
+        [Fact]
+        public void CheckFilePathTest()
+        {
+            Assert.True(RegexHelper.CheckFilePathNotContainsInvalidChar("asfas/"));
+        }
     }
 }
