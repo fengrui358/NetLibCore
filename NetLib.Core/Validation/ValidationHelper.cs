@@ -56,6 +56,38 @@ namespace FrHello.NetLib.Core.Validation
         }
 
         /// <summary>
+        /// 获取对象的某一项属性错误
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="obj">待校验的对象</param>
+        /// <param name="propertyName">待校验的属性名</param>
+        /// <param name="validator">FluentValidation验证器</param>
+        /// <returns></returns>
+        public static ValidationResult GetPropertyErrorMsg<T>(T obj, string propertyName, IValidator<T> validator)
+        {
+            if (validator == null)
+            {
+                throw new ArgumentNullException(nameof(validator));
+            }
+
+            if (string.IsNullOrWhiteSpace(propertyName) || obj == null)
+            {
+                return new ValidationResult(string.Empty);
+            }
+
+            var context = new ValidationContext(obj, null, new MemberNameValidatorSelector(new[] {propertyName}));
+            var result = validator.Validate(context);
+
+            var error = result.Errors.FirstOrDefault(x => x.PropertyName.Equals(propertyName))?.ErrorMessage;
+            if (!string.IsNullOrEmpty(error))
+            {
+                return new ValidationResult(error);
+            }
+
+            return new ValidationResult(string.Empty);
+        }
+
+        /// <summary>
         /// 获取对象的整体错误信息
         /// </summary>
         /// <param name="obj">待校验的对象</param>
@@ -95,6 +127,30 @@ namespace FrHello.NetLib.Core.Validation
                         }
                     }
                 }
+            }
+
+            return new ValidationResult(string.Empty);
+        }
+
+        /// <summary>
+        /// 获取对象的整体错误信息
+        /// </summary>
+        /// <typeparam name="T">对象类型</typeparam>
+        /// <param name="obj">待校验的对象</param>
+        /// <param name="validator">FluentValidation验证器</param>
+        /// <returns></returns>
+        public static ValidationResult GetErrorMsg<T>(T obj, IValidator<T> validator)
+        {
+            if (validator == null)
+            {
+                throw new ArgumentNullException(nameof(validator));
+            }
+
+            var result = validator.Validate(obj);
+
+            if (result.Errors.Any())
+            {
+                return new ValidationResult(result.Errors.First().ErrorMessage);
             }
 
             return new ValidationResult(string.Empty);
