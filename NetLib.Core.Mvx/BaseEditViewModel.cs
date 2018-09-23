@@ -13,12 +13,12 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 确认命令
         /// </summary>
-        public MvxCommand ConfirmCommand { get; private set; }
+        public MvxCommand ConfirmCommand { get; }
 
         /// <summary>
         /// 取消命令
         /// </summary>
-        public MvxCommand CancelCommand { get; private set; }
+        public MvxCommand CancelCommand { get; }
 
         /// <summary>
         /// 是否可确认
@@ -26,14 +26,7 @@ namespace FrHello.NetLib.Core.Mvx
         public virtual bool CanConfirm
         {
             get => _canConfirm && CanConfirmFun();
-            set
-            {
-                if (_canConfirm != value)
-                {
-                    _canConfirm = value;
-                    RaisePropertyChanged();
-                }
-            }
+            set => SetProperty(ref _canConfirm, value);
         }
 
         /// <summary>
@@ -80,12 +73,12 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 确认命令
         /// </summary>
-        public MvxCommand ConfirmCommand { get; private set; }
+        public MvxCommand ConfirmCommand { get; }
 
         /// <summary>
         /// 取消命令
         /// </summary>
-        public MvxCommand CancelCommand { get; private set; }
+        public MvxCommand CancelCommand { get; }
 
         /// <summary>
         /// 是否可确认
@@ -93,14 +86,7 @@ namespace FrHello.NetLib.Core.Mvx
         public virtual bool CanConfirm
         {
             get => _canConfirm && CanConfirmFun();
-            set
-            {
-                if (_canConfirm != value)
-                {
-                    _canConfirm = value;
-                    RaisePropertyChanged();
-                }
-            }
+            set => SetProperty(ref _canConfirm, value);
         }
 
         /// <summary>
