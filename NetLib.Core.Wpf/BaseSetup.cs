@@ -50,8 +50,9 @@ namespace FrHello.NetLib.Core.Wpf
         /// </summary>
         protected override void InitializeLastChance()
         {
-            Mvx.RegisterSingleton<IMvxAppStart>(new BaseAppStart<TViewModel>(Mvx.Resolve<IMvxApplication>(),
-                Mvx.Resolve<IMvxNavigationService>()));
+            Mvx.IoCProvider.RegisterSingleton<IMvxAppStart>(new BaseAppStart<TViewModel>(
+                Mvx.IoCProvider.Resolve<IMvxApplication>(),
+                Mvx.IoCProvider.Resolve<IMvxNavigationService>()));
         }
 
         /// <summary>

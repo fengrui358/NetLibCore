@@ -10,27 +10,28 @@ namespace FrHello.NetLib.Core.Mvx
     /// </summary>
     public class BaseViewModel : MvxViewModel
     {
-        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(MvvmCross.Mvx.Resolve<IMvxNavigationService>);
+        private readonly Lazy<IMvxNavigationService> _navigationService =
+            new Lazy<IMvxNavigationService>(MvvmCross.Mvx.IoCProvider.Resolve<IMvxNavigationService>);
 
         /// <summary>
         /// 导航服务
         /// </summary>
-        public override IMvxNavigationService NavigationService => _navigationService.Value;
+        public IMvxNavigationService NavigationService => _navigationService.Value;
 
         private IMvxLog _log;
 
         /// <summary>
         /// 日志
         /// </summary>
-        protected override IMvxLog Log
+        protected IMvxLog Log
         {
             get
             {
                 if (_log == null)
                 {
-                    if (MvvmCross.Mvx.CanResolve<IMvxLogProvider>())
+                    if (MvvmCross.Mvx.IoCProvider.CanResolve<IMvxLogProvider>())
                     {
-                        _log = MvvmCross.Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                        _log = MvvmCross.Mvx.IoCProvider.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
                     }
                 }
 
@@ -53,27 +54,28 @@ namespace FrHello.NetLib.Core.Mvx
     /// <typeparam name="TParameter"></typeparam>
     public class BaseViewModel<TParameter> : MvxViewModel<TParameter>
     {
-        private readonly Lazy<IMvxNavigationService> _navigationService = new Lazy<IMvxNavigationService>(MvvmCross.Mvx.Resolve<IMvxNavigationService>);
+        private readonly Lazy<IMvxNavigationService> _navigationService =
+            new Lazy<IMvxNavigationService>(MvvmCross.Mvx.IoCProvider.Resolve<IMvxNavigationService>);
 
         /// <summary>
         /// 导航服务
         /// </summary>
-        public override IMvxNavigationService NavigationService => _navigationService.Value;
+        public IMvxNavigationService NavigationService => _navigationService.Value;
 
         private IMvxLog _log;
 
         /// <summary>
         /// 日志
         /// </summary>
-        protected override IMvxLog Log
+        protected IMvxLog Log
         {
             get
             {
                 if (_log == null)
                 {
-                    if (MvvmCross.Mvx.CanResolve<IMvxLogProvider>())
+                    if (MvvmCross.Mvx.IoCProvider.CanResolve<IMvxLogProvider>())
                     {
-                        _log = MvvmCross.Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                        _log = MvvmCross.Mvx.IoCProvider.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
                     }
                 }
 

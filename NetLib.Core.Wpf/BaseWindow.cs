@@ -21,9 +21,9 @@ namespace FrHello.NetLib.Core.Wpf
             {
                 if (_log == null)
                 {
-                    if (Mvx.CanResolve<IMvxLogProvider>())
+                    if (Mvx.IoCProvider.CanResolve<IMvxLogProvider>())
                     {
-                        _log = Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                        _log = Mvx.IoCProvider.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
                     }
                 }
 
@@ -49,9 +49,9 @@ namespace FrHello.NetLib.Core.Wpf
             {
                 if (_log == null)
                 {
-                    if (Mvx.CanResolve<IMvxLogProvider>())
+                    if (Mvx.IoCProvider.CanResolve<IMvxLogProvider>())
                     {
-                        _log = Mvx.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
+                        _log = Mvx.IoCProvider.Resolve<IMvxLogProvider>().GetLogFor(GetType().FullName);
                     }
                 }
 

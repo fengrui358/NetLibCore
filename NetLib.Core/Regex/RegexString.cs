@@ -34,7 +34,7 @@ namespace FrHello.NetLib.Core.Regex
         #region 特殊需求
 
         /// <summary>
-        /// Email
+        /// Email(这个正则表达式校验Email的方式比微软的更加严格)
         /// </summary>
         public const string Email = @"^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
 

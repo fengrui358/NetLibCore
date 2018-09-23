@@ -24,7 +24,7 @@ namespace FrHello.NetLib.Core.Mvx
                 {
                     if (_mainThreadAsyncDispatcher == null)
                     {
-                        _mainThreadAsyncDispatcher = MvvmCross.Mvx.Resolve<IMvxMainThreadAsyncDispatcher>();
+                        _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
                     }
                 }
             }

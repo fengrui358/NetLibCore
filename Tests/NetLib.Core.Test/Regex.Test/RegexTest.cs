@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using System.Net.Mail;
 using FrHello.NetLib.Core.Regex;
 using Xunit;
 
@@ -19,9 +20,11 @@ namespace NetLib.Core.Test.Regex.Test
         {
             var isEmail = "asd@163.com";
             var isNotEmail = "asd2433@163";
+            var isNotEmail2 = "dsaasd@";
 
             Assert.True(RegexHelper.CheckEmail(isEmail));
             Assert.False(RegexHelper.CheckEmail(isNotEmail));
+            Assert.False(RegexHelper.CheckEmail(isNotEmail2));
         }
 
         /// <summary>

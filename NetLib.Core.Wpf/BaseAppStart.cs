@@ -1,4 +1,5 @@
-﻿using MvvmCross.Navigation;
+﻿using System.Threading.Tasks;
+using MvvmCross.Navigation;
 using MvvmCross.ViewModels;
 
 namespace FrHello.NetLib.Core.Wpf
@@ -21,9 +22,9 @@ namespace FrHello.NetLib.Core.Wpf
         /// 打开第一个视图页面
         /// </summary>
         /// <param name="hint"></param>
-        protected override void NavigateToFirstViewModel(object hint = null)
+        protected override Task NavigateToFirstViewModel(object hint = null)
         {
-            NavigationService.Navigate<TFirstViewModel>();
+            return NavigationService.Navigate<TFirstViewModel>();
         }
     }
 }
