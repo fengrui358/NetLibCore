@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Interactivity;
 
 namespace FrHello.NetLib.Core.Wpf.Behaviors
@@ -13,6 +15,7 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
     public class TreeViewBehavior : Behavior<TreeView>
     {
         private readonly EventSetter _treeViewItemEventSetter;
+        private List<string> _treeDataContextPropertiesList; 
 
         /// <summary>
         /// 为虚拟化节点进行相关缓存
@@ -28,17 +31,6 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedItemChanged));
 
-        /// <summary>
-        /// 获取所有父节点委托依赖属性
-        /// </summary>
-        public static readonly DependencyProperty GetAllParentsFunProperty =
-            DependencyProperty.Register(nameof(GetAllParentsFun), typeof(Func<object, IEnumerable<object>>),
-                typeof(TreeViewBehavior),
-                new FrameworkPropertyMetadata(null));
-
-        /// <summary>
-        /// 是否展开选中项依赖属性
-        /// </summary>
         public static readonly DependencyProperty ExpandSelectedProperty =
             DependencyProperty.Register(nameof(ExpandSelected), typeof(bool),
                 typeof(TreeViewBehavior),
@@ -66,15 +58,6 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         {
             get => GetValue(SelectedItemProperty);
             set => SetValue(SelectedItemProperty, value);
-        }
-
-        /// <summary>
-        /// 获取所有父节点委托
-        /// </summary>
-        public Func<object, IEnumerable<object>> GetAllParentsFun
-        {
-            get => (Func<object, IEnumerable<object>>)GetValue(GetAllParentsFunProperty);
-            set => SetValue(GetAllParentsFunProperty, value);
         }
 
         /// <summary>
@@ -115,8 +98,8 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
             else
             {
                 var isMatch = false;
-                var allParents = GetAllParentsFun?.Invoke(SelectedItem)?.ToList();
-                if (allParents != null && allParents.Any())
+                var allParents = GetAllParents(SelectedItem).ToList();
+                if (allParents.Any())
                 {
                     //遍历节点与逻辑父节点进行匹配
                     foreach (var item in treeView.Items)
@@ -329,6 +312,8 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
 
         private void AssociatedObjectOnLoaded(object sender, RoutedEventArgs e)
         {
+            BuildDataContextTreeStruct(AssociatedObject);
+
             if (AssociatedObject.SelectedItem != null || SelectedItem != null)
             {
                 _modelHandled = true;
@@ -338,8 +323,121 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         }
 
         /// <summary>
-        /// 移除
+        /// 构建DataContext的树结构
         /// </summary>
+        private void BuildDataContextTreeStruct(TreeView treeView)
+        {
+            if (_treeDataContextPropertiesList == null)
+            {
+                _treeDataContextPropertiesList = new List<string>();
+            }
+            else
+            {
+                _treeDataContextPropertiesList.Clear();
+            }
+
+            //从模板中获取孩子节点的属性名
+            IList<string> GetChildrenPropertyName(DataTemplate dataTemplate)
+            {
+                var treeDataContextPropertiesList = new List<string>();
+
+                if (dataTemplate is HierarchicalDataTemplate hierarchicalDataTemplate)
+                {
+                    //只考虑简单的Binding的情况，暂时未考虑多绑定
+                    if (hierarchicalDataTemplate.ItemsSource is Binding binding)
+                    {
+                        var propertyName = binding.Path.Path;
+                        treeDataContextPropertiesList.Add(propertyName);
+                    }
+
+                    if (hierarchicalDataTemplate.ItemTemplate != null)
+                    {
+                        treeDataContextPropertiesList.AddRange(
+                            GetChildrenPropertyName(hierarchicalDataTemplate.ItemTemplate));
+                    }
+
+                    return treeDataContextPropertiesList;
+                }
+
+                return treeDataContextPropertiesList;
+            }
+
+            _treeDataContextPropertiesList = GetChildrenPropertyName(treeView.ItemTemplate).ToList();
+        }
+
+        /// <summary>
+        /// 获取某一项的所有父节点
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        private IList<object> GetAllParents(object obj)
+        {
+            var result = new List<object>();
+            if (obj == null || _treeDataContextPropertiesList == null)
+            {
+                return result;
+            }
+
+            foreach (var item in AssociatedObject.ItemsSource)
+            {
+                if (Equals(item, obj))
+                {
+                    return result;
+                }
+                else
+                {
+                    var finds = GetParent(item, obj);
+                    if (finds != null)
+                    {
+                        result.Add(item);
+                        result.AddRange(finds);
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取父节点
+        /// </summary>
+        /// <param name="objSub">子节点</param>
+        /// <param name="objSelected">待匹配的选中节点</param>
+        /// <param name="layout">层级</param>
+        /// <returns>如果为空则没有最终匹配，需要继续寻找，如果不为空则匹配成功</returns>
+        IList<object> GetParent(object objSub, object objSelected, int layout = 0)
+        {
+            if (_treeDataContextPropertiesList.Count < (layout + 1))
+            {
+                return null;
+            }
+
+            if (objSub.GetType().GetProperty(_treeDataContextPropertiesList[layout])
+                ?.GetValue(objSub) is IEnumerable children)
+            {
+                foreach (var child in children)
+                {
+                    if (Equals(child, objSelected))
+                    {
+                        return new List<object>();
+                    }
+                    else
+                    {
+                        var finds = GetParent(child, objSelected, layout + 1);
+                        if (finds != null)
+                        {
+                            var r = new List<object> {child};
+                            r.AddRange(finds);
+                            return r;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         protected override void OnDetaching()
         {
             base.OnDetaching();
