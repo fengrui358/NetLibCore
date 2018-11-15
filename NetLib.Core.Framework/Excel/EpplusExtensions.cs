@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
+using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using OfficeOpenXml;
 
 namespace FrHello.NetLib.Core.Framework
 {
-    public static class Extensions
+    /// <summary>
+    /// Excel辅助类
+    /// </summary>
+    public static partial class Extensions
     {
         /// <summary>
         /// 最后一行有数据的行号
@@ -81,6 +87,91 @@ namespace FrHello.NetLib.Core.Framework
         {
             var cell = excelWorksheet.GetCell(headerName, rowNum);
             return cell != null ? cell.GetValue<T>() : default;
+        }
+
+        /// <summary>
+        /// 从Excel中获取特定的类型数据集合
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="excelPackage"></param>
+        /// <returns></returns>
+        public static IEnumerable<T> FillDatas<T>(this ExcelPackage excelPackage)
+        {
+            if (excelPackage == null)
+            {
+                throw new ArgumentNullException(nameof(excelPackage));
+            }
+
+            var type = typeof(T);
+            var result = new List<T>();
+
+            string sheetName;
+            var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
+            if (sheetAttribute is SheetAttribute sheetAttributeInner)
+            {
+                sheetName = sheetAttributeInner.SheetName;
+            }
+            else
+            {
+                sheetName = nameof(T);
+            }
+
+            ExcelWorksheet worksheet = null;
+
+            //判断有无对应的表
+            foreach (var workbookWorksheet in excelPackage.Workbook.Worksheets)
+            {
+                if (workbookWorksheet.Name == sheetName)
+                {
+                    worksheet = workbookWorksheet;
+                    break;
+                }
+            }
+
+            if (worksheet != null)
+            {
+                var properties = new Dictionary<string, PropertyInfo>();
+
+                //收集有效的属性
+                var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+                foreach (var propertyInfo in allPropertyInfos)
+                {
+                    string columnName;
+                    var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
+                    if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
+                    {
+                        columnName = sheetColumnAttributeInner.ColumnName;
+                    }
+                    else
+                    {
+                        columnName = propertyInfo.Name;
+                    }
+
+                    properties.Add(columnName, propertyInfo);
+                }
+
+                //遍历Excel表获取数据
+                var isCreateInstance = false;
+                T instance = default;
+
+                foreach (var keyValuePair in properties)
+                {
+                    var column = worksheet.GetColumnNum(keyValuePair.Key);
+                    if (column > 0)
+                    {
+                        
+                    }
+                }
+
+                if (isCreateInstance)
+                {
+                    result.Add(instance);
+                }
+
+                return result;
+            }
+
+            return null;
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace NetLib.Core.Test.Reflection.Test
         /// PringTypeTest
         /// </summary>
         [Fact]
-        public void PringTypeTest()
+        public void PrintTypeTest()
         {
             var output = Printer.Output(typeof(Environment));
             Assert.NotNull(output);
@@ -23,7 +23,7 @@ namespace NetLib.Core.Test.Reflection.Test
         /// PringTypeTest
         /// </summary>
         [Fact]
-        public void PringObjectTest()
+        public void PrintObjectTest()
         {
             var obj = new MockClass
             {
