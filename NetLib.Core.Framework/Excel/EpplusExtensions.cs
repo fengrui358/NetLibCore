@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
+using FrHello.NetLib.Core.Reflection;
 using OfficeOpenXml;
 
 namespace FrHello.NetLib.Core.Framework
@@ -150,22 +152,33 @@ namespace FrHello.NetLib.Core.Framework
                     properties.Add(columnName, propertyInfo);
                 }
 
-                //遍历Excel表获取数据
-                var isCreateInstance = false;
-                T instance = default;
+                //有效的列
+                var validColums = new Dictionary<int, PropertyInfo>();
 
                 foreach (var keyValuePair in properties)
                 {
                     var column = worksheet.GetColumnNum(keyValuePair.Key);
                     if (column > 0)
                     {
-                        
+                        validColums.Add(column, keyValuePair.Value);
                     }
                 }
 
-                if (isCreateInstance)
+                if (validColums.Any())
                 {
-                    result.Add(instance);
+                    for (var i = worksheet.Dimension.Start.Row + 1; i <= worksheet.MaxRowNum(); i++)
+                    {
+                        var instance = Activator.CreateInstance<T>();
+                        foreach (var keyValuePair in validColums)
+                        {
+                            var value = TypeHelper.ChangeType(worksheet.Cells[i, keyValuePair.Key].Value,
+                                keyValuePair.Value.PropertyType);
+
+                            keyValuePair.Value.SetValue(instance, value);
+                        }
+
+                        result.Add(instance);
+                    }
                 }
 
                 return result;
