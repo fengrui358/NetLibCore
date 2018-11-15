@@ -105,7 +105,6 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             var type = typeof(T);
-            var result = new List<T>();
 
             string sheetName;
             var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
@@ -171,20 +170,27 @@ namespace FrHello.NetLib.Core.Framework
                         var instance = Activator.CreateInstance<T>();
                         foreach (var keyValuePair in validColums)
                         {
-                            var value = TypeHelper.ChangeType(worksheet.Cells[i, keyValuePair.Key].Value,
-                                keyValuePair.Value.PropertyType);
+                            object value;
+
+                            var converterAttribute = keyValuePair.Value.GetCustomAttribute<SheetColumnValueConverterAttribute>();
+                            if (converterAttribute != null)
+                            {
+                                value = converterAttribute.SimpleValueConverter.Convert(worksheet
+                                    .Cells[i, keyValuePair.Key].Value);
+                            }
+                            else
+                            {
+                                value = TypeHelper.ChangeType(worksheet.Cells[i, keyValuePair.Key].Value,
+                                    keyValuePair.Value.PropertyType);
+                            }
 
                             keyValuePair.Value.SetValue(instance, value);
                         }
 
-                        result.Add(instance);
+                        yield return instance;
                     }
                 }
-
-                return result;
             }
-
-            return null;
         }
 
         /// <summary>

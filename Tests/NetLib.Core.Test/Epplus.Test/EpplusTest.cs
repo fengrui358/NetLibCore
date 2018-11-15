@@ -1,6 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Linq;
+using System.Reflection;
+using FrHello.NetLib.Core.Framework;
+using FrHello.NetLib.Core.Framework.Excel.Attributes;
+using FrHello.NetLib.Core.Interfaces;
+using OfficeOpenXml;
+using Xunit;
 
 namespace NetLib.Core.Test.Epplus.Test
 {
@@ -9,5 +13,214 @@ namespace NetLib.Core.Test.Epplus.Test
     /// </summary>
     public class EpplusTest
     {
+        /// <summary>
+        /// FillDatasTest
+        /// </summary>
+        [Fact]
+        public void FillDatasTest()
+        {
+            var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
+            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
+
+            using (var excelPackage = new ExcelPackage(testExcel))
+            {
+                var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
+                var mockDepartments = excelPackage.FillDatas<MockDepartment>();
+                var mockPersons = excelPackage.FillDatas<MockPerson>();
+
+                Assert.Equal(2, mockOrganizations.Count());
+                Assert.Equal(2, mockDepartments.Count());
+                Assert.Equal(3, mockPersons.Count());
+            }
+        }
+    }
+
+    /// <summary>
+    /// 机构
+    /// </summary>
+    [Sheet("Institución(机构名称)")]
+    internal class MockOrganization
+    {
+        /// <summary>
+        /// 机构名称
+        /// </summary>
+        [SheetColumn("Institución(机构名称)")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 描述
+        /// </summary>
+        [SheetColumn("Descripción(机构概述)")]
+        public string Description { get; set; }
+    }
+
+    /// <summary>
+    /// 部门
+    /// </summary>
+    [Sheet("Departamento(部门)")]
+    internal class MockDepartment
+    {
+        /// <summary>
+        /// 名称
+        /// </summary>
+        [SheetColumn("Nombre(部门名称)")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 电话
+        /// </summary>
+        [SheetColumn("Teléfono(联系电话)")]
+        public string TelePhone { get; set; }
+
+        /// <summary>
+        /// 传真
+        /// </summary>
+        [SheetColumn("Fax(传真号码)")]
+        public string Fax { get; set; }
+
+        /// <summary>
+        /// 部门邮箱
+        /// </summary>
+        [SheetColumn("Email(部门联系邮箱)")]
+        public string Email { get; set; }
+
+        /// <summary>
+        /// 所在地区
+        /// </summary>
+        [SheetColumn("Ubicación(所在地区)")]
+        public string City { get; set; }
+
+        /// <summary>
+        /// 地址
+        /// </summary>
+        [SheetColumn("Dirección(地址)")]
+        public string Location { get; set; }
+
+        /// <summary>
+        /// 所属机构
+        /// </summary>
+        [SheetColumn("Institución(所属机构)")]
+        public string Organization { get; set; }
+
+        /// <summary>
+        /// 内线电话
+        /// </summary>
+        [SheetColumn("Teléfono interno(内线电话)")]
+        public string InnerTelePhone { get; set; }
+
+        /// <summary>
+        /// 部门等级
+        /// </summary>
+        [SheetColumn("Nivel administrativo(部门等级)")]
+        public string Level { get; set; }
+
+        /// <summary>
+        /// 区号
+        /// </summary>
+        [SheetColumn("Codigo de área(区号)")]
+        public string AreaCode { get; set; }
+
+        /// <summary>
+        /// 邮政编号
+        /// </summary>
+        [SheetColumn("Código postal(邮政编码)")]
+        public string PostCode { get; set; }
+
+        /// <summary>
+        /// 服务类型
+        /// </summary>
+        [SheetColumn("Tipo de servicio(服务类型)")]
+        public string ServiceType { get; set; }
+
+        /// <summary>
+        /// 经度
+        /// </summary>
+        [SheetColumn("Longitud(经度)")]
+        public double? Longitude { get; set; }
+
+        /// <summary>
+        /// 纬度
+        /// </summary>
+        [SheetColumn("Latitud(维度)")]
+        public double? Latitude { get; set; }
+
+        /// <summary>
+        /// 负责人
+        /// </summary>
+        [SheetColumn("Jefe(负责人)")]
+        public string Boss { get; set; }
+
+        /// <summary>
+        /// 备注
+        /// </summary>
+        [SheetColumn("Nota(备注)")]
+        public string Note { get; set; }
+    }
+
+    /// <summary>
+    /// 部门人员
+    /// </summary>
+    [Sheet("Personal(部门人员)")]
+    internal class MockPerson
+    {
+        /// <summary>
+        /// 人员名称
+        /// </summary>
+        [SheetColumn("Nombre(人员名称)")]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 性别
+        /// </summary>
+        [SheetColumn("Género(性别)")]
+        [SheetColumnValueConverter(typeof(GenderColumnValueConverter))]
+        public Gender Gender { get; set; }
+
+        /// <summary>
+        /// 身份证
+        /// </summary>
+        [SheetColumn("Número ID(身份证号)")]
+        public string IdCard { get; set; }
+    }
+
+    internal class GenderColumnValueConverter : SimpleValueConverter<string, Gender>
+    {
+        public override Gender ConvertFun(string source)
+        {
+            switch (source)
+            {
+                case "Hombre":
+                    return Gender.Male;
+                case "Mujer":
+                    return Gender.Female;
+                case "Transgénero":
+                    return Gender.Neutral;
+            }
+
+            return Gender.None;
+        }
+    }
+
+    internal enum Gender
+    {
+        /// <summary>
+        /// 无效值
+        /// </summary>
+        None,
+
+        /// <summary>
+        /// 男性
+        /// </summary>
+        Male,
+
+        /// <summary>
+        /// 女性
+        /// </summary>
+        Female,
+
+        /// <summary>
+        /// 中性
+        /// </summary>
+        Neutral
     }
 }

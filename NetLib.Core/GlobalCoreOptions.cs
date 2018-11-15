@@ -1,8 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("NetLib.Core.Test")]
-
-namespace FrHello.NetLib.Core
+﻿namespace FrHello.NetLib.Core
 {
     /// <summary>
     /// 默认的核心工具相关参数
