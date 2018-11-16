@@ -24,6 +24,7 @@ namespace NetLib.Core.Test.Epplus.Test
 
             using (var excelPackage = new ExcelPackage(testExcel))
             {
+                var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
                 var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
                 var mockDepartments = excelPackage.FillDatas<MockDepartment>();
                 var mockPersons = excelPackage.FillDatas<MockPerson>();
@@ -181,6 +182,19 @@ namespace NetLib.Core.Test.Epplus.Test
         /// </summary>
         [SheetColumn("Número ID(身份证号)")]
         public string IdCard { get; set; }
+    }
+
+    /// <summary>
+    /// 行政区域
+    /// </summary>
+    [Sheet("行政区域")]
+    internal class MockAdministrativeRegion
+    {
+        public string DISTRICTID { get; set; }
+
+        public string PARENTID { get; set; }
+
+        public string DISTRICTFULLNAME { get; set; }
     }
 
     internal class GenderColumnValueConverter : SimpleValueConverter<string, Gender>
