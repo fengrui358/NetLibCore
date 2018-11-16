@@ -131,35 +131,38 @@ namespace FrHello.NetLib.Core.Framework
 
             if (worksheet != null)
             {
-                var properties = new Dictionary<string, PropertyInfo>();
+                var properties = new List<ColumnDescription>();
 
                 //收集有效的属性
                 var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 foreach (var propertyInfo in allPropertyInfos)
                 {
+                    var allowNull = true;
                     string columnName;
                     var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
                     if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
                     {
                         columnName = sheetColumnAttributeInner.ColumnName;
+                        allowNull = sheetColumnAttributeInner.AllowNull;
                     }
                     else
                     {
                         columnName = propertyInfo.Name;
                     }
 
-                    properties.Add(columnName, propertyInfo);
+                    properties.Add(new ColumnDescription(columnName, propertyInfo) {AllowNull = allowNull});
                 }
 
                 //有效的列
-                var validColums = new Dictionary<int, PropertyInfo>();
+                var validColums = new List<ColumnDescription>();
 
-                foreach (var keyValuePair in properties)
+                foreach (var property in properties)
                 {
-                    var column = worksheet.GetColumnNum(keyValuePair.Key);
+                    var column = worksheet.GetColumnNum(property.ColumnName);
                     if (column > 0)
                     {
-                        validColums.Add(column, keyValuePair.Value);
+                        property.ColumnNum = column;
+                        validColums.Add(property);
                     }
                 }
 
@@ -168,23 +171,33 @@ namespace FrHello.NetLib.Core.Framework
                     for (var i = worksheet.Dimension.Start.Row + 1; i <= worksheet.MaxRowNum(); i++)
                     {
                         var instance = Activator.CreateInstance<T>();
-                        foreach (var keyValuePair in validColums)
+                        foreach (var columnDescription in validColums)
                         {
                             object value;
 
-                            var converterAttribute = keyValuePair.Value.GetCustomAttribute<SheetColumnValueConverterAttribute>();
+                            var converterAttribute = columnDescription.PropertyInfo.GetCustomAttribute<SheetColumnValueConverterAttribute>();
                             if (converterAttribute != null)
                             {
                                 value = converterAttribute.SimpleValueConverter.Convert(worksheet
-                                    .Cells[i, keyValuePair.Key].Value);
+                                    .Cells[i, columnDescription.ColumnNum].Value);
                             }
                             else
                             {
-                                value = TypeHelper.ChangeType(worksheet.Cells[i, keyValuePair.Key].Value,
-                                    keyValuePair.Value.PropertyType);
+                                value = TypeHelper.ChangeType(worksheet.Cells[i, columnDescription.ColumnNum].Value,
+                                    columnDescription.PropertyInfo.PropertyType);
                             }
 
-                            keyValuePair.Value.SetValue(instance, value);
+                            if (value == null || (value is string valueStr && string.IsNullOrWhiteSpace(valueStr)))
+                            {
+                                //判断是否有空特性
+                                if (!columnDescription.AllowNull)
+                                {
+                                    throw new InvalidOperationException(
+                                        $"Table:{worksheet.Name}  Row:{i} Column:{columnDescription.ColumnNum} not allow null");
+                                }
+                            }
+
+                            columnDescription.PropertyInfo.SetValue(instance, value);
                         }
 
                         yield return instance;
@@ -221,6 +234,26 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// 列描述
+        /// </summary>
+        private class ColumnDescription
+        {
+            public string ColumnName { get; }
+
+            public int ColumnNum { get; set; }
+
+            public bool AllowNull { get; set; } = true;
+
+            public PropertyInfo PropertyInfo { get; }
+
+            public ColumnDescription(string columnName, PropertyInfo propertyInfo)
+            {
+                ColumnName = columnName;
+                PropertyInfo = propertyInfo;
+            }
         }
     }
 }

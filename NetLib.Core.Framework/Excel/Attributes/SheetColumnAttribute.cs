@@ -9,6 +9,11 @@ namespace FrHello.NetLib.Core.Framework.Excel.Attributes
     public class SheetColumnAttribute : Attribute
     {
         /// <summary>
+        /// 允许空
+        /// </summary>
+        public bool AllowNull { get; set; } = true;
+
+        /// <summary>
         /// 构造
         /// </summary>
         /// <param name="columnName">列的名称</param>
