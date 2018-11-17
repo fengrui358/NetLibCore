@@ -203,6 +203,14 @@ namespace FrHello.NetLib.Core.Framework
                         yield return instance;
                     }
                 }
+                else
+                {
+                    throw new InvalidOperationException($"表{sheetName}没有能够转换的列数据");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"没有找到对应的表名{sheetName}");
             }
         }
 
