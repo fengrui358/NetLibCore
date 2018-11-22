@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using MvvmCross;
+using MvvmCross.Logging;
 using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.Platforms.Wpf.Presenters;
 using MvvmCross.ViewModels;
@@ -13,6 +16,30 @@ namespace FrHello.NetLib.Core.Wpf
     /// </summary>
     public class MvxHelper
     {
+        private static readonly object LockObj = new object();
+        private static bool _isCaptureGlobalExceptions;
+
+        private static IMvxLog _log;
+
+        /// <summary>
+        /// 日志
+        /// </summary>
+        private static IMvxLog Log
+        {
+            get
+            {
+                if (_log == null)
+                {
+                    if (Mvx.IoCProvider.CanResolve<IMvxLogProvider>())
+                    {
+                        _log = Mvx.IoCProvider.Resolve<IMvxLogProvider>().GetLogFor(typeof(MvxHelper).FullName);
+                    }
+                }
+
+                return _log;
+            }
+        }
+
         /// <summary>
         /// 在程序的Application的OnStartup方法中使用
         /// </summary>
@@ -46,6 +73,47 @@ namespace FrHello.NetLib.Core.Wpf
             start.Start();
 
             mainWindow.Show();
+        }
+
+        /// <summary>
+        /// 捕获全局异常
+        /// </summary>
+        public static void CaptureGlobalExceptions()
+        {
+            lock (LockObj)
+            {
+                if (!_isCaptureGlobalExceptions)
+                {
+                    Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
+                    AppDomain.CurrentDomain.UnhandledException += CurrentDomainOnUnhandledException;
+
+                    _isCaptureGlobalExceptions = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 非UI线程抛出全局异常事件处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is Exception exception)
+            {
+                Log.Fatal(String.Empty, exception);
+            }
+        }
+
+        /// <summary>
+        /// UI线程抛出全局异常事件处理
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            Log.Fatal(String.Empty, e.Exception);
+            e.Handled = true;
         }
     }
 }
