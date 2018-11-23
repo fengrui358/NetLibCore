@@ -356,8 +356,8 @@ namespace FrHello.NetLib.Core.Net
         /// <summary>
         /// 获取本地所有的IPv4地址
         /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
+        /// <param name="type">要获取IP地址的网卡类型</param>
+        /// <returns>对应类型的IP地址</returns>
         public static IPAddress[] GetAllLocalIPv4(NetworkInterfaceType type)
         {
             var ipAddrList = new List<IPAddress>();
