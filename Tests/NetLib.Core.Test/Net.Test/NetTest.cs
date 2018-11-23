@@ -1,4 +1,7 @@
-﻿using FrHello.NetLib.Core.Net;
+﻿using System.Linq;
+using System.Net.NetworkInformation;
+using FrHello.NetLib.Core.Net;
+using NetLib.Core.Test.ConstString;
 using Xunit;
 
 namespace NetLib.Core.Test.Net.Test
@@ -11,7 +14,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingTest
         /// </summary>
-        [Fact(Skip = "Need to be executed manually")]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void PingTest()
         {
             Assert.True(NetHelper.PingAsync("baidu.com").GetAwaiter().GetResult());
@@ -30,10 +33,23 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// LocalPortInUse
         /// </summary>
-        [Fact(Skip = "Need to be executed manually")]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void LocalPortInUse()
         {
             Assert.True(NetHelper.CheckLocalPort(80));
+        }
+
+        /// <summary>
+        /// GetLocalIpAddressTest
+        /// </summary>
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        public void GetLocalIpAddressTest()
+        {
+            var ethernetaAddresses = NetHelper.GetAllLocalIPv4(NetworkInterfaceType.Ethernet);
+            var wirelessAddresses = NetHelper.GetAllLocalIPv4(NetworkInterfaceType.Wireless80211);
+
+            Assert.True(ethernetaAddresses.Any());
+            Assert.True(wirelessAddresses.Any());
         }
     }
 }

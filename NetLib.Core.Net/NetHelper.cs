@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -170,7 +171,6 @@ namespace FrHello.NetLib.Core.Net
 
                     client.EndConnect(result);
                 }
-
             }
             catch
             {
@@ -218,7 +218,6 @@ namespace FrHello.NetLib.Core.Net
 
                     client.EndConnect(result);
                 }
-
             }
             catch
             {
@@ -268,7 +267,6 @@ namespace FrHello.NetLib.Core.Net
 
                         client.EndConnect(result);
                     }
-
                 }
                 catch
                 {
@@ -319,7 +317,6 @@ namespace FrHello.NetLib.Core.Net
 
                         client.EndConnect(result);
                     }
-
                 }
                 catch
                 {
@@ -350,6 +347,35 @@ namespace FrHello.NetLib.Core.Net
             var ipEndPoints = ipProperties.GetActiveTcpListeners();
 
             return ipEndPoints.Any(endPoint => endPoint.Port == port);
+        }
+
+        #endregion
+
+        #region GetLocalIPAddress
+
+        /// <summary>
+        /// 获取本地所有的IPv4地址
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IPAddress[] GetAllLocalIPv4(NetworkInterfaceType type)
+        {
+            var ipAddrList = new List<IPAddress>();
+            foreach (var item in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (item.NetworkInterfaceType == type && item.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach (var ip in item.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        {
+                            ipAddrList.Add(ip.Address);
+                        }
+                    }
+                }
+            }
+
+            return ipAddrList.ToArray();
         }
 
         #endregion
