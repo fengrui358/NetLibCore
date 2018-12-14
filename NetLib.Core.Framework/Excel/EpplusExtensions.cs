@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
+using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
 using OfficeOpenXml;
 
@@ -104,6 +106,11 @@ namespace FrHello.NetLib.Core.Framework
                 throw new ArgumentNullException(nameof(excelPackage));
             }
 
+            if (!excelPackage.File.Exists)
+            {
+                throw new FileNotFoundException($"{excelPackage.File.FullName} not found.");
+            }
+
             var type = typeof(T);
 
             string sheetName;
@@ -137,20 +144,20 @@ namespace FrHello.NetLib.Core.Framework
                 var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
                 foreach (var propertyInfo in allPropertyInfos)
                 {
-                    var allowNull = true;
                     string columnName;
                     var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
                     if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
                     {
                         columnName = sheetColumnAttributeInner.ColumnName;
-                        allowNull = sheetColumnAttributeInner.AllowNull;
+                        var allowNull = sheetColumnAttributeInner.AllowNull;
+
+                        properties.Add(new ColumnDescription(columnName, propertyInfo, true) {AllowNull = allowNull});
                     }
                     else
                     {
                         columnName = propertyInfo.Name;
+                        properties.Add(new ColumnDescription(columnName, propertyInfo));
                     }
-
-                    properties.Add(new ColumnDescription(columnName, propertyInfo) {AllowNull = allowNull});
                 }
 
                 //有效的列
@@ -158,11 +165,20 @@ namespace FrHello.NetLib.Core.Framework
 
                 foreach (var property in properties)
                 {
+                    //添加了明确列名找不到的情况需要提示
+
                     var column = worksheet.GetColumnNum(property.ColumnName);
                     if (column > 0)
                     {
                         property.ColumnNum = column;
                         validColums.Add(property);
+                    }
+                    else if(property.IsNeed)
+                    {
+                        //如果必须要该列又不存在则抛出异常
+                        var excelColumnNotFoundException = new ExcelColumnNotFoundException(property.ColumnName, excelPackage.File,
+                            worksheet.Name);
+                        throw excelColumnNotFoundException;
                     }
                 }
 
@@ -183,8 +199,16 @@ namespace FrHello.NetLib.Core.Framework
                             }
                             else
                             {
-                                value = TypeHelper.ChangeType(worksheet.Cells[i, columnDescription.ColumnNum].Value,
-                                    columnDescription.PropertyInfo.PropertyType);
+                                try
+                                {
+                                    value = TypeHelper.ChangeType(worksheet.Cells[i, columnDescription.ColumnNum].Value,
+                                        columnDescription.PropertyInfo.PropertyType);
+                                }
+                                catch (Exception e)
+                                {
+                                    throw new ExcelCellChangeTypeException(i, columnDescription.ColumnNum,
+                                        excelPackage.File, worksheet.Name, e);
+                                }
                             }
 
                             if (value == null || (value is string valueStr && string.IsNullOrWhiteSpace(valueStr)))
@@ -192,8 +216,8 @@ namespace FrHello.NetLib.Core.Framework
                                 //判断是否有空特性
                                 if (!columnDescription.AllowNull)
                                 {
-                                    throw new InvalidOperationException(
-                                        $"Table:{worksheet.Name}  Row:{i} Column:{columnDescription.ColumnNum} not allow null");
+                                    throw new ExcelCellNotAllowNullException(i, columnDescription.ColumnNum,
+                                        excelPackage.File, worksheet.Name);
                                 }
                             }
 
@@ -205,12 +229,12 @@ namespace FrHello.NetLib.Core.Framework
                 }
                 else
                 {
-                    throw new InvalidOperationException($"表{sheetName}没有能够转换的列数据");
+                    throw new InvalidOperationException($"Sheet name:{sheetName} not found any columns to convert.");
                 }
             }
             else
             {
-                throw new InvalidOperationException($"没有找到对应的表名{sheetName}");
+                throw new InvalidOperationException($"Sheet name: {sheetName} not found.");
             }
         }
 
@@ -257,10 +281,17 @@ namespace FrHello.NetLib.Core.Framework
 
             public PropertyInfo PropertyInfo { get; }
 
-            public ColumnDescription(string columnName, PropertyInfo propertyInfo)
+            /// <summary>
+            /// 是否是必须的列
+            /// </summary>
+            public bool IsNeed { get; }
+
+            public ColumnDescription(string columnName, PropertyInfo propertyInfo, bool isNeed = false)
             {
                 ColumnName = columnName;
                 PropertyInfo = propertyInfo;
+
+                IsNeed = isNeed;
             }
         }
     }
