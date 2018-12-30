@@ -74,6 +74,20 @@ namespace NetLib.Core.Test.Serialization.Test
         }
 
         /// <summary>
+        /// UnicodeToStringTest
+        /// </summary>
+        [Fact]
+        public void UnicodeToStringTest()
+        {
+            var s = "freeTest";
+
+            var unicode = @"\u0066\u0072\u0065\u0065\u0054\u0065\u0073\u0074";
+
+            Assert.Equal(unicode, s.ToUnicode());
+            Assert.Equal(s, unicode.ToStringFromUnicode());
+        }
+
+        /// <summary>
         /// XmlSerializationTest
         /// </summary>
         [Fact]

@@ -275,5 +275,47 @@ namespace FrHello.NetLib.Core.Serialization
         {
             return bytes == null ? null : new MemoryStream(bytes);
         }
+
+        /// <summary>
+        /// 转换为Unicode编码
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <returns>Unicode编码的字符串</returns>
+        public static string ToUnicode(this string str)
+        {
+            var bytes = Encoding.Unicode.GetBytes(str);
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < bytes.Length; i += 2)
+            {
+                stringBuilder.AppendFormat("\\u{0:x2}{1:x2}", bytes[i + 1], bytes[i]);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// 将Unicode字符串转换为明文
+        /// </summary>
+        /// <param name="unicodeStr">Unicode字符串</param>
+        /// <returns>明文字符串</returns>
+        public static string ToStringFromUnicode(this string unicodeStr)
+        {
+            var dst = "";
+            var src = unicodeStr;
+            var len = unicodeStr.Length / 6;
+            for (var i = 0; i <= len - 1; i++)
+            {
+                var str = src.Substring(0, 6).Substring(2);
+                src = src.Substring(6);
+                var bytes = new byte[2];
+                bytes[1] = byte.Parse(int.Parse(str.Substring(0, 2), System.Globalization.NumberStyles.HexNumber)
+                    .ToString());
+                bytes[0] = byte.Parse(int.Parse(str.Substring(2, 2), System.Globalization.NumberStyles.HexNumber)
+                    .ToString());
+                dst += Encoding.Unicode.GetString(bytes);
+            }
+
+            return dst;
+        }
     }
 }
