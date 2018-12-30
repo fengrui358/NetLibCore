@@ -53,7 +53,7 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         {
             base.OnAttached();
 
-            AssociatedObject.MouseLeftButtonDown += AssociatedObjectOnMouseLeftButtonDown;
+            AssociatedObject.PreviewMouseDoubleClick += AssociatedObjectOnMouseLeftButtonDown;
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         {
             base.OnDetaching();
 
-            AssociatedObject.MouseLeftButtonDown -= AssociatedObjectOnMouseLeftButtonDown;
+            AssociatedObject.PreviewMouseDoubleClick -= AssociatedObjectOnMouseLeftButtonDown;
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         /// <param name="e"></param>
         private void AssociatedObjectOnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Command != null && e.ClickCount == 2)
+            if (Command != null && e.LeftButton == MouseButtonState.Pressed)
             {
                 var element = e.MouseDevice.DirectlyOver;
                 if (element is FrameworkElement frameworkElement && sender is ItemsControl itemsControl)
