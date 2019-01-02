@@ -106,7 +106,7 @@ namespace FrHello.NetLib.Core.Framework
                 throw new ArgumentNullException(nameof(excelPackage));
             }
 
-            if (!excelPackage.File.Exists)
+            if (excelPackage.File != null && !excelPackage.File.Exists)
             {
                 throw new FileNotFoundException($"{excelPackage.File.FullName} not found.");
             }
