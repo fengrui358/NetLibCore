@@ -9,7 +9,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core mvx utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
