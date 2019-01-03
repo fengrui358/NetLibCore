@@ -73,6 +73,7 @@ namespace FrHello.NetLib.Core.Mvx
         {
             if (!_viewAppearingFirstTime)
             {
+                _viewAppearingFirstTime = true;
                 ViewAppearingFirstTime();
             }
 
@@ -86,6 +87,7 @@ namespace FrHello.NetLib.Core.Mvx
         {
             if (!_viewAppearedFirstTime)
             {
+                _viewAppearedFirstTime = true;
                 ViewAppearedFirstTime();
             }
 
@@ -178,6 +180,7 @@ namespace FrHello.NetLib.Core.Mvx
         {
             if (!_viewAppearingFirstTime)
             {
+                _viewAppearingFirstTime = true;
                 ViewAppearingFirstTime();
             }
 
@@ -191,6 +194,7 @@ namespace FrHello.NetLib.Core.Mvx
         {
             if (!_viewAppearedFirstTime)
             {
+                _viewAppearedFirstTime = true;
                 ViewAppearedFirstTime();
             }
 
