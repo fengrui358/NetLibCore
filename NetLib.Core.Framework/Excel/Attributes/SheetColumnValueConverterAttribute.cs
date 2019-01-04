@@ -12,7 +12,7 @@ namespace FrHello.NetLib.Core.Framework.Excel.Attributes
         /// <summary>
         /// 构造
         /// </summary>
-        /// <param name="simpleValueConverterType">需要继承ISimpleValueConverter接口</param>
+        /// <param name="simpleValueConverterType">需要继承ISimpleValueConverter接口或者需要继承SimpleValueConverter</param>
         public SheetColumnValueConverterAttribute(Type simpleValueConverterType)
         {
             if (simpleValueConverterType == null)

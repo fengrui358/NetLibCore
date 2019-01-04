@@ -83,7 +83,7 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 页面呈现后
         /// </summary>
-        public override void ViewDisappeared()
+        public override void ViewAppeared()
         {
             if (!_viewAppearedFirstTime)
             {
@@ -91,7 +91,7 @@ namespace FrHello.NetLib.Core.Mvx
                 ViewAppearedFirstTime();
             }
 
-            base.ViewDisappeared();
+            base.ViewAppeared();
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 页面呈现后
         /// </summary>
-        public override void ViewDisappeared()
+        public override void ViewAppeared()
         {
             if (!_viewAppearedFirstTime)
             {
@@ -198,7 +198,7 @@ namespace FrHello.NetLib.Core.Mvx
                 ViewAppearedFirstTime();
             }
 
-            base.ViewDisappeared();
+            base.ViewAppeared();
         }
 
         /// <summary>
