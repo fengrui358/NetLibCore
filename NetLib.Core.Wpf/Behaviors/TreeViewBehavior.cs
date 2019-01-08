@@ -31,6 +31,9 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedItemChanged));
 
+        /// <summary>
+        /// 自动展开选中项
+        /// </summary>
         public static readonly DependencyProperty ExpandSelectedProperty =
             DependencyProperty.Register(nameof(ExpandSelected), typeof(bool),
                 typeof(TreeViewBehavior),
