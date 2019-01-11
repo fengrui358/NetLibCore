@@ -10,6 +10,7 @@ namespace FrHello.NetLib.Core.Wpf
     /// </summary>
     public class BaseView : MvxWpfView
     {
+        private bool _isLoadedFirstTime;
         private IMvxLog _log;
 
         /// <summary>
@@ -30,6 +31,29 @@ namespace FrHello.NetLib.Core.Wpf
                 return _log;
             }
         }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public BaseView()
+        {
+            Loaded += (sender, args) =>
+            {
+                if (!_isLoadedFirstTime)
+                {
+                    _isLoadedFirstTime = true;
+
+                    LoadedFirstTime();
+                }
+            };
+        }
+
+        /// <summary>
+        /// 第一次加载
+        /// </summary>
+        protected virtual void LoadedFirstTime()
+        {
+        }
     }
 
     /// <summary>
@@ -38,6 +62,7 @@ namespace FrHello.NetLib.Core.Wpf
     /// <typeparam name="TViewModel">ViewModel</typeparam>
     public class BaseView<TViewModel> : MvxWpfView<TViewModel> where TViewModel : class, IMvxViewModel
     {
+        private bool _isLoadedFirstTime;
         private IMvxLog _log;
 
         /// <summary>
@@ -57,6 +82,29 @@ namespace FrHello.NetLib.Core.Wpf
 
                 return _log;
             }
+        }
+
+        /// <summary>
+        /// 构造
+        /// </summary>
+        public BaseView()
+        {
+            Loaded += (sender, args) =>
+            {
+                if (!_isLoadedFirstTime)
+                {
+                    _isLoadedFirstTime = true;
+
+                    LoadedFirstTime();
+                }
+            };
+        }
+
+        /// <summary>
+        /// 第一次加载
+        /// </summary>
+        protected virtual void LoadedFirstTime()
+        {
         }
     }
 }
