@@ -1,4 +1,5 @@
-﻿using FrHello.NetLib.Core;
+﻿using System;
+using FrHello.NetLib.Core;
 using Xunit;
 
 namespace NetLib.Core.Test.String.Test
@@ -38,6 +39,22 @@ namespace NetLib.Core.Test.String.Test
             string strB = "abc";
             string strC = "abc";
             Assert.True(strB.EqualAbsolute(strC));
+        }
+
+        /// <summary>
+        /// TimeSpanFormatTest
+        /// </summary>
+        [Fact]
+        public void TimeSpanFormatTest()
+        {
+            var seconds = 14;
+            Assert.Equal("00:14", TimeSpanExtensions.TimeSpanFormat(seconds));
+
+            seconds = 76;
+            Assert.Equal("01:16", TimeSpanExtensions.TimeSpanFormat(seconds));
+
+            seconds = 5698;
+            Assert.Equal("01:34:58", TimeSpanExtensions.TimeSpanFormat(seconds));
         }
     }
 }

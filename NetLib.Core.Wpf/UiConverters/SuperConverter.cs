@@ -33,10 +33,9 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
             new EnumToItemsSourceConverter();
 
         /// <summary>
-        /// 枚举描述和枚举值之间转换
+        /// 日期显示格式转换
         /// </summary>
-        public static EnumDescriptionToEnumValueConverter EnumDescriptionToEnumValueConverter =
-            new EnumDescriptionToEnumValueConverter();
+        public static DateTimeDisplayConverter DateTimeDisplayConverter = new DateTimeDisplayConverter();
     }
 
     /// <summary>

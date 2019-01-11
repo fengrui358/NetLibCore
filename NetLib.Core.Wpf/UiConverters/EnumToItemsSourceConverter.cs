@@ -9,6 +9,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// <summary>
     /// 枚举值转描述数据源
     /// </summary>
+    [ValueConversion(typeof(System.Enum), typeof(IEnumerable<string>))]
     public class EnumToItemsSourceConverter : IValueConverter
     {
         /// <inheritdoc />

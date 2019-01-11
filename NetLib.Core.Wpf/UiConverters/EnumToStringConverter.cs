@@ -8,6 +8,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// <summary>
     /// 枚举转描述
     /// </summary>
+    [ValueConversion(typeof(System.Enum), typeof(string))]
     public class EnumToStringConverter : IValueConverter
     {
         /// <inheritdoc />
@@ -24,7 +25,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string enumString && targetType.IsEnum)
+            if (value is string enumString && !string.IsNullOrWhiteSpace(enumString) && targetType.IsEnum)
             {
                 var enumValues = System.Enum.GetValues(targetType);
 
