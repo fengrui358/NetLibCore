@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using MvvmCross;
+using MvvmCross.IoC;
 using MvvmCross.Logging;
 using MvvmCross.Platforms.Wpf.Core;
 using MvvmCross.Platforms.Wpf.Presenters;
@@ -49,9 +49,10 @@ namespace FrHello.NetLib.Core.Wpf
         /// <param name="mvxAppStart">程序启动控制</param>
         /// <param name="viewAssemblies">视图程序集</param>
         /// <param name="viewModelAssemblies">ViewModel程序集</param>
+        /// <param name="serviceAssemblies">提供服务工具的程序集，更具服务工具的接口注册为单例（服务的名称必须以Service结尾）</param>
         public static void Init<TMainWindow, TViewModel>(MvxWpfViewPresenter mvxViewPresenter = null,
             IMvxWpfSetup mvxSetup = null, IMvxApplication mvxApplication = null, IMvxAppStart mvxAppStart = null, Assembly[] viewAssemblies = null,
-            Assembly[] viewModelAssemblies = null) where TMainWindow : Window where TViewModel : MvxViewModel
+            Assembly[] viewModelAssemblies = null, Assembly[] serviceAssemblies = null) where TMainWindow : Window where TViewModel : MvxViewModel
         {
             var mainWindow = Activator.CreateInstance<TMainWindow>();
 
@@ -71,6 +72,17 @@ namespace FrHello.NetLib.Core.Wpf
 
             var start = Mvx.IoCProvider.Resolve<IMvxAppStart>();
             start.Start();
+
+            if (serviceAssemblies != null)
+            {
+                foreach (var serviceAssembly in serviceAssemblies)
+                {
+                    serviceAssembly.CreatableTypes()
+                        .EndingWith("Service")
+                        .AsInterfaces()
+                        .RegisterAsLazySingleton();
+                }
+            }
 
             mainWindow.Show();
         }
