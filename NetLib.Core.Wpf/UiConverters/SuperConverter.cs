@@ -14,28 +14,33 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <summary>
         /// 超级转换
         /// </summary>
-        public static SuperConverter SuperConverter = new SuperConverter();
+        public static SuperConverter SuperConverter { get; } = new SuperConverter();
 
         /// <summary>
         /// 超级转换（反向）
         /// </summary>
-        public static SuperConverterInverse SuperConverterInverse = new SuperConverterInverse();
+        public static SuperConverterInverse SuperConverterInverse { get; } = new SuperConverterInverse();
 
         /// <summary>
         /// 枚举值转换器
         /// </summary>
-        public static EnumToStringConverter EnumToStringConverter = new EnumToStringConverter();
+        public static EnumToStringConverter EnumToStringConverter { get; } = new EnumToStringConverter();
 
         /// <summary>
         /// 枚举类型转数据源
         /// </summary>
-        public static EnumToItemsSourceConverter EnumToItemsSourceConverter =
+        public static EnumToItemsSourceConverter EnumToItemsSourceConverter { get; } =
             new EnumToItemsSourceConverter();
 
         /// <summary>
         /// 日期显示格式转换
         /// </summary>
-        public static DateTimeDisplayConverter DateTimeDisplayConverter = new DateTimeDisplayConverter();
+        public static DateTimeDisplayConverter DateTimeDisplayConverter { get; } = new DateTimeDisplayConverter();
+
+        /// <summary>
+        /// 时间显示格式转换
+        /// </summary>
+        public static TimeSpanDisplayConverter TimeSpanDisplayConverter { get; } = new TimeSpanDisplayConverter();
     }
 
     /// <summary>
@@ -153,7 +158,8 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter">比较参数</param>
         /// <param name="culture">文化</param>
         /// <returns></returns>
-        internal static object Convert(bool converterValue, object value, Type targetType, object parameter, CultureInfo culture)
+        internal static object Convert(bool converterValue, object value, Type targetType, object parameter,
+            CultureInfo culture)
         {
             //判断结果能否进行转换
             if (CanAutoConverterType(targetType))
