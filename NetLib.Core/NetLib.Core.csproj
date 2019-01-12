@@ -10,15 +10,17 @@
     <Description>Dotnet core utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core utility</PackageTags>
-    <Version>1.0.13</Version>
+    <Version>1.0.14</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\NetLib.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\NetLib.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
