@@ -29,7 +29,7 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="address">IP地址</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
         public static bool Ping(IPAddress address, int timeout)
         {
@@ -57,7 +57,7 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
         public static async Task<bool> PingAsync(string hostNameOrAddress, int timeout)
         {
@@ -86,7 +86,7 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="address">IP地址</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
         public static async Task<bool> PingAsync(IPAddress address, int timeout)
         {
@@ -114,7 +114,7 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
         public static bool Ping(string hostNameOrAddress, int timeout)
         {
@@ -149,9 +149,9 @@ namespace FrHello.NetLib.Core.Net
         /// </summary>
         /// <param name="address">地址</param>
         /// <param name="port">端口</param>
-        /// <param name="timeoutMillionSeconds">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>端口是否正在使用</returns>
-        public static bool CheckRemotePort(IPAddress address, int port, int timeoutMillionSeconds)
+        public static bool CheckRemotePort(IPAddress address, int port, int timeout)
         {
             if (port < 0 || port > 65535)
             {
@@ -163,7 +163,7 @@ namespace FrHello.NetLib.Core.Net
                 using (var client = new TcpClient())
                 {
                     var result = client.BeginConnect(address, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(timeoutMillionSeconds);
+                    var success = result.AsyncWaitHandle.WaitOne(timeout);
                     if (!success)
                     {
                         return false;

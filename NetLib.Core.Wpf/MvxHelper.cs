@@ -70,9 +70,6 @@ namespace FrHello.NetLib.Core.Wpf
             mvxSetup.InitializePrimary();
             mvxSetup.InitializeSecondary();
 
-            var start = Mvx.IoCProvider.Resolve<IMvxAppStart>();
-            start.Start();
-
             if (serviceAssemblies != null)
             {
                 foreach (var serviceAssembly in serviceAssemblies)
@@ -83,6 +80,9 @@ namespace FrHello.NetLib.Core.Wpf
                         .RegisterAsLazySingleton();
                 }
             }
+
+            var start = Mvx.IoCProvider.Resolve<IMvxAppStart>();
+            start.Start();
 
             mainWindow.Show();
         }
