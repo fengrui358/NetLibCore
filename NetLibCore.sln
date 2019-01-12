@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Mvx", "NetLib.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Compression", "NetLib.Core.Compression\NetLib.Core.Compression.csproj", "{245F289C-469F-4373-A64F-54A0E430CC31}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetLib.Core.Security", "NetLib.Core.Security\NetLib.Core.Security.csproj", "{D47C54D6-99AF-4F72-BA34-268D313A1090}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{245F289C-469F-4373-A64F-54A0E430CC31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{245F289C-469F-4373-A64F-54A0E430CC31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{245F289C-469F-4373-A64F-54A0E430CC31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D47C54D6-99AF-4F72-BA34-268D313A1090}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47C54D6-99AF-4F72-BA34-268D313A1090}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47C54D6-99AF-4F72-BA34-268D313A1090}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47C54D6-99AF-4F72-BA34-268D313A1090}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

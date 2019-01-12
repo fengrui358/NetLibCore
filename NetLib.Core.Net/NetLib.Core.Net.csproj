@@ -8,18 +8,21 @@
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Product>NetLib.Core.Net</Product>
-    <Description>Dotnet core Net utility</Description>
+    <Description>Dotnet core net utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <PackageTags>Dotnet core Net utility</PackageTags>
-    <Version>1.0.2</Version>
+    <PackageTags>Dotnet core net utility</PackageTags>
+    <Product>NetLib.Core.Net</Product>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

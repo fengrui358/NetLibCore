@@ -2,6 +2,9 @@
 
 namespace FrHello.NetLib.Core.Serialization.DateTime
 {
+    /// <summary>
+    /// 日期显示格式化辅助方法
+    /// </summary>
     public static class DateTimeSerializationExtensions
     {
         private static readonly System.DateTime Time19700101 = new System.DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

@@ -441,6 +441,9 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
             return null;
         }
 
+        /// <summary>
+        /// 释放
+        /// </summary>
         protected override void OnDetaching()
         {
             base.OnDetaching();

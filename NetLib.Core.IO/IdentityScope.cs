@@ -53,6 +53,12 @@ namespace FrHello.NetLib.Core.IO
 
         private bool _disposed;
 
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="sUsername">用户名</param>
+        /// <param name="sDomain">域名</param>
+        /// <param name="sPassword">密码</param>
         public IdentityScope(string sUsername, string sDomain, string sPassword)
         {
             // initialize tokens  
@@ -89,6 +95,10 @@ namespace FrHello.NetLib.Core.IO
             }
         }
 
+        /// <summary>
+        /// 释放
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -98,6 +108,9 @@ namespace FrHello.NetLib.Core.IO
             }
         }
 
+        /// <summary>
+        /// 释放
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);

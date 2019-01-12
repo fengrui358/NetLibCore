@@ -2,8 +2,12 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace FrHello.NetLib.Core
 {
+    /// <summary>
+    /// 数据流扩展辅助方法
+    /// </summary>
     public static class StreamExtensions
     {
         /// <summary>
