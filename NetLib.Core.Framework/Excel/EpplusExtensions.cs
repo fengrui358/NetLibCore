@@ -97,8 +97,8 @@ namespace FrHello.NetLib.Core.Framework
         /// 从Excel中获取特定的类型数据集合
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
-        /// <param name="excelPackage"></param>
-        /// <returns></returns>
+        /// <param name="excelPackage">工作表</param>
+        /// <returns>填充后的集合对象</returns>
         public static IEnumerable<T> FillDatas<T>(this ExcelPackage excelPackage)
         {
             if (excelPackage == null)
