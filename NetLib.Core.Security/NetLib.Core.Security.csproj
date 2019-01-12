@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <RootNamespace>FrHello.NetLib.Core.Framework</RootNamespace>
-    <PackageId>FrHello.NetLib.Core.Framework</PackageId>
+    <PackageId>FrHello.NetLib.Core.Security</PackageId>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
-    <Description>Dotnet core framework utility</Description>
+    <Description>Dotnet core security utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <PackageTags>Dotnet core Framework utility</PackageTags>
-    <Product>NetLib.Core.Framework</Product>
-    <Version>1.0.13</Version>
+    <PackageTags>Dotnet core security utility</PackageTags>
+    <RootNamespace>FrHello.NetLib.Core.Security</RootNamespace>
+    <Product>NetLib.Core.Security</Product>
+    <Version>1.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -23,15 +23,5 @@
     <LangVersion>latest</LangVersion>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="EPPlus" Version="4.5.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
-    <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
-    <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
-  </ItemGroup>
 
 </Project>

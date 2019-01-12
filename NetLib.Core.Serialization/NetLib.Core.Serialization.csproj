@@ -10,15 +10,18 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core serialization utility</PackageTags>
     <PackageId>FrHello.NetLib.Core.Serialization</PackageId>
-    <Version>1.0.4</Version>
+    <Product>NetLib.Core.Serialization</Product>
+    <Version>1.0.5</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

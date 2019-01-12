@@ -1,5 +1,8 @@
 ﻿namespace FrHello.NetLib.Core.Interfaces
 {
+    /// <summary>
+    /// 简单的类型转换
+    /// </summary>
     public interface ISimpleValueConverter
     {
         /// <summary>
@@ -24,6 +27,11 @@
         /// <returns>目标值</returns>
         public abstract TDestination ConvertFun(TSource source);
 
+        /// <summary>
+        /// 转换
+        /// </summary>
+        /// <param name="source"></param>
+        /// <returns></returns>
         public object Convert(object source)
         {
             return ConvertFun((TSource) source);

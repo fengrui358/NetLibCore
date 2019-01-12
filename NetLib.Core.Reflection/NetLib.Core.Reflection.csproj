@@ -10,17 +10,20 @@
     <Description>Dotnet core reflection utility</Description>
     <PackageTags>Dotnet core reflection utility</PackageTags>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.3</Version>
+    <Product>NetLib.Core.Reflection</Product>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\NetLib.Core.Reflection.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\NetLib.Core.Reflection.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

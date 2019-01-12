@@ -23,6 +23,9 @@ namespace FrHello.NetLib.Core
         
     }
 
+    /// <summary>
+    /// 时间显示格式化
+    /// </summary>
     public static class TimeSpanExtensions
     {
         /// <summary>
