@@ -149,9 +149,9 @@ namespace FrHello.NetLib.Core.Net
         /// </summary>
         /// <param name="address">地址</param>
         /// <param name="port">端口</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeoutMillionSeconds">超时(毫秒)</param>
         /// <returns>端口是否正在使用</returns>
-        public static bool CheckRemotePort(IPAddress address, int port, int timeout)
+        public static bool CheckRemotePort(IPAddress address, int port, int timeoutMillionSeconds)
         {
             if (port < 0 || port > 65535)
             {
@@ -163,7 +163,7 @@ namespace FrHello.NetLib.Core.Net
                 using (var client = new TcpClient())
                 {
                     var result = client.BeginConnect(address, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(timeout);
+                    var success = result.AsyncWaitHandle.WaitOne(timeoutMillionSeconds);
                     if (!success)
                     {
                         return false;
