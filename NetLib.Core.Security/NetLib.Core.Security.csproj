@@ -24,4 +24,8 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(Product).xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
+  </ItemGroup>
+
 </Project>

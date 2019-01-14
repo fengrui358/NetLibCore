@@ -16,5 +16,10 @@ namespace FrHello.NetLib.Core.Serialization
         /// 是否缩进Xml输出，使其格式更直观好看
         /// </summary>
         public static bool XmlIndentFormat { get; set; } = true;
+
+        /// <summary>
+        /// 分段尺寸，默认1024Kb
+        /// </summary>
+        public static int SegmentSize { get; set; } = 9 * 1024 * 1024;
     }
 }

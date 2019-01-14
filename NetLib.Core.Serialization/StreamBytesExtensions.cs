@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FrHello.NetLib.Core.Serialization
 {
@@ -49,7 +53,12 @@ namespace FrHello.NetLib.Core.Serialization
                 }
             }
 
-            return bytes == null ? null : encoding.GetString(bytes);
+            if (bytes == null)
+            {
+                return null;
+            }
+
+            return encoding.GetString(bytes);
         }
 
         /// <summary>
@@ -212,8 +221,9 @@ namespace FrHello.NetLib.Core.Serialization
         /// 流转字节数组
         /// </summary>
         /// <param name="stream">流</param>
+        /// <param name="progress">进度通知</param>
         /// <returns>字节数组</returns>
-        public static byte[] ToBytes(this Stream stream)
+        public static byte[] ToBytes(this Stream stream, IProgress<double> progress = null)
         {
             if (stream == null)
             {
@@ -227,7 +237,44 @@ namespace FrHello.NetLib.Core.Serialization
             }
 
             var bytes = new byte[stream.Length];
-            stream.Read(bytes, 0, bytes.Length);
+
+            if (progress != null)
+            {
+                if (stream.Length > GlobalSerializationOptions.SegmentSize)
+                {
+                    var segmentCount = (int)Math.Ceiling(bytes.Length / (double)GlobalSerializationOptions.SegmentSize);
+
+                    if (segmentCount > 1)
+                    {
+                        var totalLength = 0;
+
+                        for (int i = 0; i < segmentCount; i++)
+                        {
+                            var startIndex = i * GlobalSerializationOptions.SegmentSize;
+                            var endIndex = startIndex + GlobalSerializationOptions.SegmentSize;
+                            if (endIndex > bytes.Length)
+                            {
+                                endIndex = bytes.Length;
+                            }
+
+                            var length = endIndex - startIndex;
+                            stream.Read(bytes, startIndex, length);
+                            totalLength = totalLength + length;
+
+                            progress.Report(totalLength / (double)bytes.Length);
+                        }
+                    }
+                    else
+                    {
+                        progress.Report(1);
+                    }
+                }
+            }
+            else
+            {
+                stream.Read(bytes, 0, bytes.Length);
+            }
+
             stream.Seek(position, SeekOrigin.Begin);
 
             return bytes;
