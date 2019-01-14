@@ -14,10 +14,11 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingTest
         /// </summary>
-        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        //[Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        [Fact]
         public void PingTest()
         {
-            Assert.True(NetHelper.PingAsync("baidu.com").GetAwaiter().GetResult());
+            Assert.True(NetHelper.PingAsync("http://baidu.com").GetAwaiter().GetResult());
             Assert.True(NetHelper.PingAsync("127.0.0.1").GetAwaiter().GetResult());
         }
 
@@ -27,7 +28,7 @@ namespace NetLib.Core.Test.Net.Test
         [Fact]
         public void CheckRemotePortTest()
         {
-            Assert.True(NetHelper.CheckRemotePortAsync("baidu.com", 80).GetAwaiter().GetResult());
+            Assert.True(NetHelper.CheckRemotePortAsync("http://baidu.com", 80).GetAwaiter().GetResult());
         }
 
         /// <summary>
