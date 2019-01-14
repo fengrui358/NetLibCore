@@ -18,8 +18,8 @@ namespace FrHello.NetLib.Core.Serialization
         public static bool XmlIndentFormat { get; set; } = true;
 
         /// <summary>
-        /// 分段尺寸，默认1024Kb
+        /// 分段尺寸，默认8mb
         /// </summary>
-        public static int SegmentSize { get; set; } = 9 * 1024 * 1024;
+        public static int SegmentSize { get; set; } = 8 * 1024 * 1024;
     }
 }

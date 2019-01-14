@@ -230,8 +230,7 @@ namespace FrHello.NetLib.Core.Serialization
                 return null;
             }
 
-            var position = stream.Position;
-            if (position != 0L)
+            if (stream.Position != 0L && stream.CanSeek)
             {
                 stream.Seek(0L, SeekOrigin.Begin);
             }
@@ -275,7 +274,10 @@ namespace FrHello.NetLib.Core.Serialization
                 stream.Read(bytes, 0, bytes.Length);
             }
 
-            stream.Seek(position, SeekOrigin.Begin);
+            if (stream.Position != 0L && stream.CanSeek)
+            {
+                stream.Seek(0L, SeekOrigin.Begin);
+            }
 
             return bytes;
         }
@@ -321,6 +323,31 @@ namespace FrHello.NetLib.Core.Serialization
         public static Stream ToStream(this byte[] bytes)
         {
             return bytes == null ? null : new MemoryStream(bytes);
+        }
+
+        /// <summary>
+        /// 字节数组转十六进制字符串
+        /// </summary>
+        /// <param name="bytes">字节数组</param>
+        /// <returns>流</returns>
+        public static string ToHex(this byte[] bytes)
+        {
+            if (bytes == null || !bytes.Any())
+            {
+                return string.Empty;
+            }
+
+            var sBuilder = new StringBuilder();
+
+            // Loop through each byte of the hashed data 
+            // and format each one as a hexadecimal string.
+            foreach (var b in bytes)
+            {
+                sBuilder.Append(b.ToString("X2"));
+            }
+
+            // Return the hexadecimal string.
+            return sBuilder.ToString();
         }
 
         /// <summary>
