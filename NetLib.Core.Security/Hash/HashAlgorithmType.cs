@@ -3,7 +3,7 @@
     /// <summary>
     /// 可使用的Hash算法类型
     /// </summary>
-    public enum HashAlgorithmType
+    internal enum HashAlgorithmType
     {
         /// <summary>
         /// MD5

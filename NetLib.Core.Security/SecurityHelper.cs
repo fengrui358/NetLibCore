@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FrHello.NetLib.Core.Security.Hash;
 
 namespace FrHello.NetLib.Core.Security
 {
@@ -9,5 +7,9 @@ namespace FrHello.NetLib.Core.Security
     /// </summary>
     public static class SecurityHelper
     {
+        /// <summary>
+        /// Hash算法
+        /// </summary>
+        public static HashAlgorithms Hash { get; } = new HashAlgorithms();
     }
 }
