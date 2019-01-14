@@ -67,7 +67,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = await ping.SendPingAsync(hostNameOrAddress, timeout);
+            var pingReply = await ping.SendPingAsync(RemoveProtocolHead(hostNameOrAddress), timeout);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -124,7 +124,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = ping.Send(hostNameOrAddress, timeout);
+            var pingReply = ping.Send(RemoveProtocolHead(hostNameOrAddress), timeout);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -308,7 +308,7 @@ namespace FrHello.NetLib.Core.Net
                 {
                     using (var client = new TcpClient())
                     {
-                        var result = client.BeginConnect(hostNameOrAddress, port, null, null);
+                        var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress), port, null, null);
                         var success = result.AsyncWaitHandle.WaitOne(timeout);
                         if (!success)
                         {
@@ -379,5 +379,30 @@ namespace FrHello.NetLib.Core.Net
         }
 
         #endregion
+
+        #region RemoveProtocolHead
+
+        /// <summary>
+        /// 移除地址前面的协议头
+        /// </summary>
+        /// <param name="hostNameOrAddress">地址</param>
+        /// <returns></returns>
+        public static string RemoveProtocolHead(string hostNameOrAddress)
+        {
+            if (string.IsNullOrWhiteSpace(hostNameOrAddress))
+            {
+                throw new ArgumentNullException(nameof(hostNameOrAddress));
+            }
+
+            var symbolIndex = hostNameOrAddress.IndexOf("://", StringComparison.Ordinal);
+            if (symbolIndex > 0)
+            {
+                hostNameOrAddress = hostNameOrAddress.Remove(0, symbolIndex + "://".Length);
+            }
+
+            return hostNameOrAddress;
+
+            #endregion
+        }
     }
 }
