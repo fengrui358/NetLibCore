@@ -17,9 +17,9 @@ namespace NetLib.Core.Test.Enum.Test
         [Fact]
         public void EnumDescriptionTest()
         {
-            var ma = new MockClass{EnumTest = TestEnum.A};
-            var mb = new MockClass{EnumTest = TestEnum.B};
-            var mc = new MockClass { EnumTest = TestEnum.C };
+            var ma = new MockClass {EnumTest = TestEnum.A};
+            var mb = new MockClass {EnumTest = TestEnum.B};
+            var mc = new MockClass {EnumTest = TestEnum.C};
 
             var a = ma.EnumTest.GetDescription();
             var b = mb.EnumTest.GetDescription();
@@ -36,12 +36,14 @@ namespace NetLib.Core.Test.Enum.Test
         [Fact]
         public void EnumCombineTest_ThrowException()
         {
-            Assert.Throws<ArgumentException>(() => {
+            Assert.Throws<ArgumentException>(() =>
+            {
                 var create = Permission.Create;
                 create.Combine(Permission.Delete);
             });
-            
-            Assert.Throws<ArgumentException>(() => {
+
+            Assert.Throws<ArgumentException>(() =>
+            {
                 var create = Permission.Create;
                 create.Combine(PermissionWithFlag.Delete);
             });
@@ -55,7 +57,7 @@ namespace NetLib.Core.Test.Enum.Test
         {
             var create = PermissionWithFlag.Create;
             var excepted = create | PermissionWithFlag.Update;
-            
+
             var actual = create.Combine(PermissionWithFlag.Update);
             Assert.Equal(excepted, actual);
 
@@ -121,14 +123,12 @@ namespace NetLib.Core.Test.Enum.Test
             /// <summary>
             /// A
             /// </summary>
-            [EnumDescription("ADescription")]
-            A,
+            [EnumDescription("ADescription")] A,
 
             /// <summary>
             /// B
             /// </summary>
-            [Description("DescriptionB")]
-            [EnumDescription("BDescription")]
+            [Description("DescriptionB")] [EnumDescription("BDescription")]
             B,
 
             /// <summary>

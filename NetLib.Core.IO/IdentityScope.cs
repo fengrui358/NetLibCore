@@ -57,7 +57,7 @@ namespace FrHello.NetLib.Core.IO
         /// 构造
         /// </summary>
         /// <param name="sUsername">用户名</param>
-        /// <param name="sDomain">域名</param>
+        /// <param name="sDomain">地址</param>
         /// <param name="sPassword">密码</param>
         public IdentityScope(string sUsername, string sDomain, string sPassword)
         {
