@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core Framework utility</PackageTags>
     <Product>NetLib.Core.Framework</Product>
-    <Version>1.0.14</Version>
+    <Version>1.0.15</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="4.5.2.1" />
+    <PackageReference Include="EPPlus" Version="4.5.3" />
   </ItemGroup>
 
   <ItemGroup>
