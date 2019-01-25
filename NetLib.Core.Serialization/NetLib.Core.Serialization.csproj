@@ -11,7 +11,7 @@
     <PackageTags>Dotnet core serialization utility</PackageTags>
     <PackageId>FrHello.NetLib.Core.Serialization</PackageId>
     <Product>NetLib.Core.Serialization</Product>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,6 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
