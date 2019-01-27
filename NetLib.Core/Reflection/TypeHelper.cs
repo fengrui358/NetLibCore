@@ -50,6 +50,24 @@ namespace FrHello.NetLib.Core.Reflection
         }
 
         /// <summary>
+        /// 类型是否有默认非静态Public无参构造函数
+        /// </summary>
+        /// <param name="type">类型</param>
+        /// <returns>是否有默认构造函数</returns>
+        public static bool HasDefaultConstructor(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            var constructors = type.GetConstructors()
+                .Where(s => s.IsPublic && !s.IsAbstract && !s.IsStatic && !s.GetParameters().Any());
+
+            return constructors.Any();
+        }
+
+        /// <summary>
         /// 根据类型改变值
         /// </summary>
         /// <param name="value">原始值</param>

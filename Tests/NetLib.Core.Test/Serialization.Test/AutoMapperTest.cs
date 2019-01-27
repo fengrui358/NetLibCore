@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using AutoMapper;
 using FrHello.NetLib.Core.Serialization;
 using Xunit;
 
@@ -28,8 +29,8 @@ namespace NetLib.Core.Test.Serialization.Test
                 }
             };
 
-            var dest = AutoMapperHelper.GetDefaultMapper(new[] {typeof(AutoMapperHelper).Assembly})
-                .Map<ObservableCollection<MockClass>>(sources);
+            var defaultMapper = AutoMapperHelper.GetDefaultMapper(new[] {typeof(AutoMapperHelper).Assembly});
+            var dest = defaultMapper.Map<ObservableCollection<MockClass>>(sources);
 
             Assert.Equal(sources.Count, dest.Count);
             Assert.NotSame(sources, dest);
@@ -39,6 +40,11 @@ namespace NetLib.Core.Test.Serialization.Test
             Assert.Equal(sources[0].MockItems.First().Str, dest[0].MockItems.First().Str);
             Assert.NotSame(sources[0].MockItems.Last(), dest[0].MockItems.Last());
             Assert.NotSame(sources[0].MockItems.First(), dest[0].MockItems.First());
+
+            var collectionNullSource = new MockClassDto();
+            var collectionNullDest = defaultMapper.Map<MockClass>(collectionNullSource);
+
+            Assert.NotNull(collectionNullDest.MockItems);
         }
     }
 

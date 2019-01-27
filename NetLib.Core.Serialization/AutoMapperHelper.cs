@@ -38,6 +38,7 @@ namespace FrHello.NetLib.Core.Serialization
 
                     cfg.AddConditionalObjectMapper().Where((s, d) => s.Name == $"{d.Name}Dto");
                     cfg.AddConditionalObjectMapper().Where((s, d) => $"{s.Name}Dto" == d.Name);
+                    //cfg.AllowNullCollections = true;
                 }
 
                 mapperConfigurationExpression?.Invoke(cfg);
