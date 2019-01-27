@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using AutoMapper;
 using FrHello.NetLib.Core.Serialization;
 using Xunit;
 
@@ -29,7 +25,8 @@ namespace NetLib.Core.Test.Serialization.Test
                 }
             };
 
-            var defaultMapper = AutoMapperHelper.GetDefaultMapper(new[] {typeof(AutoMapperHelper).Assembly});
+            var defaultMapper = AutoMapperHelper.GetDefaultMapper(new[] {typeof(AutoMapperTest).Assembly}).GetAwaiter()
+                .GetResult();
             var dest = defaultMapper.Map<ObservableCollection<MockClass>>(sources);
 
             Assert.Equal(sources.Count, dest.Count);
@@ -45,6 +42,10 @@ namespace NetLib.Core.Test.Serialization.Test
             var collectionNullDest = defaultMapper.Map<MockClass>(collectionNullSource);
 
             Assert.NotNull(collectionNullDest.MockItems);
+
+            var derivedClass = defaultMapper.Map<MockClassDerived>(collectionNullSource);
+            Assert.NotNull(derivedClass);
+            Assert.NotSame(collectionNullDest, derivedClass);
         }
     }
 
@@ -81,6 +82,15 @@ namespace NetLib.Core.Test.Serialization.Test
     {
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
         public string Str { get; set; }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
+    }
+
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+    public class MockClassDerived : MockClass
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
+    {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
+        public string Str2 { get; set; }
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
     }
 }
