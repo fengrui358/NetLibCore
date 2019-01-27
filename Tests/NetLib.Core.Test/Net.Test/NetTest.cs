@@ -24,7 +24,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// CheckRemotePortTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void CheckRemotePortTest()
         {
             Assert.True(NetHelper.CheckRemotePortAsync("baidu.com", 80).GetAwaiter().GetResult());
