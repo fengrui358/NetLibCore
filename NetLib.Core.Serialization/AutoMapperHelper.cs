@@ -36,110 +36,8 @@ namespace FrHello.NetLib.Core.Serialization
             {
                 var configuration = new MapperConfiguration(cfg =>
                 {
-                    //程序集中扫描处的原始类型，Value为其基类
-                    var originalCache = new Dictionary<Type, HashSet<Type>>();
-                    var originalCacheDto = new Dictionary<Type, HashSet<Type>>();
-
-                    //用类型的名字来缓存类型，方便进行名字查找
-                    var nameCache = new Dictionary<string, HashSet<Type>>();
-
-                    //已经映射过的进行记录，防止重复映射，Key作为映射的Source，Value的HashSet为映射时的Dest集合
-                    var mapedCache = new Dictionary<Type, HashSet<Type>>();
-
-                    foreach (var type in assemblies.SelectMany(s => s.GetTypes()))
-                    {
-                        if (IsDtoType(type))
-                        {
-                            AddToCache(type, ref originalCacheDto, ref nameCache);
-
-                            //将一组相关集合创建映射
-                            var types = new Type[originalCacheDto[type].Count + 1];
-                            types[0] = type;
-
-                            var index = 1;
-                            foreach (var typeItem in originalCacheDto[type])
-                            {
-                                types[index] = typeItem;
-                                index++;
-                            }
-
-                            CreateMap(cfg, types, ref mapedCache);
-                        }
-                        else
-                        {
-                            AddToCache(type, ref originalCache, ref nameCache);
-
-                            //将一组相关集合创建映射
-                            var types = new Type[originalCache[type].Count + 1];
-                            types[0] = type;
-
-                            var index = 1;
-                            foreach (var typeItem in originalCache[type])
-                            {
-                                types[index] = typeItem;
-                                index++;
-                            }
-
-                            CreateMap(cfg, types, ref mapedCache);
-                        }
-                    }
-
-                    //整理继承关系链条
-                    var combineCache = originalCache.ToDictionary(s => s.Key, v => v.Value);
-
-                    foreach (var keyValuePair in originalCacheDto)
-                    {
-                        combineCache.Add(keyValuePair.Key, keyValuePair.Value);
-                    }
-
-                    AddParentRelationship(ref combineCache);
-
-                    //将Dto和非Dto进行映射
-                    foreach (var dtoTypes in originalCacheDto)
-                    {
-                        //查找类型
-                        var dtotypes = new List<Type> { dtoTypes.Key };
-                        dtotypes.AddRange(dtoTypes.Value.Select(s => s));
-
-                        var noneDtoTypes = new HashSet<Type>();
-                        foreach (var dtotype in dtotypes)
-                        {
-                            var typeName = dtotype.Name.Substring(0, dtotype.Name.Length - 3);
-                            if (nameCache.ContainsKey(typeName))
-                            {
-                                foreach (var type1 in nameCache[typeName])
-                                {
-                                    if (originalCache.ContainsKey(type1))
-                                    {
-                                        if (!noneDtoTypes.Contains(type1))
-                                        {
-                                            noneDtoTypes.Add(type1);
-                                        }
-
-                                        foreach (var type2 in originalCache[type1])
-                                        {
-                                            if (!noneDtoTypes.Contains(type2))
-                                            {
-                                                noneDtoTypes.Add(type2);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        foreach (var noneDtoType in noneDtoTypes)
-                        {
-                            foreach (var dtotype in dtotypes)
-                            {
-                                CreateMap(cfg, noneDtoType, dtotype, ref mapedCache);
-                                CreateMap(cfg, dtotype, noneDtoType, ref mapedCache);
-                            }
-                        }
-                    }
-
-                    cfg.ValidateInlineMaps = false;
-
+                    cfg.AddProfile(new AutoMapperAssemblesProfile(assemblies));
+                    
                     mapperConfigurationExpression?.Invoke(cfg);
                 });
 
@@ -158,6 +56,128 @@ namespace FrHello.NetLib.Core.Serialization
         {
             var configuration = await GetDefaultMapperConfiguration(assemblies, mapperConfigurationExpression);
             return configuration.CreateMapper();
+        }
+
+        
+    }
+
+    /// <summary>
+    /// 自动加载程序集中的相关类，并进行映射
+    /// </summary>
+    public class AutoMapperAssemblesProfile : Profile
+    {
+        /// <summary>
+        /// 构造
+        /// </summary>
+        /// <param name="assemblies">要扫描的程序集</param>
+        public AutoMapperAssemblesProfile(Assembly[] assemblies)
+        {
+            if (assemblies != null && assemblies.Any())
+            {
+                //程序集中扫描处的原始类型，Value为其基类
+                var originalCache = new Dictionary<Type, HashSet<Type>>();
+                var originalCacheDto = new Dictionary<Type, HashSet<Type>>();
+
+                //用类型的名字来缓存类型，方便进行名字查找
+                var nameCache = new Dictionary<string, HashSet<Type>>();
+
+                //已经映射过的进行记录，防止重复映射，Key作为映射的Source，Value的HashSet为映射时的Dest集合
+                var mapedCache = new Dictionary<Type, HashSet<Type>>();
+
+                foreach (var type in assemblies.SelectMany(s => s.GetTypes()))
+                {
+                    if (IsDtoType(type))
+                    {
+                        AddToCache(type, ref originalCacheDto, ref nameCache);
+
+                        //将一组相关集合创建映射
+                        var types = new Type[originalCacheDto[type].Count + 1];
+                        types[0] = type;
+
+                        var index = 1;
+                        foreach (var typeItem in originalCacheDto[type])
+                        {
+                            types[index] = typeItem;
+                            index++;
+                        }
+
+                        CreateMap(types, ref mapedCache);
+                    }
+                    else
+                    {
+                        AddToCache(type, ref originalCache, ref nameCache);
+
+                        //将一组相关集合创建映射
+                        var types = new Type[originalCache[type].Count + 1];
+                        types[0] = type;
+
+                        var index = 1;
+                        foreach (var typeItem in originalCache[type])
+                        {
+                            types[index] = typeItem;
+                            index++;
+                        }
+
+                        CreateMap(types, ref mapedCache);
+                    }
+                }
+
+                //整理继承关系链条
+                var combineCache = originalCache.ToDictionary(s => s.Key, v => v.Value);
+
+                foreach (var keyValuePair in originalCacheDto)
+                {
+                    combineCache.Add(keyValuePair.Key, keyValuePair.Value);
+                }
+
+                AddParentRelationship(ref combineCache);
+
+                //将Dto和非Dto进行映射
+                foreach (var dtoTypes in originalCacheDto)
+                {
+                    //查找类型
+                    var dtotypes = new List<Type> { dtoTypes.Key };
+                    dtotypes.AddRange(dtoTypes.Value.Select(s => s));
+
+                    var noneDtoTypes = new HashSet<Type>();
+                    foreach (var dtotype in dtotypes)
+                    {
+                        var typeName = dtotype.Name.Substring(0, dtotype.Name.Length - 3);
+                        if (nameCache.ContainsKey(typeName))
+                        {
+                            foreach (var type1 in nameCache[typeName])
+                            {
+                                if (originalCache.ContainsKey(type1))
+                                {
+                                    if (!noneDtoTypes.Contains(type1))
+                                    {
+                                        noneDtoTypes.Add(type1);
+                                    }
+
+                                    foreach (var type2 in originalCache[type1])
+                                    {
+                                        if (!noneDtoTypes.Contains(type2))
+                                        {
+                                            noneDtoTypes.Add(type2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    foreach (var noneDtoType in noneDtoTypes)
+                    {
+                        foreach (var dtotype in dtotypes)
+                        {
+                            CreateMap(noneDtoType, dtotype, ref mapedCache);
+                            CreateMap(dtotype, noneDtoType, ref mapedCache);
+                        }
+                    }
+                }
+            }
+
+            ValidateInlineMaps = false;
         }
 
         /// <summary>
@@ -195,7 +215,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// <param name="type">需要加入缓存的类型</param>
         /// <param name="cache">类型及其子类型的缓存集合</param>
         /// <param name="nameCache">缓存类型的名称</param>
-        private static void AddToCache(Type type, ref Dictionary<Type, HashSet<Type>> cache,
+        private void AddToCache(Type type, ref Dictionary<Type, HashSet<Type>> cache,
             ref Dictionary<string, HashSet<Type>> nameCache)
         {
             if (!cache.ContainsKey(type))
@@ -213,7 +233,7 @@ namespace FrHello.NetLib.Core.Serialization
 
                     if (!nameCache.ContainsKey(baseType.Name))
                     {
-                        nameCache.Add(baseType.Name, new HashSet<Type> {baseType});
+                        nameCache.Add(baseType.Name, new HashSet<Type> { baseType });
                     }
                     else
                     {
@@ -224,7 +244,7 @@ namespace FrHello.NetLib.Core.Serialization
 
             if (!nameCache.ContainsKey(type.Name))
             {
-                nameCache.Add(type.Name, new HashSet<Type> {type});
+                nameCache.Add(type.Name, new HashSet<Type> { type });
             }
             else
             {
@@ -235,10 +255,9 @@ namespace FrHello.NetLib.Core.Serialization
         /// <summary>
         /// 对一组相关集合进行两两映射
         /// </summary>
-        /// <param name="cfg">Automapper配置</param>
         /// <param name="list">需要创建映射的集合类型</param>
         /// <param name="mappedCache">已映射的类型缓存，防止重复映射</param>
-        private static void CreateMap(IMapperConfigurationExpression cfg, IList<Type> list,
+        private void CreateMap(IList<Type> list,
             ref Dictionary<Type, HashSet<Type>> mappedCache)
         {
             //进行俩俩遍历映射
@@ -246,8 +265,8 @@ namespace FrHello.NetLib.Core.Serialization
             {
                 for (var j = i; j < list.Count; j++)
                 {
-                    CreateMap(cfg, list[i], list[j], ref mappedCache);
-                    CreateMap(cfg, list[j], list[i], ref mappedCache);
+                    CreateMap(list[i], list[j], ref mappedCache);
+                    CreateMap(list[j], list[i], ref mappedCache);
                 }
             }
         }
@@ -255,12 +274,10 @@ namespace FrHello.NetLib.Core.Serialization
         /// <summary>
         /// 对两个类型创建映射
         /// </summary>
-        /// <param name="cfg">Automapper配置</param>
         /// <param name="source">源类型</param>
         /// <param name="dest">目标类型</param>
         /// <param name="mappedCache">已映射的类型缓存，防止重复映射</param>
-        private static void CreateMap(IMapperConfigurationExpression cfg, Type source, Type dest,
-            ref Dictionary<Type, HashSet<Type>> mappedCache)
+        private void CreateMap(Type source, Type dest, ref Dictionary<Type, HashSet<Type>> mappedCache)
         {
             if (mappedCache.ContainsKey(source))
             {
@@ -274,10 +291,10 @@ namespace FrHello.NetLib.Core.Serialization
             //目标类型要能够构造才创建映射
             if (TypeHelper.HasDefaultConstructor(dest))
             {
-                cfg.CreateMap(source, dest);
+                CreateMap(source, dest);
                 if (!mappedCache.ContainsKey(source))
                 {
-                    mappedCache.Add(source, new HashSet<Type> {dest});
+                    mappedCache.Add(source, new HashSet<Type> { dest });
                 }
                 else
                 {
