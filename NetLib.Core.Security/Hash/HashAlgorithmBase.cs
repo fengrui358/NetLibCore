@@ -314,15 +314,15 @@ namespace FrHello.NetLib.Core.Security.Hash
         {
             switch (_hashAlgorithmType)
             {
-                case HashAlgorithmType.MD5:
+                case HashAlgorithmType.Md5:
                     return MD5.Create();
-                case HashAlgorithmType.SHA1:
+                case HashAlgorithmType.Sha1:
                     return SHA1.Create();
-                case HashAlgorithmType.SHA256:
+                case HashAlgorithmType.Sha256:
                     return SHA256.Create();
-                case HashAlgorithmType.SHA384:
+                case HashAlgorithmType.Sha384:
                     return SHA384.Create();
-                case HashAlgorithmType.SHA512:
+                case HashAlgorithmType.Sha512:
                     return SHA512.Create();
             }
 
