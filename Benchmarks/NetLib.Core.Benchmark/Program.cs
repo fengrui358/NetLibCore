@@ -1,4 +1,6 @@
 ﻿using System;
+using BenchmarkDotNet.Running;
+using NetLib.Core.Benchmark.Benchmarks;
 
 namespace NetLib.Core.Benchmark
 {
@@ -6,7 +8,8 @@ namespace NetLib.Core.Benchmark
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+            //BenchmarkRunner.Run<HashAlgorithmBenchmark>();
         }
     }
 }
