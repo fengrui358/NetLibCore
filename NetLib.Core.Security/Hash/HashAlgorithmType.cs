@@ -6,33 +6,33 @@
     internal enum HashAlgorithmType
     {
         /// <summary>
-        /// MD5
+        /// Md5
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        MD5,
+        Md5 = 32771, // 0x00008003,
 
         /// <summary>
-        /// MD5
+        /// Sha1
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        SHA1,
+        Sha1 = 32772, // 0x00008004
 
         /// <summary>
-        /// SHA256
+        /// Sha256
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        SHA256,
+        Sha256 = 32780, // 0x0000800C
 
         /// <summary>
-        /// SHA384
+        /// Sha384
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        SHA384,
+        Sha384 = 32781, // 0x0000800D
 
         /// <summary>
         /// SHA512
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        SHA512,
+        Sha512 = 32782, // 0x0000800E
     }
 }

@@ -13,33 +13,33 @@
         }
 
         /// <summary>
-        /// MD5 Hash算法
+        /// Md5 Hash算法
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IHashAlgorithm MD5 { get; } = new HashAlgorithmBase(HashAlgorithmType.MD5);
+        public IHashAlgorithm Md5 { get; } = new HashAlgorithmBase(HashAlgorithmType.Md5);
 
         /// <summary>
-        /// SHA1 Hash算法
+        /// Sha1 Hash算法
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IHashAlgorithm SHA1 { get; } = new HashAlgorithmBase(HashAlgorithmType.SHA1);
+        public IHashAlgorithm Sha1 { get; } = new HashAlgorithmBase(HashAlgorithmType.Sha1);
 
         /// <summary>
-        /// SHA256 Hash算法
+        /// Sha256 Hash算法
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IHashAlgorithm SHA256 { get; } = new HashAlgorithmBase(HashAlgorithmType.SHA256);
+        public IHashAlgorithm Sha256 { get; } = new HashAlgorithmBase(HashAlgorithmType.Sha256);
 
         /// <summary>
-        /// SHA384 Hash算法
+        /// Sha384 Hash算法
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IHashAlgorithm SHA384 { get; } = new HashAlgorithmBase(HashAlgorithmType.SHA384);
+        public IHashAlgorithm Sha384 { get; } = new HashAlgorithmBase(HashAlgorithmType.Sha384);
 
         /// <summary>
-        /// SHA512 Hash算法
+        /// Sha512 Hash算法
         /// </summary>
         // ReSharper disable once InconsistentNaming
-        public IHashAlgorithm SHA512 { get; } = new HashAlgorithmBase(HashAlgorithmType.SHA512);
+        public IHashAlgorithm Sha512 { get; } = new HashAlgorithmBase(HashAlgorithmType.Sha512);
     }
 }
