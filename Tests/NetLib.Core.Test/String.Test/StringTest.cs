@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FrHello.NetLib.Core;
 using Xunit;
 
@@ -55,6 +56,22 @@ namespace NetLib.Core.Test.String.Test
 
             seconds = 5698;
             Assert.Equal("01:34:58", TimeSpanExtensions.TimeSpanFormat(seconds));
+        }
+
+        /// <summary>
+        /// ProperTest
+        /// </summary>
+        [Fact]
+        public void ProperTest()
+        {
+            var sources = new List<string>
+                {null, " ", string.Empty, "RAMIRO   EDWIN CHOQUE TICONA", "Julio  Juan  Yujra Mamani"};
+
+            Assert.Equal("", StringHelper.Proper(sources[0]));
+            Assert.Equal("", StringHelper.Proper(sources[1]));
+            Assert.Equal("", StringHelper.Proper(sources[2]));
+            Assert.Equal("Ramiro Edwin Choque Ticona", StringHelper.Proper(sources[3]));
+            Assert.Equal("Julio Juan Yujra Mamani", StringHelper.Proper(sources[4]));
         }
     }
 }

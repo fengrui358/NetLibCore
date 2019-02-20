@@ -1,6 +1,4 @@
-﻿using System;
-using BenchmarkDotNet.Running;
-using NetLib.Core.Benchmark.Benchmarks;
+﻿using BenchmarkDotNet.Running;
 
 namespace NetLib.Core.Benchmark
 {
