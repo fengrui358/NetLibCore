@@ -25,7 +25,7 @@ namespace FrHello.NetLib.Core
             return string.Join(" ", strList.Select(s =>
             {
                 var chars = s.ToLower().ToCharArray();
-                chars[0] = (char) (chars[0] - 32);
+                chars[0] = Char.ToUpper(chars[0]);
 
                 return new string(chars);
             }));
