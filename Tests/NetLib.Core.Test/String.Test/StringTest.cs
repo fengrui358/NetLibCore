@@ -73,5 +73,19 @@ namespace NetLib.Core.Test.String.Test
             Assert.Equal("Ramiro Edwin Choque Ticona", StringHelper.Proper(sources[3]));
             Assert.Equal("Julio Juan Yujra Mamani", StringHelper.Proper(sources[4]));
         }
+
+        /// <summary>
+        /// LevenshteinDistanceComputeTest
+        /// </summary>
+        [Fact]
+        public void LevenshteinDistanceComputeTest()
+        {
+            var a = "abcdfetrfds dsafrtd dsfgsdg";
+            var b = "abcdfetrfds dsafrtd dsfgsdg";
+            Assert.Equal(0, StringHelper.LevenshteinDistanceCompute(a, b));
+
+            var c = "abcdfatrfds dsafrtd dsgsdg";
+            Assert.Equal(2, StringHelper.LevenshteinDistanceCompute(a, c));
+        }
     }
 }
