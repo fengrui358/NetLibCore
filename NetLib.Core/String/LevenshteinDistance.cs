@@ -13,8 +13,9 @@ namespace FrHello.NetLib.Core
         /// </summary>
         /// <param name="s"></param>
         /// <param name="t"></param>
+        /// <param name="ignoreCase">忽略大小写</param>
         /// <returns>返回值越小，相似度越高</returns>
-        public static int LevenshteinDistanceCompute(string s, string t)
+        public static int LevenshteinDistanceCompute(string s, string t, bool ignoreCase = false)
         {
             if (string.IsNullOrEmpty(s))
             {
@@ -26,6 +27,12 @@ namespace FrHello.NetLib.Core
             if (string.IsNullOrEmpty(t))
             {
                 return s.Length;
+            }
+
+            if (ignoreCase)
+            {
+                s = s.ToUpper();
+                t = t.ToUpper();
             }
 
             int n = s.Length;
@@ -52,6 +59,7 @@ namespace FrHello.NetLib.Core
                     d[i, j] = Math.Min(Math.Min(min1, min2), min3);
                 }
             }
+
             return d[n, m];
         }
     }
