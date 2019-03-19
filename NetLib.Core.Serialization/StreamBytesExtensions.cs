@@ -427,7 +427,7 @@ namespace FrHello.NetLib.Core.Serialization
             {
                 if (length == null)
                 {
-                    return bytes;
+                    length = bytes.Length - startIndex.Value;
                 }
 
                 var realBytes = new byte[length.Value];
