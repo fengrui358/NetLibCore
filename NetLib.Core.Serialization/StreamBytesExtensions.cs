@@ -27,8 +27,10 @@ namespace FrHello.NetLib.Core.Serialization
         /// 字节数组转换为字符串
         /// </summary>
         /// <param name="bytes">字节数组</param>
+        /// <param name="startIndex">起始索引</param>
+        /// <param name="length">字节长度</param>
         /// <returns>字符串</returns>
-        public static string ToStringEasy(this byte[] bytes)
+        public static string ToStringEasy(this byte[] bytes, int? startIndex = null, int? length = null)
         {
             return ToStringEasy(bytes, GlobalSerializationOptions.DefaultEncoding);
         }
@@ -38,8 +40,11 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <param name="bytes">字节数组</param>
         /// <param name="encoding">编码格式</param>
+        /// <param name="startIndex">起始索引</param>
+        /// <param name="length">字节长度</param>
         /// <returns>字符串</returns>
-        public static string ToStringEasy(this byte[] bytes, Encoding encoding)
+        public static string ToStringEasy(this byte[] bytes, Encoding encoding, int? startIndex = null,
+            int? length = null)
         {
             if (encoding == null)
             {
@@ -58,6 +63,7 @@ namespace FrHello.NetLib.Core.Serialization
                 return null;
             }
 
+            bytes = GetRealBytes(bytes, startIndex, length);
             return encoding.GetString(bytes);
         }
 
@@ -135,11 +141,16 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <param name="bytes">字节数组</param>
         /// <param name="base64FormattingOptions">base64格式</param>
+        /// <param name="startIndex">起始索引</param>
+        /// <param name="length">字节长度</param>
         /// <returns>Base64字符串</returns>
         public static string ToBase64String(this byte[] bytes,
-            Base64FormattingOptions base64FormattingOptions = Base64FormattingOptions.None)
+            Base64FormattingOptions base64FormattingOptions = Base64FormattingOptions.None, int? startIndex = null,
+            int? length = null)
         {
-            return bytes == null ? null : Convert.ToBase64String(bytes, base64FormattingOptions);
+            return bytes == null
+                ? null
+                : Convert.ToBase64String(GetRealBytes(bytes, startIndex, length), base64FormattingOptions);
         }
 
         /// <summary>
@@ -241,7 +252,8 @@ namespace FrHello.NetLib.Core.Serialization
             {
                 if (stream.Length > GlobalSerializationOptions.SegmentSize)
                 {
-                    var segmentCount = (int)Math.Ceiling(bytes.Length / (double)GlobalSerializationOptions.SegmentSize);
+                    var segmentCount =
+                        (int) Math.Ceiling(bytes.Length / (double) GlobalSerializationOptions.SegmentSize);
 
                     if (segmentCount > 1)
                     {
@@ -260,7 +272,7 @@ namespace FrHello.NetLib.Core.Serialization
                             stream.Read(bytes, startIndex, length);
                             totalLength = totalLength + length;
 
-                            progress.Report(totalLength / (double)bytes.Length);
+                            progress.Report(totalLength / (double) bytes.Length);
                         }
                     }
                     else
@@ -319,18 +331,24 @@ namespace FrHello.NetLib.Core.Serialization
         /// 字节数组转流
         /// </summary>
         /// <param name="bytes">字节数组</param>
+        /// <param name="startIndex">起始索引</param>
+        /// <param name="length">字节长度</param>
         /// <returns>流</returns>
-        public static Stream ToStream(this byte[] bytes)
+        public static Stream ToStream(this byte[] bytes, int? startIndex = null,
+            int? length = null)
         {
-            return bytes == null ? null : new MemoryStream(bytes);
+            return bytes == null ? null : new MemoryStream(GetRealBytes(bytes, startIndex, length));
         }
 
         /// <summary>
         /// 字节数组转十六进制字符串
         /// </summary>
         /// <param name="bytes">字节数组</param>
+        /// <param name="startIndex">起始索引</param>
+        /// <param name="length">字节长度</param>
         /// <returns>流</returns>
-        public static string ToHex(this byte[] bytes)
+        public static string ToHex(this byte[] bytes, int? startIndex = null,
+            int? length = null)
         {
             if (bytes == null || !bytes.Any())
             {
@@ -341,7 +359,7 @@ namespace FrHello.NetLib.Core.Serialization
 
             // Loop through each byte of the hashed data 
             // and format each one as a hexadecimal string.
-            foreach (var b in bytes)
+            foreach (var b in GetRealBytes(bytes, startIndex, length))
             {
                 sBuilder.Append(b.ToString("X2"));
             }
@@ -390,6 +408,33 @@ namespace FrHello.NetLib.Core.Serialization
             }
 
             return dst;
+        }
+
+        /// <summary>
+        /// 获取真正的字节数组
+        /// </summary>
+        /// <param name="bytes">待处理的字节数组</param>
+        /// <param name="startIndex">开始位置</param>
+        /// <param name="length">长度</param>
+        /// <returns>截取后的字节数组</returns>
+        private static byte[] GetRealBytes(byte[] bytes, int? startIndex, int? length)
+        {
+            if (startIndex == null)
+            {
+                return bytes;
+            }
+            else
+            {
+                if (length == null)
+                {
+                    return bytes;
+                }
+
+                var realBytes = new byte[length.Value];
+
+                Array.Copy(bytes, startIndex.Value, realBytes, 0, length.Value);
+                return realBytes;
+            }
         }
     }
 }
