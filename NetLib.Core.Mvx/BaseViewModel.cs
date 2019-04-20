@@ -95,10 +95,18 @@ namespace FrHello.NetLib.Core.Mvx
         }
 
         /// <summary>
+        /// 窗口即将关闭
+        /// </summary>
+        public virtual void ViewClosing()
+        {
+        }
+
+        /// <summary>
         /// 关闭
         /// </summary>
         public void Close()
         {
+            ViewClosing();
             NavigationService.Close(this);
         }
     }
@@ -202,10 +210,18 @@ namespace FrHello.NetLib.Core.Mvx
         }
 
         /// <summary>
+        /// 窗口即将关闭
+        /// </summary>
+        public virtual void ViewClosing()
+        {
+        }
+
+        /// <summary>
         /// 关闭
         /// </summary>
         public void Close()
         {
+            ViewClosing();
             NavigationService.Close(this);
         }
     }
