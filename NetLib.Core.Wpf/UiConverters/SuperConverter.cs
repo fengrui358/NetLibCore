@@ -266,6 +266,10 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                             converterValue = !converterValue;
                         }
                     }
+                    else if (value is string str && string.IsNullOrEmpty(str))
+                    {
+                        converterValue = !converterValue;
+                    }
                     else if (value is IEnumerable enumerableValue)
                     {
                         //如果值为集合则根据数量进行判断
@@ -285,12 +289,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                     else
                     {
                         //如果参数等于空则进行一些基本判断
-                        if (value != null && !string.IsNullOrEmpty(value.ToString()))
-                        {
-                            converterValue = !converterValue;
-                        }
-
-                        if (value == DependencyProperty.UnsetValue)
+                        if (value != null && value != DependencyProperty.UnsetValue)
                         {
                             converterValue = !converterValue;
                         }
