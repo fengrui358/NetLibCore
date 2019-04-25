@@ -22,6 +22,17 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         public static SuperConverterInverse SuperConverterInverse { get; } = new SuperConverterInverse();
 
         /// <summary>
+        /// 超级转换
+        /// </summary>
+        public static SuperConverterForMulti SuperConverterForMulti { get; } = new SuperConverterForMulti();
+
+        /// <summary>
+        /// 超级转换（反向）
+        /// </summary>
+        public static SuperConverterInverseForMulti SuperConverterInverseForMulti { get; } =
+            new SuperConverterInverseForMulti();
+
+        /// <summary>
         /// 枚举值转换器
         /// </summary>
         public static EnumToStringConverter EnumToStringConverter { get; } = new EnumToStringConverter();
@@ -71,7 +82,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <returns></returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return Binding.DoNothing;
         }
     }
 
@@ -102,6 +113,70 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="culture"></param>
         /// <returns></returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
+    }
+
+    /// <summary>
+    /// 超级转换器
+    /// </summary>
+    public class SuperConverterForMulti : IMultiValueConverter
+    {
+        /// <summary>
+        /// 从Model到UI转换
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ConverterResultHelper.Convert(true, values, targetType, parameter, culture);
+        }
+
+        /// <summary>
+        /// 从UI到Model转换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetTypes"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>
+    /// 超级转换器
+    /// </summary>
+    public class SuperConverterInverseForMulti : IMultiValueConverter
+    {
+        /// <summary>
+        /// 从Model到UI转换
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ConverterResultHelper.Convert(false, values, targetType, parameter, culture);
+        }
+
+        /// <summary>
+        /// 从UI到Model转换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetTypes"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -191,6 +266,10 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                             converterValue = !converterValue;
                         }
                     }
+                    else if (value is string str && string.IsNullOrEmpty(str))
+                    {
+                        converterValue = !converterValue;
+                    }
                     else if (value is IEnumerable enumerableValue)
                     {
                         //如果值为集合则根据数量进行判断
@@ -210,12 +289,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                     else
                     {
                         //如果参数等于空则进行一些基本判断
-                        if (value != null && !string.IsNullOrEmpty(value.ToString()))
-                        {
-                            converterValue = !converterValue;
-                        }
-
-                        if (value == DependencyProperty.UnsetValue)
+                        if (value != null && value != DependencyProperty.UnsetValue)
                         {
                             converterValue = !converterValue;
                         }
@@ -230,6 +304,50 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
             }
 
             return value;
+        }
+
+        /// <summary>
+        /// 转换方法
+        /// </summary>
+        /// <param name="converterValue">将值处理为bool值，在根据真假和目标类型转换为可处理的值</param>
+        /// <param name="values">需要处理的值</param>
+        /// <param name="targetType">目标类型</param>
+        /// <param name="parameter">比较参数</param>
+        /// <param name="culture">文化</param>
+        /// <returns></returns>
+        internal static object Convert(bool converterValue, object[] values, Type targetType, object parameter,
+            CultureInfo culture)
+        {
+            //判断结果能否进行转换
+            if (CanAutoConverterType(targetType))
+            {
+                foreach (var value in values)
+                {
+                    if (value == null || value == DependencyProperty.UnsetValue)
+                    {
+                        converterValue = !converterValue;
+                        break;
+                    }
+
+                    //判断是否是字符串
+                    if (value is string str && string.IsNullOrEmpty(str))
+                    {
+                        converterValue = !converterValue;
+                        break;
+                    }
+
+                    //判断是否是bool值
+                    if (value is bool boolean && !boolean)
+                    {
+                        converterValue = !converterValue;
+                        break;
+                    }
+                }
+
+                return ConverterResultHelper.GetResult(targetType, converterValue);
+            }
+
+            return Binding.DoNothing;
         }
     }
 }
