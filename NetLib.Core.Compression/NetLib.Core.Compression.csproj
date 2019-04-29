@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net461;net472;netstandard2.0</TargetFrameworks>
     <RootNamespace>FrHello.NetLib.Core.Compression</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Compression</PackageId>
@@ -11,7 +11,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core compression utility</PackageTags>
     <Product>NetLib.Core.Compression</Product>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>net461;net472;netstandard2.0</TargetFrameworks>
     <RootNamespace>FrHello.NetLib.Core.Mvx</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Mvx</PackageId>
@@ -10,7 +10,7 @@
     <Description>Dotnet core mvx utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Product>NetLib.Core.Mvx</Product>
-    <Version>1.0.16</Version>
+    <Version>1.0.17</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

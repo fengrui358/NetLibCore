@@ -1,13 +1,13 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/1.6.68">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net461;net472</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>FrHello.NetLib.Core.Wpf</RootNamespace>
     <PackageId>FrHello.NetLib.Core.Wpf</PackageId>
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
-    <Version>1.1.20</Version>
+    <Version>1.1.21</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Wpf.xml</DocumentationFile>
