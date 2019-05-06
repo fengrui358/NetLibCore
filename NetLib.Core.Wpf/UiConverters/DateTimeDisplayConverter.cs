@@ -9,7 +9,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// 日期显示转换
     /// </summary>
     [ValueConversion(typeof(DateTime), typeof(string))]
-    public class DateTimeDisplayConverter : IValueConverter
+    public class DateTimeDisplayConverter : MarkupConverter
     {
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
