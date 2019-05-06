@@ -32,11 +32,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        protected override object Convert(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (!(value is IconFontFlipOrientation))
                 return DependencyProperty.UnsetValue;
@@ -63,11 +59,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        protected override object ConvertBack(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
         }

@@ -12,6 +12,11 @@ namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
     {
         private static NullToUnsetValueConverter _instance;
 
+        /// <summary>
+        /// 对象提供
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return _instance ??
@@ -19,27 +24,27 @@ namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
         }
 
         /// <summary>
-        /// 
+        /// 转换
         /// </summary>
         /// <param name="value"></param>
         /// <param name="targetType"></param>
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        protected override object Convert(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value ?? DependencyProperty.UnsetValue;
         }
 
-        protected override object ConvertBack(
-            object value,
-            Type targetType,
-            object parameter,
-            CultureInfo culture)
+        /// <summary>
+        /// 反向转换
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="targetType"></param>
+        /// <param name="parameter"></param>
+        /// <param name="culture"></param>
+        /// <returns></returns>
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return DependencyProperty.UnsetValue;
         }

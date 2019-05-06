@@ -11,8 +11,26 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     [ValueConversion(typeof(DateTime), typeof(string))]
     public class DateTimeDisplayConverter : MarkupConverter
     {
+        private static DateTimeDisplayConverter _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static DateTimeDisplayConverter Instance { get; } =
+            _instance ?? (_instance = new DateTimeDisplayConverter());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
             {
@@ -34,7 +52,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (DateTime.TryParse(value?.ToString(), out var date))
             {

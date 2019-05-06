@@ -14,51 +14,69 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <summary>
         /// 超级转换
         /// </summary>
-        public static SuperConverter SuperConverter { get; } = new SuperConverter();
+        public static SuperConverter SuperConverter { get; } = SuperConverter.Instance;
 
         /// <summary>
         /// 超级转换（反向）
         /// </summary>
-        public static SuperConverterInverse SuperConverterInverse { get; } = new SuperConverterInverse();
+        public static SuperConverterInverse SuperConverterInverse { get; } = SuperConverterInverse.Instance;
 
         /// <summary>
         /// 超级转换
         /// </summary>
-        public static SuperConverterForMulti SuperConverterForMulti { get; } = new SuperConverterForMulti();
+        public static SuperConverterForMulti SuperConverterForMulti { get; } = SuperConverterForMulti.Instance;
 
         /// <summary>
         /// 超级转换（反向）
         /// </summary>
         public static SuperConverterInverseForMulti SuperConverterInverseForMulti { get; } =
-            new SuperConverterInverseForMulti();
+            SuperConverterInverseForMulti.Instance;
 
         /// <summary>
         /// 枚举值转换器
         /// </summary>
-        public static EnumToStringConverter EnumToStringConverter { get; } = new EnumToStringConverter();
+        public static EnumToStringConverter EnumToStringConverter { get; } = EnumToStringConverter.Instance;
 
         /// <summary>
         /// 枚举类型转数据源
         /// </summary>
         public static EnumToItemsSourceConverter EnumToItemsSourceConverter { get; } =
-            new EnumToItemsSourceConverter();
+            EnumToItemsSourceConverter.Instance;
 
         /// <summary>
         /// 日期显示格式转换
         /// </summary>
-        public static DateTimeDisplayConverter DateTimeDisplayConverter { get; } = new DateTimeDisplayConverter();
+        public static DateTimeDisplayConverter DateTimeDisplayConverter { get; } = DateTimeDisplayConverter.Instance;
 
         /// <summary>
         /// 时间显示格式转换
         /// </summary>
-        public static TimeSpanDisplayConverter TimeSpanDisplayConverter { get; } = new TimeSpanDisplayConverter();
+        public static TimeSpanDisplayConverter TimeSpanDisplayConverter { get; } = TimeSpanDisplayConverter.Instance;
     }
 
     /// <summary>
     /// 超级转换器
     /// </summary>
-    public class SuperConverter : IValueConverter
+    public class SuperConverter : MarkupConverter
     {
+        private static SuperConverter _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static SuperConverter Instance { get; } =
+            _instance ?? (_instance = new SuperConverter());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <summary>
         /// 从Model到UI转换
         /// </summary>
@@ -67,7 +85,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return ConverterResultHelper.Convert(false, value, targetType, parameter, culture);
         }
@@ -80,7 +98,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return Binding.DoNothing;
         }
@@ -89,8 +107,26 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// <summary>
     /// 超级转换器(取反)
     /// </summary>
-    public class SuperConverterInverse : IValueConverter
+    public class SuperConverterInverse : MarkupConverter
     {
+        private static SuperConverterInverse _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static SuperConverterInverse Instance { get; } =
+            _instance ?? (_instance = new SuperConverterInverse());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <summary>
         /// 从Model到UI转换
         /// </summary>
@@ -99,7 +135,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return ConverterResultHelper.Convert(true, value, targetType, parameter, culture);
         }
@@ -112,7 +148,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return Binding.DoNothing;
         }
@@ -121,8 +157,26 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// <summary>
     /// 超级转换器
     /// </summary>
-    public class SuperConverterForMulti : IMultiValueConverter
+    public class SuperConverterForMulti : MarkupMultiConverter
     {
+        private static SuperConverterForMulti _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static SuperConverterForMulti Instance { get; } =
+            _instance ?? (_instance = new SuperConverterForMulti());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <summary>
         /// 从Model到UI转换
         /// </summary>
@@ -131,7 +185,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             return ConverterResultHelper.Convert(true, values, targetType, parameter, culture);
         }
@@ -144,7 +198,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        protected override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -153,8 +207,26 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// <summary>
     /// 超级转换器
     /// </summary>
-    public class SuperConverterInverseForMulti : IMultiValueConverter
+    public class SuperConverterInverseForMulti : MarkupMultiConverter
     {
+        private static SuperConverterInverseForMulti _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static SuperConverterInverseForMulti Instance { get; } =
+            _instance ?? (_instance = new SuperConverterInverseForMulti());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <summary>
         /// 从Model到UI转换
         /// </summary>
@@ -163,7 +235,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             return ConverterResultHelper.Convert(false, values, targetType, parameter, culture);
         }
@@ -176,7 +248,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <param name="parameter"></param>
         /// <param name="culture"></param>
         /// <returns></returns>
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        protected override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -344,7 +416,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                     }
                 }
 
-                return ConverterResultHelper.GetResult(targetType, converterValue);
+                return GetResult(targetType, converterValue);
             }
 
             return Binding.DoNothing;
