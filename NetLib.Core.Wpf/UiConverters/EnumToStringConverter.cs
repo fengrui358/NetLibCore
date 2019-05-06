@@ -9,10 +9,28 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
     /// 枚举转描述
     /// </summary>
     [ValueConversion(typeof(System.Enum), typeof(string))]
-    public class EnumToStringConverter : IValueConverter
+    public class EnumToStringConverter : MarkupConverter
     {
+        private static EnumToStringConverter _instance;
+
+        /// <summary>
+        /// 对象
+        /// </summary>
+        public static EnumToStringConverter Instance { get; } =
+            _instance ?? (_instance = new EnumToStringConverter());
+
+        /// <summary>
+        /// 提供对象
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <returns></returns>
+        public override object ProvideValue(IServiceProvider serviceProvider)
+        {
+            return Instance;
+        }
+
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is System.Enum @enum)
             {
@@ -23,7 +41,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is string enumString && !string.IsNullOrWhiteSpace(enumString) && targetType.IsEnum)
             {
