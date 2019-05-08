@@ -82,7 +82,17 @@ namespace FrHello.NetLib.Core.Wpf
             }
 
             var start = Mvx.IoCProvider.Resolve<IMvxAppStart>();
-            start.Start();
+            //如果是默认的启动页，则不调用启动方法
+            if (!(start is BaseAppStart<TViewModel>))
+            {
+                start.Start();
+            }
+            else
+            {
+                var request = new MvxViewModelInstanceRequest(typeof(TViewModel));
+                var viewModel = Mvx.IoCProvider.GetSingleton<IMvxViewModelLoader>().LoadViewModel(request, null);
+                mainWindow.DataContext = viewModel;
+            }
 
             mainWindow.Show();
         }
