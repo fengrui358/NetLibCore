@@ -120,12 +120,12 @@ namespace FrHello.NetLib.Core.Mvx
         /// <summary>
         /// 页面第一次呈现前标记
         /// </summary>
-        private bool _viewAppearingFirstTime = false;
+        private bool _viewAppearingFirstTime;
 
         /// <summary>
         /// 页面第一次呈现后标记
         /// </summary>
-        private bool _viewAppearedFirstTime = false;
+        private bool _viewAppearedFirstTime;
 
         /// <summary>
         /// 导航服务
