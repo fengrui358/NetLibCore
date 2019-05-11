@@ -89,6 +89,14 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
                         {
                             Command?.Execute(CommandParameter ?? selectedItem);
                         }
+                        else
+                        {
+                            if (itemsControl is TreeView)
+                            {
+                                //TreeView判断是否选中项会出问题
+                                Command?.Execute(CommandParameter ?? selectedItem);
+                            }
+                        }
                     }
                 }
             }
