@@ -73,6 +73,11 @@ namespace FrHello.NetLib.Core.Net
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                if (GlobalMailOptions.SmtpServerInfo.Port != null)
+                {
+                    smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
+                }
+
                 smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
@@ -146,6 +151,11 @@ namespace FrHello.NetLib.Core.Net
                 using (var smtpClient = new SmtpClient())
                 {
                     smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                    if (GlobalMailOptions.SmtpServerInfo.Port != null)
+                    {
+                        smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
+                    }
+
                     smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
                     smtpClient.UseDefaultCredentials = false;
                     smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
