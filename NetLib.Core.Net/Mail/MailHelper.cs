@@ -163,7 +163,7 @@ namespace FrHello.NetLib.Core.Net
 
 
                     var task = smtpClient.SendMailAsync(mailMessage);
-                    var taskCancel = Task.Run(async () => { await Task.Delay(GlobalMailOptions.DefaultTimeOut); });
+                    var taskCancel = Task.Delay(GlobalMailOptions.DefaultTimeOut);
 
                     if (Task.WaitAny(task, taskCancel) == 1)
                     {
