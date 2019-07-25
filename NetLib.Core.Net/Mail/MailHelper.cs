@@ -146,32 +146,29 @@ namespace FrHello.NetLib.Core.Net
             //继续检查
             CheckSmtpServer();
 
-            await Task.Run(() =>
+            using (var smtpClient = new SmtpClient())
             {
-                using (var smtpClient = new SmtpClient())
+                smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                if (GlobalMailOptions.SmtpServerInfo.Port != null)
                 {
-                    smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
-                    if (GlobalMailOptions.SmtpServerInfo.Port != null)
-                    {
-                        smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
-                    }
-
-                    smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
-                    smtpClient.UseDefaultCredentials = false;
-                    smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
-                        GlobalMailOptions.SmtpServerInfo.MailPassword);
-
-
-                    var task = smtpClient.SendMailAsync(mailMessage);
-                    var taskCancel = Task.Delay(GlobalMailOptions.DefaultTimeOut);
-
-                    if (Task.WaitAny(task, taskCancel) == 1)
-                    {
-                        //任务超时，取消发送
-                        smtpClient.SendAsyncCancel();
-                    }
+                    smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
                 }
-            });
+
+                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
+                    GlobalMailOptions.SmtpServerInfo.MailPassword);
+
+
+                var task = smtpClient.SendMailAsync(mailMessage);
+                var taskCancel = Task.Delay(GlobalMailOptions.DefaultTimeOut);
+
+                if (await Task.WhenAny(task, taskCancel) == taskCancel)
+                {
+                    //任务超时，取消发送
+                    smtpClient.SendAsyncCancel();
+                }
+            }
         }
 
         /// <summary>
