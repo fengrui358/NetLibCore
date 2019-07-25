@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
@@ -161,12 +162,18 @@ namespace FrHello.NetLib.Core.Net
 
 
                 var task = smtpClient.SendMailAsync(mailMessage);
-                var taskCancel = Task.Delay(GlobalMailOptions.DefaultTimeOut);
 
-                if (await Task.WhenAny(task, taskCancel) == taskCancel)
+                var delayTaskCancel = new CancellationTokenSource();
+                var delayTask = Task.Delay(GlobalMailOptions.DefaultTimeOut, delayTaskCancel.Token);
+
+                if (await Task.WhenAny(task, delayTask) == delayTask)
                 {
                     //任务超时，取消发送
                     smtpClient.SendAsyncCancel();
+                }
+                else
+                {
+                    delayTaskCancel.Cancel();
                 }
             }
         }
