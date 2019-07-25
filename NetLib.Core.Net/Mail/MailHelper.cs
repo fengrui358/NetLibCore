@@ -160,13 +160,11 @@ namespace FrHello.NetLib.Core.Net
                 smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.SmtpServerInfo.MailPassword);
 
-
-                var task = smtpClient.SendMailAsync(mailMessage);
-
+                var sendMailAsync = smtpClient.SendMailAsync(mailMessage);
                 var delayTaskCancel = new CancellationTokenSource();
                 var delayTask = Task.Delay(GlobalMailOptions.DefaultTimeOut, delayTaskCancel.Token);
 
-                if (await Task.WhenAny(task, delayTask) == delayTask)
+                if (await Task.WhenAny(sendMailAsync, delayTask) == delayTask)
                 {
                     //任务超时，取消发送
                     smtpClient.SendAsyncCancel();
