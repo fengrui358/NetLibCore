@@ -168,6 +168,9 @@ namespace FrHello.NetLib.Core.Net
                 {
                     //任务超时，取消发送
                     smtpClient.SendAsyncCancel();
+
+                    //超时异常
+                    throw new OperationCanceledException("Send mail timeout");
                 }
                 else
                 {
