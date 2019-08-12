@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
@@ -146,32 +147,36 @@ namespace FrHello.NetLib.Core.Net
             //继续检查
             CheckSmtpServer();
 
-            await Task.Run(() =>
+            using (var smtpClient = new SmtpClient())
             {
-                using (var smtpClient = new SmtpClient())
+                smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                if (GlobalMailOptions.SmtpServerInfo.Port != null)
                 {
-                    smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
-                    if (GlobalMailOptions.SmtpServerInfo.Port != null)
-                    {
-                        smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
-                    }
-
-                    smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
-                    smtpClient.UseDefaultCredentials = false;
-                    smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
-                        GlobalMailOptions.SmtpServerInfo.MailPassword);
-
-
-                    var task = smtpClient.SendMailAsync(mailMessage);
-                    var taskCancel = Task.Run(async () => { await Task.Delay(GlobalMailOptions.DefaultTimeOut); });
-
-                    if (Task.WaitAny(task, taskCancel) == 1)
-                    {
-                        //任务超时，取消发送
-                        smtpClient.SendAsyncCancel();
-                    }
+                    smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
                 }
-            });
+
+                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
+                    GlobalMailOptions.SmtpServerInfo.MailPassword);
+
+                var sendMailAsync = smtpClient.SendMailAsync(mailMessage);
+                var delayTaskCancel = new CancellationTokenSource();
+                var delayTask = Task.Delay(GlobalMailOptions.DefaultTimeOut, delayTaskCancel.Token);
+
+                if (await Task.WhenAny(sendMailAsync, delayTask) == delayTask)
+                {
+                    //任务超时，取消发送
+                    smtpClient.SendAsyncCancel();
+
+                    //超时异常
+                    throw new OperationCanceledException("Send mail timeout");
+                }
+                else
+                {
+                    delayTaskCancel.Cancel();
+                }
+            }
         }
 
         /// <summary>
