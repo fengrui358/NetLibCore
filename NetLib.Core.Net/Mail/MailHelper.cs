@@ -35,7 +35,7 @@ namespace FrHello.NetLib.Core.Net
                 BodyEncoding = GlobalMailOptions.DefaultEncoding
             };
 
-            foreach (var address in toAddress.Split(new []{','}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var address in toAddress.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 mailMessage.To.Add(new MailAddress(address));
             }
@@ -74,12 +74,17 @@ namespace FrHello.NetLib.Core.Net
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+
                 if (GlobalMailOptions.SmtpServerInfo.Port != null)
                 {
                     smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
                 }
+                else if (smtpClient.EnableSsl)
+                {
+                    smtpClient.Port = 587;
+                }
 
-                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.SmtpServerInfo.MailPassword);
@@ -150,12 +155,17 @@ namespace FrHello.NetLib.Core.Net
             using (var smtpClient = new SmtpClient())
             {
                 smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
+                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+
                 if (GlobalMailOptions.SmtpServerInfo.Port != null)
                 {
                     smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
                 }
+                else if (smtpClient.EnableSsl)
+                {
+                    smtpClient.Port = 587;
+                }
 
-                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
                 smtpClient.UseDefaultCredentials = false;
                 smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.SmtpServerInfo.MailPassword);
