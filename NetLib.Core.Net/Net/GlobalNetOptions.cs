@@ -7,7 +7,7 @@ namespace FrHello.NetLib.Core.Net
     public static class GlobalNetOptions
     {
         /// <summary>
-        /// 默认Ping超时等待时间，秒
+        /// 默认Ping超时等待时间，毫秒
         /// </summary>
         public static int DefaultPingTimeOut { get; set; } = 5000;
     }

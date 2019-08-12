@@ -9,7 +9,7 @@ namespace FrHello.NetLib.Core.Net
     public static class GlobalMailOptions
     {
         /// <summary>
-        /// 默认超时等待时间，秒
+        /// 默认超时等待时间，毫秒
         /// </summary>
         public static int DefaultTimeOut { get; set; } = 5000;
 
