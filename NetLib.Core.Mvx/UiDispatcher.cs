@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MvvmCross.Base;
 
@@ -10,7 +11,7 @@ namespace FrHello.NetLib.Core.Mvx
     public class UiDispatcherHelper
     {
         private static IMvxMainThreadAsyncDispatcher _mainThreadAsyncDispatcher;
-        private static readonly object Async = new object();
+        private static readonly SemaphoreSlim SemaphoreSlim = new SemaphoreSlim(1, 1);
 
         /// <summary>
         /// Ui主线程调用
@@ -21,13 +22,41 @@ namespace FrHello.NetLib.Core.Mvx
             if (action == null) return;
             if (_mainThreadAsyncDispatcher == null)
             {
-                lock (Async)
+                Task.Run(async () =>
                 {
-                    if (_mainThreadAsyncDispatcher == null)
+                    await SemaphoreSlim.WaitAsync();
+
+                    try
                     {
-                        _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                        if (_mainThreadAsyncDispatcher == null)
+                        {
+                            if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                            {
+                                _mainThreadAsyncDispatcher =
+                                    MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                            }
+                            else
+                            {
+
+                                do
+                                {
+                                    await Task.Delay(5);
+
+                                    if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                                    {
+                                        _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider
+                                            .Resolve<IMvxMainThreadAsyncDispatcher>();
+                                        break;
+                                    }
+                                } while (_mainThreadAsyncDispatcher == null);
+                            }
+                        }
                     }
-                }
+                    finally
+                    {
+                        SemaphoreSlim.Release();
+                    }
+                });
             }
 
             _mainThreadAsyncDispatcher.ExecuteOnMainThreadAsync(action);
@@ -43,12 +72,37 @@ namespace FrHello.NetLib.Core.Mvx
             if (action == null) return;
             if (_mainThreadAsyncDispatcher == null)
             {
-                lock (Async)
+                await SemaphoreSlim.WaitAsync();
+
+                try
                 {
                     if (_mainThreadAsyncDispatcher == null)
                     {
-                        _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                        if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                        {
+                            _mainThreadAsyncDispatcher =
+                                MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
+                        }
+                        else
+                        {
+
+                            do
+                            {
+                                await Task.Delay(5);
+
+                                if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                                {
+                                    _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider
+                                        .Resolve<IMvxMainThreadAsyncDispatcher>();
+                                    break;
+                                }
+                            } while (_mainThreadAsyncDispatcher == null);
+                        }
                     }
+                }
+                finally
+                {
+                    SemaphoreSlim.Release();
                 }
             }
 
