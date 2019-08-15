@@ -55,11 +55,14 @@ namespace FrHello.NetLib.Core.Mvx
                     finally
                     {
                         SemaphoreSlim.Release();
+                        _mainThreadAsyncDispatcher.ExecuteOnMainThreadAsync(action);
                     }
                 });
             }
-
-            _mainThreadAsyncDispatcher.ExecuteOnMainThreadAsync(action);
+            else
+            {
+                _mainThreadAsyncDispatcher.ExecuteOnMainThreadAsync(action);
+            }
         }
 
         /// <summary>
