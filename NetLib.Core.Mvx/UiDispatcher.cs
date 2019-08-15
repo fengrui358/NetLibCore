@@ -30,19 +30,20 @@ namespace FrHello.NetLib.Core.Mvx
                     {
                         if (_mainThreadAsyncDispatcher == null)
                         {
-                            if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                            if (MvvmCross.Mvx.IoCProvider != null &&
+                                MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
                             {
                                 _mainThreadAsyncDispatcher =
                                     MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
                             }
                             else
                             {
-
                                 do
                                 {
                                     await Task.Delay(5);
 
-                                    if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                                    if (MvvmCross.Mvx.IoCProvider != null &&
+                                        MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
                                     {
                                         _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider
                                             .Resolve<IMvxMainThreadAsyncDispatcher>();
@@ -55,7 +56,9 @@ namespace FrHello.NetLib.Core.Mvx
                     finally
                     {
                         SemaphoreSlim.Release();
-                        _mainThreadAsyncDispatcher.ExecuteOnMainThreadAsync(action);
+#pragma warning disable 4014
+                        _mainThreadAsyncDispatcher?.ExecuteOnMainThreadAsync(action);
+#pragma warning restore 4014
                     }
                 });
             }
@@ -81,7 +84,8 @@ namespace FrHello.NetLib.Core.Mvx
                 {
                     if (_mainThreadAsyncDispatcher == null)
                     {
-                        if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                        if (MvvmCross.Mvx.IoCProvider != null &&
+                            MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
                         {
                             _mainThreadAsyncDispatcher =
                                 MvvmCross.Mvx.IoCProvider.Resolve<IMvxMainThreadAsyncDispatcher>();
@@ -93,7 +97,8 @@ namespace FrHello.NetLib.Core.Mvx
                             {
                                 await Task.Delay(5);
 
-                                if (MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
+                                if (MvvmCross.Mvx.IoCProvider != null &&
+                                    MvvmCross.Mvx.IoCProvider.CanResolve(typeof(IMvxMainThreadAsyncDispatcher)))
                                 {
                                     _mainThreadAsyncDispatcher = MvvmCross.Mvx.IoCProvider
                                         .Resolve<IMvxMainThreadAsyncDispatcher>();
