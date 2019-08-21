@@ -8,7 +8,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core windows utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.4</Version>
+    <Version>1.0.5</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Windows.xml</DocumentationFile>
@@ -20,4 +20,7 @@
     <DocumentationFile>bin\Release\net471\NetLib.Core.Windows.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
 </Project>
