@@ -14,8 +14,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingTest
         /// </summary>
-        //[Fact(Skip = TestStrings.ManuallyExcuteTip)]
-        [Fact]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void PingTest()
         {
             Assert.True(NetHelper.PingAsync("http://baidu.com").GetAwaiter().GetResult());

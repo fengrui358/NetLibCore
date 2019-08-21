@@ -19,8 +19,6 @@ namespace FrHello.NetLib.Core
 
             return $"{timeSpan.Minutes:d2}:{timeSpan.Seconds:d2}";
         }
-
-        
     }
 
     /// <summary>
