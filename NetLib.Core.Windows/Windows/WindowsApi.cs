@@ -20,6 +20,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
         public static int? Delay { get; set; }
 
         /// <summary>
+        /// MouseApi
+        /// </summary>
+        public static MouseApi MouseApi { get; set; } = new MouseApi();
+
+        /// <summary>
         /// 记录日志
         /// </summary>
         /// <param name="log">日志信息</param>

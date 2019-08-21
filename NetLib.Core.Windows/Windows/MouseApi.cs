@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace FrHello.NetLib.Core.Windows.Windows
 {
-    internal class MouseApi
+    public class MouseApi
     {
         [Flags]
         internal enum MouseEventFlag : uint
@@ -24,14 +23,17 @@ namespace FrHello.NetLib.Core.Windows.Windows
             Absolute = 0x8000
         }
 
-        private struct InnerPoint
+        /// <summary>
+        /// 内部坐标点
+        /// </summary>
+        public struct MousePoint
         {
-            int X { get; }
-            int Y { get; }
-            public InnerPoint(int x, int y)
+            public int X { get; }
+            public int Y { get; }
+            public MousePoint(int x, int y)
             {
-                this.X = x;
-                this.Y = y;
+                X = x;
+                Y = y;
             }
         }
 
@@ -61,13 +63,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
         private static extern void mouse_event(MouseEventFlag flags, int dx, int dy, int data, UIntPtr extraInfo);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern bool GetCursorPos(out Point pt);
+        private static extern bool GetCursorPos(out MousePoint pt);
 
         /// <summary>
         /// 获取当前的鼠标坐标
         /// </summary>
         /// <returns></returns>
-        public static Point GetCurrentMousePoint()
+        public MousePoint GetCurrentMousePoint()
         {
             if (WindowsApi.Delay.HasValue)
             {
@@ -76,14 +78,70 @@ namespace FrHello.NetLib.Core.Windows.Windows
             
             if (GetCursorPos(out var p))
             {
-                WindowsApi.WriteLog($"{nameof(GetCurrentMousePoint)} {p}");
+                WindowsApi.WriteLog($"{nameof(GetCurrentMousePoint)} {nameof(MousePoint.X)}:{p.X},{nameof(MousePoint.Y)}:{p.Y}");
                 return p;
             }
             else
             {
                 WindowsApi.WriteLog($"{nameof(GetCurrentMousePoint)} operating failed.");
-                return new Point();
+                return new MousePoint();
             }
+        }
+
+        /// <summary>
+        /// 鼠标移动到绝对位置
+        /// </summary>
+        /// <param name="point">需要移动到的坐标</param>
+        public void MouseMove(MousePoint point)
+        {
+
+        }
+
+        /// <summary>
+        /// 鼠标移动到相对当前鼠标的位置
+        /// </summary>
+        /// <param name="offsetX">offsetX</param>
+        /// <param name="offsetY">offsetY</param>
+        public void MouseMove(int offsetX, int offsetY)
+        {
+
+        }
+
+        /// <summary>
+        /// 鼠标单击
+        /// </summary>
+        /// <param name="rightButton">右键</param>
+        public void MouseClick(bool rightButton)
+        {
+
+        }
+
+        /// <summary>
+        /// 鼠标双击
+        /// </summary>
+        /// <param name="rightButton">右键</param>
+        public void MouseDoubleClick(bool rightButton)
+        {
+
+        }
+
+        /// <summary>
+        /// 鼠标按压
+        /// </summary>
+        /// <param name="rightButton">右键</param>
+        /// <param name="millionSeconds">按压时长</param>
+        public void MousePressed(bool rightButton, uint millionSeconds)
+        {
+
+        }
+
+        /// <summary>
+        /// 鼠标滚轮
+        /// </summary>
+        /// <param name="wheelDelta">正值表明鼠标轮向前转动，即远离用户的方向；负值表明鼠标轮向后转动，即朝向用户。</param>
+        public void MouseWheel(int wheelDelta = 500)
+        {
+
         }
     }
 }
