@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FrHello.NetLib.Core.Windows.Windows
 {
-    internal class KeyBoardApi
+    public class KeyBoardApi
     {
     }
 }
