@@ -7,6 +7,9 @@ namespace FrHello.NetLib.Core.Windows.Windows
 {
     public class MouseApi
     {
+        private readonly Lazy<ScreenApi> _innerScrrenApi = new Lazy<ScreenApi>(() => new ScreenApi());
+        private const int MagicNumber = 65536;
+
         /// <summary>
         /// 鼠标按压持续时间
         /// </summary>
@@ -106,8 +109,9 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 Thread.Sleep(WindowsApi.Delay.Value);
             }
 
-            //TODO:C# 获取屏幕分辨率
-            mouse_event(MouseEventFlag.Absolute | MouseEventFlag.Move, point.X * (65536 / 1920), point.Y * (65536 / 1080),
+            var bounds = _innerScrrenApi.Value.GetMouseScreen(point).Bounds;
+            mouse_event(MouseEventFlag.Absolute | MouseEventFlag.Move, point.X * (MagicNumber / bounds.Width),
+                point.Y * (MagicNumber / bounds.Height),
                 0, UIntPtr.Zero);
             WindowsApi.WriteLog($"{nameof(MouseMove)} {nameof(MousePoint.X)}:{point.X},{nameof(MousePoint.Y)}:{point.Y}");
         }
