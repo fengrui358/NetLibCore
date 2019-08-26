@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FrHello.NetLib.Core.Windows.Windows
@@ -116,6 +117,87 @@ namespace FrHello.NetLib.Core.Windows.Windows
         public Color GetColorAt()
         {
             return GetColorAt(_innerMouseApi.Value.GetCurrentMousePoint());
+        }
+
+        /// <summary>
+        /// Get color at point.
+        /// </summary>
+        /// <param name="point">point</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <returns>If wait unit time out, the return color is null.</returns>
+        public async Task<Color?> WaitColorAt(Point point, TimeSpan? timeOut = null)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                Thread.Sleep(WindowsApi.Delay.Value);
+            }
+
+            Color? color = null;
+
+            var mainTask = new Task(() =>
+            {
+                using (var dest = Graphics.FromImage(_screenPixel))
+                {
+                    using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                    {
+                        var hSrcDc = src.GetHdc();
+                        var hDc = dest.GetHdc();
+                        BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int) CopyPixelOperation.SourceCopy);
+                        dest.ReleaseHdc();
+                        src.ReleaseHdc();
+                    }
+                }
+
+                color = _screenPixel.GetPixel(0, 0);
+                WindowsApi.WriteLog(
+                    $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color.Value}");
+            });
+
+            if (timeOut == null)
+            {
+                await mainTask;
+
+            }
+            else
+            {
+                var delayTask = Task.Delay(timeOut.Value);
+                await Task.WhenAny(mainTask, delayTask);
+            }
+
+            return color;
+        }
+
+        /// <summary>
+        /// Get color at point.
+        /// </summary>
+        /// <param name="mousePoint">point</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <returns>If wait unit time out, the return color is null.</returns>
+        public async Task<Color?> WaitColorAt(MouseApi.MousePoint mousePoint, TimeSpan? timeOut = null)
+        {
+            return await WaitColorAt(new Point(mousePoint.X, mousePoint.Y), timeOut);
+        }
+
+        /// <summary>
+        /// Get color at point.
+        /// </summary>
+        /// <param name="x">X</param>
+        /// <param name="y">Y</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <returns>If wait unit time out, the return color is null.</returns>
+        public async Task<Color?> WaitColorAt(int x, int y, TimeSpan? timeOut = null)
+        {
+            return await WaitColorAt(new Point(x, y), timeOut);
+        }
+
+        /// <summary>
+        /// Get color at current mouse.
+        /// </summary>
+        /// <param name="timeOut">timeOut</param>
+        /// <returns>If wait unit time out, the return color is null.</returns>
+        public async Task<Color?> WaitColorAt(TimeSpan? timeOut = null)
+        {
+            return await WaitColorAt(_innerMouseApi.Value.GetCurrentMousePoint(), timeOut);
         }
     }
 }
