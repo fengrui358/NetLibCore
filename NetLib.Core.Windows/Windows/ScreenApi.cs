@@ -14,6 +14,10 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
         private Lazy<Screen[]> _allScreen;
 
+        internal ScreenApi()
+        {
+        }
+
         /// <summary>
         /// PrimaryScreen
         /// </summary>

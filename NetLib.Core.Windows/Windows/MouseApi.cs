@@ -7,7 +7,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
 {
     public class MouseApi
     {
-        private readonly Lazy<ScreenApi> _innerScrrenApi = new Lazy<ScreenApi>(() => new ScreenApi());
+        private readonly Lazy<ScreenApi> _innerScreenApi = new Lazy<ScreenApi>(() => new ScreenApi());
+
         private const int MagicNumber = 65536;
 
         /// <summary>
@@ -30,20 +31,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
             Wheel = 0x0800,
             //VirtualDesk = 0x4000,
             Absolute = 0x8000
-        }
-
-        /// <summary>
-        /// 内部坐标点
-        /// </summary>
-        public struct MousePoint
-        {
-            public int X { get; set; }
-            public int Y { get; set; }
-            public MousePoint(int x, int y)
-            {
-                X = x;
-                Y = y;
-            }
         }
 
         //[DllImport("user32.dll")]
@@ -74,6 +61,10 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool GetCursorPos(out MousePoint pt);
+
+        internal MouseApi()
+        {
+        }
 
         /// <summary>
         /// 获取当前的鼠标坐标
@@ -109,18 +100,20 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 Thread.Sleep(WindowsApi.Delay.Value);
             }
 
-            var bounds = _innerScrrenApi.Value.GetMouseScreen(point).Bounds;
+            var bounds = _innerScreenApi.Value.GetMouseScreen(point).Bounds;
             mouse_event(MouseEventFlag.Absolute | MouseEventFlag.Move, point.X * (MagicNumber / bounds.Width),
                 point.Y * (MagicNumber / bounds.Height),
                 0, UIntPtr.Zero);
             WindowsApi.WriteLog($"{nameof(MouseMove)} {nameof(MousePoint.X)}:{point.X},{nameof(MousePoint.Y)}:{point.Y}");
         }
 
+        /*
         /// <summary>
         /// 鼠标移动到相对当前鼠标的位置
         /// </summary>
         /// <param name="offsetX">offsetX</param>
         /// <param name="offsetY">offsetY</param>
+        [Obsolete("It's imprecise.", true)]
         public void MouseMove(int offsetX, int offsetY)
         {
             if (WindowsApi.Delay.HasValue)
@@ -131,62 +124,156 @@ namespace FrHello.NetLib.Core.Windows.Windows
             mouse_event(MouseEventFlag.Move, offsetX, offsetY, 0, UIntPtr.Zero);
             WindowsApi.WriteLog($"{nameof(MouseMove)} {nameof(offsetX)}:{offsetX},{nameof(offsetY)}:{offsetY}");
         }
+        */
 
         /// <summary>
         /// 鼠标移动到绝对位置
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="pressedMillionSeconds"></param>
+        /// <param name="point">鼠标要移动到的绝对位置</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
         /// <returns></returns>
-        public async Task MouseMove(MousePoint point, uint pressedMillionSeconds)
+        public async Task MouseMove(MousePoint point, uint delayPerPixel)
         {
             if (WindowsApi.Delay.HasValue)
             {
                 await Task.Delay(WindowsApi.Delay.Value);
             }
 
-            if (pressedMillionSeconds == 0u)
-            {
-                pressedMillionSeconds = MousePressedTime;
-            }
-
             await Task.Run(async () =>
             {
                 var currentPoint = GetCurrentMousePoint();
+                var currentX = currentPoint.X;
+                var currentY = currentPoint.Y;
 
-                var xDiff = point.X - currentPoint.X;
-                var yDiff = point.Y - currentPoint.Y;
+                var delayTimeSpan = TimeSpan.FromMilliseconds(delayPerPixel);
 
-                //10ms移动一次
-                var timeInterval = pressedMillionSeconds / 10;
-                if (timeInterval == 0)
+                while (currentPoint != point)
                 {
-                    timeInterval = 1;
-                }
-
-                var xPixel = (int)(xDiff / timeInterval);
-                var yPixel = (int)(yDiff / timeInterval);
-
-                while (currentPoint.X != point.X || currentPoint.Y != point.Y)
-                {
-                    if (currentPoint.X != point.X)
+                    if (currentX < point.X)
                     {
-                        currentPoint.X += xPixel;
-                        mouse_event(MouseEventFlag.Move, xPixel, 0, 0, UIntPtr.Zero);
-                        await Task.Delay(10);
+                        currentX++;
+                    }
+                    else if (currentX > point.X)
+                    {
+                        currentX--;
                     }
 
-                    if (currentPoint.Y != point.Y)
+                    if (currentY < point.Y)
                     {
-                        currentPoint.Y += yPixel;
-                        mouse_event(MouseEventFlag.Move, 0, yPixel, 0, UIntPtr.Zero);
-                        await Task.Delay(10);
+                        currentY++;
+                    }
+                    else if (currentY > point.Y)
+                    {
+                        currentY--;
+                    }
+
+                    currentPoint = new MousePoint(currentX, currentY);
+                    var bounds = _innerScreenApi.Value.GetMouseScreen(currentPoint).Bounds;
+                    mouse_event(MouseEventFlag.Absolute | MouseEventFlag.Move, currentPoint.X * (MagicNumber / bounds.Width),
+                        currentPoint.Y * (MagicNumber / bounds.Height),
+                        0, UIntPtr.Zero);
+
+                    if (delayPerPixel > 0u)
+                    {
+                        await Task.Delay(delayTimeSpan);
                     }
                 }
 
                 WindowsApi.WriteLog(
                     $"{nameof(MouseMove)} from {nameof(MousePoint.X)}:{currentPoint.X},{nameof(MousePoint.Y)}:{currentPoint.Y} to {nameof(MousePoint.X)}:{point.X},{nameof(MousePoint.Y)}:{point.Y}");
             });
+        }
+
+        /*
+        /// <summary>
+        /// 鼠标移动到绝对位置
+        /// </summary>
+        /// <param name="offsetX">offsetX</param>
+        /// <param name="offsetY">offsetY</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
+        /// <returns></returns>
+        [Obsolete("It's imprecise.", true)]
+        public async Task MouseMove(int offsetX, int offsetY, uint delayPerPixel)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value);
+            }
+
+            await Task.Run(async () =>
+            {
+                var currentPoint = GetCurrentMousePoint();
+                
+                var delayTimeSpan = TimeSpan.FromMilliseconds(delayPerPixel);
+                while (offsetX != 0 && offsetY != 0)
+                {
+                    var offsetXPerMove = 0;
+                    var offsetYPerMove = 0;
+
+                    if (offsetX < 0)
+                    {
+                        offsetXPerMove = -1;
+                        offsetX++;
+                    }
+                    else if (offsetX > 0)
+                    {
+                        offsetXPerMove = 1;
+                        offsetX--;
+                    }
+
+                    if (offsetY < 0)
+                    {
+                        offsetYPerMove = -1;
+                        offsetY++;
+                    }
+                    else if (offsetY > 0)
+                    {
+                        offsetYPerMove = 1;
+                        offsetY--;
+                    }
+
+                    mouse_event(MouseEventFlag.Move, offsetXPerMove, offsetYPerMove, 0, UIntPtr.Zero);
+
+                    if (delayPerPixel > 0u)
+                    {
+                        await Task.Delay(delayTimeSpan);
+                    }
+                }
+
+                WindowsApi.WriteLog(
+                    $"{nameof(MouseMove)} from {nameof(MousePoint.X)}:{currentPoint.X},{nameof(MousePoint.Y)}:{currentPoint.Y} to {offsetX}:{offsetX},{offsetY}:{offsetY}");
+            });
+        }
+        */
+
+        /// <summary>
+        /// 鼠标按下
+        /// </summary>
+        /// <param name="rightButton">右键</param>
+        public void MouseButtonDown(bool rightButton = false)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                Thread.Sleep(WindowsApi.Delay.Value);
+            }
+
+            mouse_event(rightButton ? MouseEventFlag.RightDown : MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
+            WindowsApi.WriteLog($"{nameof(MouseButtonDown)} {GetButtonString(rightButton)}");
+        }
+
+        /// <summary>
+        /// 鼠标抬起
+        /// </summary>
+        /// <param name="rightButton">右键</param>
+        public void MouseButtonUp(bool rightButton = false)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                Thread.Sleep(WindowsApi.Delay.Value);
+            }
+
+            mouse_event(rightButton ? MouseEventFlag.RightUp : MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
+            WindowsApi.WriteLog($"{nameof(MouseButtonUp)} {GetButtonString(rightButton)}");
         }
 
         /// <summary>
@@ -217,17 +304,20 @@ namespace FrHello.NetLib.Core.Windows.Windows
             MouseClick(rightButton);
         }
 
+        /*
         /// <summary>
         /// 鼠标单击
         /// </summary>
         /// <param name="offsetX">offsetX</param>
         /// <param name="offsetY">offsetY</param>
         /// <param name="rightButton">右键</param>
+        [Obsolete("It's imprecise.", true)]
         public void MouseClick(int offsetX, int offsetY, bool rightButton = false)
         {
             MouseMove(offsetX, offsetY);
             MouseClick(rightButton);
         }
+        */
 
         /// <summary>
         /// 鼠标双击
@@ -259,17 +349,20 @@ namespace FrHello.NetLib.Core.Windows.Windows
             MouseDoubleClick(rightButton);
         }
 
+        /*
         /// <summary>
         /// 鼠标双击
         /// </summary>
         /// <param name="offsetX">offsetX</param>
         /// <param name="offsetY">offsetY</param>
         /// <param name="rightButton">右键</param>
+        [Obsolete("It's imprecise.", true)]
         public void MouseDoubleClick(int offsetX, int offsetY, bool rightButton = false)
         {
             MouseMove(offsetX, offsetY);
             MouseDoubleClick(rightButton);
         }
+        */
 
         /// <summary>
         /// 鼠标按压
@@ -306,6 +399,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
             await MousePressed(rightButton, pressedMillionSeconds);
         }
 
+        /*
         /// <summary>
         /// 鼠标按压
         /// </summary>
@@ -313,11 +407,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="offsetY">offsetY</param>
         /// <param name="rightButton">右键</param>
         /// <param name="pressedMillionSeconds">按压时长</param>
+        [Obsolete("It's imprecise.", true)]
         public async Task MousePressed(int offsetX, int offsetY, bool rightButton = false, uint pressedMillionSeconds = MousePressedTime)
         {
             MouseMove(offsetX, offsetY);
             await MousePressed(rightButton, pressedMillionSeconds);
         }
+        */
 
         /// <summary>
         /// 鼠标滚轮
@@ -334,7 +430,65 @@ namespace FrHello.NetLib.Core.Windows.Windows
             WindowsApi.WriteLog($"{nameof(MouseWheel)} {nameof(wheelDelta)}:{wheelDelta}");
         }
 
-        //public void MouseDrag()
+        /// <summary>
+        /// 鼠标拖拽
+        /// </summary>
+        /// <param name="point">鼠标要移动到的绝对位置</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
+        public async Task MouseDrag(MousePoint point, uint delayPerPixel = 0)
+        {
+            MouseButtonDown();
+            await Task.Delay(500);
+
+            await MouseMove(point, delayPerPixel);
+            MouseButtonUp();
+        }
+
+        /*
+        /// <summary>
+        /// 鼠标拖拽
+        /// </summary>
+        /// <param name="offsetX">offsetX</param>
+        /// <param name="offsetY">offsetY</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
+        [Obsolete("It's imprecise.", true)]
+        public async Task MouseDrag(int offsetX, int offsetY, uint delayPerPixel = 0)
+        {
+            MouseButtonDown();
+            await Task.Delay(500);
+
+            await MouseMove(offsetX, offsetY, delayPerPixel);
+            MouseButtonUp();
+        }
+        */
+
+        /// <summary>
+        /// 鼠标拖拽
+        /// </summary>
+        /// <param name="fromPoint">拖动的起始绝对位置</param>
+        /// <param name="toPoint">鼠标要移动到的绝对位置</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
+        public async Task MouseDrag(MousePoint fromPoint, MousePoint toPoint, uint delayPerPixel = 0)
+        {
+            MouseMove(fromPoint);
+            await MouseDrag(toPoint, delayPerPixel);
+        }
+
+        /*
+        /// <summary>
+        /// 鼠标拖拽
+        /// </summary>
+        /// <param name="fromPoint">拖动的起始绝对位置</param>
+        /// <param name="offsetX">offsetX</param>
+        /// <param name="offsetY">offsetY</param>
+        /// <param name="delayPerPixel">每像素停留时间</param>
+        [Obsolete("It's imprecise.", true)]
+        public async Task MouseDrag(MousePoint fromPoint, int offsetX, int offsetY, uint delayPerPixel = 0)
+        {
+            MouseMove(fromPoint);
+            await MouseDrag(offsetX, offsetY, delayPerPixel);
+        }
+        */
 
         /// <summary>
         /// 获取鼠标按键字符串
@@ -344,6 +498,48 @@ namespace FrHello.NetLib.Core.Windows.Windows
         private string GetButtonString(bool rightButton)
         {
             return rightButton ? "RightButton" : "LeftButton";
+        }
+
+        /// <summary>
+        /// 内部坐标点
+        /// </summary>
+        public struct MousePoint : IEquatable<MousePoint>
+        {
+            public readonly int X;
+            public readonly int Y;
+            public MousePoint(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            public bool Equals(MousePoint other)
+            {
+                return X == other.X && Y == other.Y;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is MousePoint mousePoint && Equals(mousePoint);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (X * 397) ^ Y;
+                }
+            }
+
+            public static bool operator ==(MousePoint mousePoint1, MousePoint mousePoint2)
+            {
+                return mousePoint1.Equals(mousePoint2);
+            }
+
+            public static bool operator !=(MousePoint mousePoint1, MousePoint mousePoint2)
+            {
+                return !mousePoint1.Equals(mousePoint2);
+            }
         }
     }
 }

@@ -22,7 +22,17 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <summary>
         /// MouseApi
         /// </summary>
-        public static MouseApi MouseApi { get; set; } = new MouseApi();
+        public static MouseApi MouseApi { get; } = new MouseApi();
+
+        /// <summary>
+        /// KeyBoardApi
+        /// </summary>
+        public static KeyBoardApi KeyBoardApi { get; } = new KeyBoardApi();
+
+        /// <summary>
+        /// WindowApi
+        /// </summary>
+        public static WindowApi WindowApi { get; } = new WindowApi();
 
         /// <summary>
         /// 记录日志
