@@ -11,7 +11,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("user32.dll")]
-        public static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
+        private static extern void SwitchToThisWindow(IntPtr hWnd, bool fAltTab);
 
         internal WindowApi()
         {

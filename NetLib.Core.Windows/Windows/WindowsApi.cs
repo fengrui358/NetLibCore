@@ -35,6 +35,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
         public static WindowApi WindowApi { get; } = new WindowApi();
 
         /// <summary>
+        /// ScreenApi
+        /// </summary>
+        public static ScreenApi ScreenApi { get; } = new ScreenApi();
+
+        /// <summary>
         /// 记录日志
         /// </summary>
         /// <param name="log">日志信息</param>
