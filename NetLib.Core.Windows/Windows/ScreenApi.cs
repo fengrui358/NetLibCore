@@ -19,8 +19,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
         [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
         private static extern int BitBlt(IntPtr hDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
 
-        private readonly Bitmap _screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
-
         internal ScreenApi()
         {
         }
@@ -69,7 +67,9 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 Thread.Sleep(WindowsApi.Delay.Value);
             }
 
-            using (var dest = Graphics.FromImage(_screenPixel))
+            var screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+
+            using (var dest = Graphics.FromImage(screenPixel))
             {
                 using (var src = Graphics.FromHwnd(IntPtr.Zero))
                 {
@@ -81,7 +81,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 }
             }
 
-            var color = _screenPixel.GetPixel(0, 0);
+            var color = screenPixel.GetPixel(0, 0);
             WindowsApi.WriteLog($"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color}");
 
             return color;
@@ -146,37 +146,39 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
             await Task.Run(async () =>
             {
-                do
+                using (var screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
                 {
-                    linkedToken.ThrowIfCancellationRequested();
-
-                    using (var dest = Graphics.FromImage(_screenPixel))
+                    do
                     {
-                        using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                        linkedToken.ThrowIfCancellationRequested();
+
+                        using (var dest = Graphics.FromImage(screenPixel))
                         {
-                            var hSrcDc = src.GetHdc();
-                            var hDc = dest.GetHdc();
-                            BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int) CopyPixelOperation.SourceCopy);
-                            dest.ReleaseHdc();
-                            src.ReleaseHdc();
+                            using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                            {
+                                var hSrcDc = src.GetHdc();
+                                var hDc = dest.GetHdc();
+                                BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int) CopyPixelOperation.SourceCopy);
+                                dest.ReleaseHdc();
+                                src.ReleaseHdc();
+                            }
                         }
-                    }
 
-                    color = _screenPixel.GetPixel(0, 0);
+                        color = screenPixel.GetPixel(0, 0);
 
-                    await Task.Delay(5, linkedToken);
-                    WindowsApi.WriteLog(
-                        $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color.Value}");
-
-                    if (color == wantColor)
-                    {
-                        getColor = true;
+                        await Task.Delay(5, linkedToken);
                         WindowsApi.WriteLog(
-                            $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} is {color.Value}");
-                    }
+                            $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color.Value}");
 
-                } while (!getColor);
+                        if (color == wantColor)
+                        {
+                            getColor = true;
+                            WindowsApi.WriteLog(
+                                $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} is {color.Value}");
+                        }
 
+                    } while (!getColor);
+                }
             }, linkedToken);
 
             return getColor;
@@ -253,37 +255,39 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
             await Task.Run(async () =>
             {
-                do
+                using (var screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb))
                 {
-                    linkedToken.ThrowIfCancellationRequested();
-
-                    using (var dest = Graphics.FromImage(_screenPixel))
+                    do
                     {
-                        using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                        linkedToken.ThrowIfCancellationRequested();
+
+                        using (var dest = Graphics.FromImage(screenPixel))
                         {
-                            var hSrcDc = src.GetHdc();
-                            var hDc = dest.GetHdc();
-                            BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int)CopyPixelOperation.SourceCopy);
-                            dest.ReleaseHdc();
-                            src.ReleaseHdc();
+                            using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                            {
+                                var hSrcDc = src.GetHdc();
+                                var hDc = dest.GetHdc();
+                                BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int) CopyPixelOperation.SourceCopy);
+                                dest.ReleaseHdc();
+                                src.ReleaseHdc();
+                            }
                         }
-                    }
 
-                    color = _screenPixel.GetPixel(0, 0);
+                        color = screenPixel.GetPixel(0, 0);
 
-                    await Task.Delay(5, linkedToken);
-                    WindowsApi.WriteLog(
-                        $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color.Value}");
-
-                    if (color != wantColor)
-                    {
-                        getColor = true;
+                        await Task.Delay(5, linkedToken);
                         WindowsApi.WriteLog(
-                            $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} isn't {color.Value}");
-                    }
+                            $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color.Value}");
 
-                } while (!getColor);
+                        if (color != wantColor)
+                        {
+                            getColor = true;
+                            WindowsApi.WriteLog(
+                                $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} isn't {color.Value}");
+                        }
 
+                    } while (!getColor);
+                }
             }, linkedToken);
 
             return getColor;
