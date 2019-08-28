@@ -4,6 +4,9 @@ namespace FrHello.NetLib.Core.Windows.Windows
 {
     public static class WindowsApi
     {
+        private static string _lastLogMsg;
+        private static DateTime _lastLogDateTime;
+
         /// <summary>
         /// 接受新的WindowsApi操作日志
         /// </summary>
@@ -47,6 +50,15 @@ namespace FrHello.NetLib.Core.Windows.Windows
         {
             if (ReceiveApiOperateLogEvent != null)
             {
+                //降低日志频率，如果与上一条发送的日志一样并且发送时间小于1秒，则不发送
+                if (log == _lastLogMsg && DateTime.Now.Subtract(_lastLogDateTime) < TimeSpan.FromSeconds(1))
+                {
+                    return;
+                }
+
+                _lastLogMsg = log;
+                _lastLogDateTime = DateTime.Now;
+
                 if (NeedLogTime)
                 {
                     log = $"{DateTime.Now:yyyy-MM-dd hh:mm:ss:ffff}  {log}";
