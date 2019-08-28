@@ -131,12 +131,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// </summary>
         /// <param name="point">鼠标要移动到的绝对位置</param>
         /// <param name="delayPerPixel">每像素停留时间</param>
+        /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task MouseMove(MousePoint point, uint delayPerPixel)
+        public async Task MouseMove(MousePoint point, uint delayPerPixel, CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
             {
-                await Task.Delay(WindowsApi.Delay.Value);
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
             }
 
             await Task.Run(async () =>
@@ -149,6 +150,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                 while (currentPoint != point)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     if (currentX < point.X)
                     {
                         currentX++;
@@ -175,13 +178,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                     if (delayPerPixel > 0u)
                     {
-                        await Task.Delay(delayTimeSpan);
+                        await Task.Delay(delayTimeSpan, cancellationToken);
                     }
                 }
 
                 WindowsApi.WriteLog(
                     $"{nameof(MouseMove)} from {nameof(MousePoint.X)}:{currentPoint.X},{nameof(MousePoint.Y)}:{currentPoint.Y} to {nameof(MousePoint.X)}:{point.X},{nameof(MousePoint.Y)}:{point.Y}");
-            });
+            }, cancellationToken);
         }
 
         /*
@@ -191,13 +194,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="offsetX">offsetX</param>
         /// <param name="offsetY">offsetY</param>
         /// <param name="delayPerPixel">每像素停留时间</param>
+        /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
         [Obsolete("It's imprecise.", true)]
-        public async Task MouseMove(int offsetX, int offsetY, uint delayPerPixel)
+        public async Task MouseMove(int offsetX, int offsetY, uint delayPerPixel, CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
             {
-                await Task.Delay(WindowsApi.Delay.Value);
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
             }
 
             await Task.Run(async () =>
@@ -207,6 +211,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 var delayTimeSpan = TimeSpan.FromMilliseconds(delayPerPixel);
                 while (offsetX != 0 && offsetY != 0)
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
+
                     var offsetXPerMove = 0;
                     var offsetYPerMove = 0;
 
@@ -236,13 +242,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                     if (delayPerPixel > 0u)
                     {
-                        await Task.Delay(delayTimeSpan);
+                        await Task.Delay(delayTimeSpan, cancellationToken);
                     }
                 }
 
                 WindowsApi.WriteLog(
                     $"{nameof(MouseMove)} from {nameof(MousePoint.X)}:{currentPoint.X},{nameof(MousePoint.Y)}:{currentPoint.Y} to {offsetX}:{offsetX},{offsetY}:{offsetY}");
-            });
+            }, cancellationToken);
         }
         */
 
@@ -369,7 +375,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// </summary>
         /// <param name="rightButton">右键</param>
         /// <param name="pressedMillionSeconds">按压时长</param>
-        public async Task MousePressed(bool rightButton = false, uint pressedMillionSeconds = MousePressedTime)
+        /// <param name="cancellationToken">cancellationToken</param>
+        public async Task MousePressed(bool rightButton = false, uint pressedMillionSeconds = MousePressedTime, CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
             {
@@ -379,12 +386,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
             await Task.Run(async () =>
             {
                 mouse_event(rightButton ? MouseEventFlag.RightDown : MouseEventFlag.LeftDown, 0, 0, 0, UIntPtr.Zero);
-                await Task.Delay(TimeSpan.FromMilliseconds(pressedMillionSeconds));
+                await Task.Delay(TimeSpan.FromMilliseconds(pressedMillionSeconds), cancellationToken);
                 mouse_event(rightButton ? MouseEventFlag.RightUp : MouseEventFlag.LeftUp, 0, 0, 0, UIntPtr.Zero);
 
                 WindowsApi.WriteLog(
                     $"{nameof(MousePressed)} {GetButtonString(rightButton)} {nameof(MousePressedTime)}:{pressedMillionSeconds}");
-            });
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -393,10 +400,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="point">需要移动到的坐标</param>
         /// <param name="rightButton">右键</param>
         /// <param name="pressedMillionSeconds">按压时长</param>
-        public async Task MousePressed(MousePoint point, bool rightButton = false, uint pressedMillionSeconds = MousePressedTime)
+        /// <param name="cancellationToken">cancellationToken</param>
+        public async Task MousePressed(MousePoint point, bool rightButton = false, uint pressedMillionSeconds = MousePressedTime, CancellationToken cancellationToken = default)
         {
             MouseMove(point);
-            await MousePressed(rightButton, pressedMillionSeconds);
+            await MousePressed(rightButton, pressedMillionSeconds, cancellationToken);
         }
 
         /*
@@ -407,11 +415,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="offsetY">offsetY</param>
         /// <param name="rightButton">右键</param>
         /// <param name="pressedMillionSeconds">按压时长</param>
+        /// <param name="cancellationToken">cancellationToken</param>
         [Obsolete("It's imprecise.", true)]
-        public async Task MousePressed(int offsetX, int offsetY, bool rightButton = false, uint pressedMillionSeconds = MousePressedTime)
+        public async Task MousePressed(int offsetX, int offsetY, bool rightButton = false, uint pressedMillionSeconds = MousePressedTime, CancellationToken cancellationToken = default)
         {
             MouseMove(offsetX, offsetY);
-            await MousePressed(rightButton, pressedMillionSeconds);
+            await MousePressed(rightButton, pressedMillionSeconds, cancellationToken);
         }
         */
 
