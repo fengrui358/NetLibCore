@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -334,6 +335,24 @@ namespace FrHello.NetLib.Core.Windows.Windows
         {
             return await WaitColorNotAt(_innerMouseApi.Value.GetCurrentMousePoint(), wantColor, timeOut,
                 cancellationToken);
+        }
+
+        public Task<Point> ScanColorLocation(Color wantColor, Screen screen, Rectangle? rectangle = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        {
+            //确定扫描范围
+        }
+
+        public Task<Stream> ScreenCapture(Screen screen, Rectangle? rectangle = null, TimeSpan? timeSpan = null,
+            CancellationToken cancellationToken = default)
+        {
+
+        }
+
+        public Task ScreenCapture(Screen screen, string filePath, Rectangle? rectangle = null, TimeSpan? timeSpan = null,
+            CancellationToken cancellationToken = default)
+        {
+
         }
     }
 }
