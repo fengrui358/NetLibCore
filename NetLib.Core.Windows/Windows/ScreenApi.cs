@@ -343,16 +343,220 @@ namespace FrHello.NetLib.Core.Windows.Windows
             //确定扫描范围
         }
 
-        public Task<Stream> ScreenCapture(Screen screen, Rectangle? rectangle = null, TimeSpan? timeSpan = null,
-            CancellationToken cancellationToken = default)
+        public Task<Point> WaitScanColorLocation(Color wantColor, Screen screen, Rectangle? rectangle = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
         {
-
+            //确定扫描范围
         }
 
-        public Task ScreenCapture(Screen screen, string filePath, Rectangle? rectangle = null, TimeSpan? timeSpan = null,
+        public Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? rectangle = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        {
+            //确定扫描范围
+        }
+
+        public Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? rectangle = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        {
+            //确定扫描范围
+        }
+
+        /// <summary>
+        /// Screen capture
+        /// </summary>
+        /// <param name="screen">The screen want to capture</param>
+        /// <param name="imageFormat">Save image file path</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns></returns>
+        public async Task<Stream> ScreenCapture(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null, TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
 
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            using (var screenPixel = await InnerScreenCapture(screen, bounds, linkedToken))
+            {
+                if (screenPixel != null)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+                    var stream = new MemoryStream();
+
+                    if (imageFormat != null)
+                    {
+                        screenPixel.Save(stream, imageFormat);
+                        WindowsApi.WriteLog($"{nameof(ScreenCapture)} save to stream");
+                    }
+                    else
+                    {
+                        screenPixel.Save(stream, ImageFormat.MemoryBmp);
+                        WindowsApi.WriteLog($"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
+                    }
+
+                    return stream;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Screen capture
+        /// </summary>
+        /// <param name="screen">The screen want to capture</param>
+        /// <param name="filePath">Save image file path</param>
+        /// <param name="imageFormat">Image format</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns></returns>
+        public async Task ScreenCapture(Screen screen, string filePath, ImageFormat imageFormat = null, Rectangle? bounds = null, TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            using (var screenPixel = await InnerScreenCapture(screen, bounds, linkedToken))
+            {
+                if (screenPixel != null)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+                    if (imageFormat != null)
+                    {
+                        screenPixel.Save(filePath, imageFormat);
+                        WindowsApi.WriteLog($"Save to {filePath} with {nameof(imageFormat)}:{imageFormat}");
+                    }
+                    else
+                    {
+                        screenPixel.Save(filePath);
+                        WindowsApi.WriteLog($"Save to {filePath}");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inner screen capture
+        /// </summary>
+        /// <param name="screen">The screen want to capture</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns></returns>
+        private async Task<Bitmap> InnerScreenCapture(Screen screen, Rectangle? bounds = null,
+            CancellationToken cancellationToken = default)
+        {
+            var screenBounds = screen.Bounds;
+
+            if (bounds != null)
+            {
+                bounds.Value.Offset(screenBounds.Location);
+                screenBounds.Intersect(bounds.Value);
+            }
+
+            if (screenBounds.Width > 0 && screenBounds.Height > 0)
+            {
+                return await Task.Run(() =>
+                {
+                    var screenPixel = new Bitmap(screenBounds.Width, screenBounds.Height, PixelFormat.Format32bppArgb);
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    using (var dest = Graphics.FromImage(screenPixel))
+                    {
+                        using (var src = Graphics.FromHwnd(IntPtr.Zero))
+                        {
+                            var hSrcDc = src.GetHdc();
+                            var hDc = dest.GetHdc();
+                            BitBlt(hDc, 0, 0, screenBounds.Width, screenBounds.Height, hSrcDc, screenBounds.X,
+                                screenBounds.Y, (int)CopyPixelOperation.SourceCopy);
+                            dest.ReleaseHdc();
+                            src.ReleaseHdc();
+                        }
+                    }
+
+                    WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} {nameof(screenBounds)}:{screenBounds}");
+
+                    return screenPixel;
+                }, cancellationToken);
+            }
+            else
+            {
+                WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} failed. {nameof(screenBounds)}:{screenBounds}");
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get valid intersect rectangle
+        /// </summary>
+        /// <param name="targetRectangle">target rectangle</param>
+        /// <param name="bounds">bounds</param>
+        /// <returns>Intersect rectangle</returns>
+        [Obsolete]
+        private Rectangle GetValidIntersectRectangle(Rectangle targetRectangle, Rectangle bounds)
+        {
+            bounds.Offset(targetRectangle.Location);
+
+            var x = targetRectangle.X;
+            var y = targetRectangle.Y;
+
+            if (bounds.X > x && bounds.X < (x + targetRectangle.Width))
+            {
+                x = bounds.X;
+            }
+
+            if (bounds.Y > y && bounds.Y < (y + targetRectangle.Height))
+            {
+                y = bounds.Y;
+            }
+
+            int width;
+            int height;
+            var maxTargetRectangleX = targetRectangle.X + targetRectangle.Width;
+            var maxTargetRectangleY = targetRectangle.Y + targetRectangle.Height;
+
+            var maxBoundsRectangleX = bounds.X + bounds.Width;
+            var maxBoundsRectangleY = bounds.Y + bounds.Height;
+
+            if (maxBoundsRectangleX > x && maxBoundsRectangleX < maxTargetRectangleX)
+            {
+                width = maxBoundsRectangleX - x;
+            }
+            else
+            {
+                width = maxTargetRectangleX - x;
+            }
+
+            if (maxBoundsRectangleY > y && maxBoundsRectangleY < maxTargetRectangleY)
+            {
+                height = maxBoundsRectangleY - y;
+            }
+            else
+            {
+                height = maxTargetRectangleY - y;
+            }
+
+            return new Rectangle(x, y, width, height);
         }
     }
 }
