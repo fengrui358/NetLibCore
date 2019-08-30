@@ -422,12 +422,50 @@ namespace FrHello.NetLib.Core.Windows.Windows
             }, linkedToken);
         }
 
-        //public Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
-        //    TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
-        //{
-        //    //确定扫描范围
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wantBitmap"></param>
+        /// <param name="screen"></param>
+        /// <param name="bounds"></param>
+        /// <param name="timeOut"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
 
-        //}
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            var realRectangle = GetValidIntersectRectangle(screen, bounds);
+            using (var screenPixel = await InnerScreenCapture(realRectangle, linkedToken))
+            {
+                if (screenPixel != null)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+
+                    var rectangle = await ScanBitmapLocation(wantBitmap, screenPixel, null, linkedToken);
+                    if (rectangle != null)
+                    {
+                        var rectangle2 = rectangle.Value;
+                        rectangle2.Offset(realRectangle.Location);
+
+                        return rectangle2;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         //public Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
         //    TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
@@ -483,11 +521,76 @@ namespace FrHello.NetLib.Core.Windows.Windows
             }, cancellationToken);
         }
 
-        //public Task<Rectangle?> ScanBitmapLocation(Color wantColor, Bitmap bitmap, TimeSpan? timeOut = null,
-        //    CancellationToken cancellationToken = default)
-        //{
+        /// <summary>
+        /// Scan bitmap location
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
+        public async Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Bitmap bitmap, TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
 
-        //}
+            if (wantBitmap.Width == 0 || wantBitmap.Height == 0 || bitmap.Width == 0 || bitmap.Height == 0)
+            {
+                return null;
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await Task.Run(() =>
+            {
+                var index = 0;
+                for (var x = 0; x <= bitmap.Size.Width - wantBitmap.Width; x++)
+                {
+                    for (var y = 0; y <= bitmap.Size.Height - wantBitmap.Height; y++)
+                    {
+                        var isMatch = true;
+
+                        for (var x2 = 0; x2 < wantBitmap.Size.Width; x2++)
+                        {
+                            for (var y2 = 0; y2 < wantBitmap.Size.Height; y2++)
+                            {
+                                //降低检查频率
+                                if (index++ % 10 == 0)
+                                {
+                                    linkedToken.ThrowIfCancellationRequested();
+                                }
+
+                                if (bitmap.GetPixel(x + x2, y + y2) != wantBitmap.GetPixel(x2, y2))
+                                {
+                                    isMatch = false;
+                                    break;
+                                }
+
+                                if (x2 == wantBitmap.Size.Width - 1 && y2 == wantBitmap.Size.Height - 1)
+                                {
+                                    return new Rectangle?(new Rectangle(x, y, wantBitmap.Width, wantBitmap.Height));
+                                }
+                            }
+
+                            if (!isMatch)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                return null;
+            }, cancellationToken);
+        }
 
         /// <summary>
         /// Screen capture
