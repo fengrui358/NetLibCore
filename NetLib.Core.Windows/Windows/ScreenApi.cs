@@ -423,7 +423,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         }
 
         /// <summary>
-        /// 
+        /// todo:
         /// </summary>
         /// <param name="wantBitmap"></param>
         /// <param name="screen"></param>
@@ -626,13 +626,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (imageFormat != null)
                     {
                         screenPixel.Save(stream, imageFormat);
-                        WindowsApi.WriteLog($"{nameof(ScreenCapture)} save to stream");
+                        WindowsApi.WriteLog(
+                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
                     }
                     else
                     {
                         screenPixel.Save(stream, ImageFormat.MemoryBmp);
                         WindowsApi.WriteLog(
-                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
+                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{ImageFormat.MemoryBmp}");
                     }
 
                     return stream;
