@@ -18,7 +18,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         private readonly Lazy<MouseApi> _innerMouseApi = new Lazy<MouseApi>(() => new MouseApi());
 
         [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-        private static extern int BitBlt(IntPtr hDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
+        private static extern int BitBlt(IntPtr hDc, int x, int y, int nWidth, int nHeight, IntPtr hSrcDc, int xSrc, int ySrc, int dwRop);
 
         internal ScreenApi()
         {
@@ -337,29 +337,157 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 cancellationToken);
         }
 
-        public Task<Point> ScanColorLocation(Color wantColor, Screen screen, Rectangle? rectangle = null,
+        /// <summary>
+        /// Scan color first display location on screen
+        /// </summary>
+        /// <param name="wantColor">Want match color</param>
+        /// <param name="screen">The screen want to scanning</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target color location</returns>
+        public async Task<Point?> ScanColorLocation(Color wantColor, Screen screen, Rectangle? bounds = null,
             TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
         {
-            //确定扫描范围
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            var realRectangle = GetValidIntersectRectangle(screen, bounds);
+            using (var screenPixel = await InnerScreenCapture(realRectangle, linkedToken))
+            {
+                if (screenPixel != null)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+
+                    var point = await ScanColorLocation(wantColor, screenPixel, null, linkedToken);
+                    if (point != null)
+                    {
+                        var point2 = point.Value;
+                        point2.Offset(realRectangle.Location);
+
+                        return point2;
+                    }
+                }
+            }
+
+            return null;
         }
 
-        public Task<Point> WaitScanColorLocation(Color wantColor, Screen screen, Rectangle? rectangle = null,
+        /// <summary>
+        /// Wait to scan color first display location on screen
+        /// </summary>
+        /// <param name="wantColor">Want match color</param>
+        /// <param name="screen">The screen want to scanning</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target color location</returns>
+        public async Task<Point?> WaitScanColorLocation(Color wantColor, Screen screen, Rectangle? bounds = null,
             TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
         {
-            //确定扫描范围
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+
+                    var point = await ScanColorLocation(wantColor, screen, bounds, null, linkedToken);
+
+                    if (point != null)
+                    {
+                        return point;
+                    }
+                }
+            }, linkedToken);
         }
 
-        public Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? rectangle = null,
-            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        //public Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
+        //    TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        //{
+        //    //确定扫描范围
+
+        //}
+
+        //public Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
+        //    TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        //{
+        //    //确定扫描范围
+
+        //}
+
+        /// <summary>
+        /// Scan color first display location
+        /// </summary>
+        /// <param name="wantColor">Want match color</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target color location</returns>
+        public async Task<Point?> ScanColorLocation(Color wantColor, Bitmap bitmap, TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
         {
-            //确定扫描范围
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await Task.Run(() =>
+            {
+                var index = 0;
+                for (var x = 0; x < bitmap.Size.Width; x++)
+                {
+                    for (var y = 0; y < bitmap.Size.Height; y++)
+                    {
+                        //降低检查频率
+                        if (index++ % 10 == 0)
+                        {
+                            linkedToken.ThrowIfCancellationRequested();
+                        }
+
+                        if (bitmap.GetPixel(x, y) == wantColor)
+                        {
+                            return new Point?(new Point(x, y));
+                        }
+                    }
+                }
+
+                return null;
+            }, cancellationToken);
         }
 
-        public Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? rectangle = null,
-            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
-        {
-            //确定扫描范围
-        }
+        //public Task<Rectangle?> ScanBitmapLocation(Color wantColor, Bitmap bitmap, TimeSpan? timeOut = null,
+        //    CancellationToken cancellationToken = default)
+        //{
+
+        //}
 
         /// <summary>
         /// Screen capture
@@ -385,7 +513,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
                         .Token;
 
-            using (var screenPixel = await InnerScreenCapture(screen, bounds, linkedToken))
+            using (var screenPixel = await InnerScreenCapture(GetValidIntersectRectangle(screen, bounds), linkedToken))
             {
                 if (screenPixel != null)
                 {
@@ -400,16 +528,15 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     else
                     {
                         screenPixel.Save(stream, ImageFormat.MemoryBmp);
-                        WindowsApi.WriteLog($"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
+                        WindowsApi.WriteLog(
+                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
                     }
 
                     return stream;
                 }
-                else
-                {
-                    return null;
-                }
             }
+
+            return null;
         }
 
         /// <summary>
@@ -437,7 +564,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
                         .Token;
 
-            using (var screenPixel = await InnerScreenCapture(screen, bounds, linkedToken))
+            using (var screenPixel = await InnerScreenCapture(GetValidIntersectRectangle(screen, bounds), linkedToken))
             {
                 if (screenPixel != null)
                 {
@@ -459,26 +586,16 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <summary>
         /// Inner screen capture
         /// </summary>
-        /// <param name="screen">The screen want to capture</param>
-        /// <param name="bounds">bounds</param>
+        /// <param name="realRectangle">The real rectangle</param>
         /// <param name="cancellationToken">cancellationToken</param>
-        /// <returns></returns>
-        private async Task<Bitmap> InnerScreenCapture(Screen screen, Rectangle? bounds = null,
-            CancellationToken cancellationToken = default)
+        /// <returns>not null</returns>
+        private async Task<Bitmap> InnerScreenCapture(Rectangle realRectangle, CancellationToken cancellationToken = default)
         {
-            var screenBounds = screen.Bounds;
-
-            if (bounds != null)
-            {
-                bounds.Value.Offset(screenBounds.Location);
-                screenBounds.Intersect(bounds.Value);
-            }
-
-            if (screenBounds.Width > 0 && screenBounds.Height > 0)
+            if (realRectangle.Width > 0 && realRectangle.Height > 0)
             {
                 return await Task.Run(() =>
                 {
-                    var screenPixel = new Bitmap(screenBounds.Width, screenBounds.Height, PixelFormat.Format32bppArgb);
+                    var screenPixel = new Bitmap(realRectangle.Width, realRectangle.Height, PixelFormat.Format32bppArgb);
                     cancellationToken.ThrowIfCancellationRequested();
 
                     using (var dest = Graphics.FromImage(screenPixel))
@@ -487,25 +604,57 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         {
                             var hSrcDc = src.GetHdc();
                             var hDc = dest.GetHdc();
-                            BitBlt(hDc, 0, 0, screenBounds.Width, screenBounds.Height, hSrcDc, screenBounds.X,
-                                screenBounds.Y, (int)CopyPixelOperation.SourceCopy);
+                            BitBlt(hDc, 0, 0, realRectangle.Width, realRectangle.Height, hSrcDc, realRectangle.X,
+                                realRectangle.Y, (int)CopyPixelOperation.SourceCopy);
                             dest.ReleaseHdc();
                             src.ReleaseHdc();
                         }
                     }
 
-                    WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} {nameof(screenBounds)}:{screenBounds}");
+                    WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} {nameof(realRectangle)}:{realRectangle}");
 
                     return screenPixel;
                 }, cancellationToken);
             }
             else
             {
-                WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} failed. {nameof(screenBounds)}:{screenBounds}");
-                return null;
+                WindowsApi.WriteLog($"{nameof(InnerScreenCapture)} failed. {nameof(realRectangle)}:{realRectangle}");
+
+                throw new InvalidOperationException(
+                    $"Can't capture from {nameof(realRectangle)} is {realRectangle}");
             }
         }
 
+        /// <summary>
+        /// Get valid intersect rectangle
+        /// </summary>
+        /// <param name="targetRectangle">target rectangle</param>
+        /// <param name="bounds">bounds</param>
+        /// <returns>Intersect rectangle</returns>
+        private Rectangle GetValidIntersectRectangle(Rectangle targetRectangle, Rectangle? bounds = null)
+        {
+            if (bounds != null)
+            {
+                var innerBounds = bounds.Value;
+                innerBounds.Offset(targetRectangle.Location);
+                targetRectangle.Intersect(innerBounds);
+            }
+
+            return targetRectangle;
+        }
+
+        /// <summary>
+        /// Get valid intersect rectangle
+        /// </summary>
+        /// <param name="targetScreen">target screen</param>
+        /// <param name="bounds">bounds</param>
+        /// <returns>Intersect rectangle</returns>
+        private Rectangle GetValidIntersectRectangle(Screen targetScreen, Rectangle? bounds = null)
+        {
+            return GetValidIntersectRectangle(targetScreen.Bounds, bounds);
+        }
+
+        /*
         /// <summary>
         /// Get valid intersect rectangle
         /// </summary>
@@ -558,5 +707,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
             return new Rectangle(x, y, width, height);
         }
+        */
     }
 }
