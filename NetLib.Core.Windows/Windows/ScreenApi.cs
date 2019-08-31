@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -423,14 +424,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
         }
 
         /// <summary>
-        /// todo:
+        /// Scan bitmap location
         /// </summary>
-        /// <param name="wantBitmap"></param>
-        /// <param name="screen"></param>
-        /// <param name="bounds"></param>
-        /// <param name="timeOut"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="screen">screen</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
         public async Task<Rectangle?> ScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
             TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
         {
@@ -467,12 +468,45 @@ namespace FrHello.NetLib.Core.Windows.Windows
             return null;
         }
 
-        //public Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
-        //    TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
-        //{
-        //    //确定扫描范围
+        /// <summary>
+        /// Wait scan bitmap location
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="screen">screen</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns></returns>
+        public async Task<Rectangle?> WaitScanBitmapLocation(Bitmap wantBitmap, Screen screen, Rectangle? bounds = null,
+            TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
 
-        //}
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await Task.Run(async () =>
+            {
+                while (true)
+                {
+                    linkedToken.ThrowIfCancellationRequested();
+
+                    var rectangle = await ScanBitmapLocation(wantBitmap, screen, bounds, null, linkedToken);
+
+                    if (rectangle != null)
+                    {
+                        return rectangle;
+                    }
+                }
+            }, linkedToken);
+        }
 
         /// <summary>
         /// Scan color first display location
@@ -500,6 +534,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
             return await Task.Run(() =>
             {
                 var index = 0;
+
                 for (var x = 0; x < bitmap.Size.Width; x++)
                 {
                     for (var y = 0; y < bitmap.Size.Height; y++)
@@ -518,6 +553,55 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 }
 
                 return null;
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Scan color all display locations
+        /// </summary>
+        /// <param name="wantColor">Want match color</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target color locations</returns>
+        public async Task<Point[]> ScanColorLocations(Color wantColor, Bitmap bitmap, TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await Task.Run(() =>
+            {
+                var result = new List<Point>();
+
+                var index = 0;
+                for (var x = 0; x < bitmap.Size.Width; x++)
+                {
+                    for (var y = 0; y < bitmap.Size.Height; y++)
+                    {
+                        //降低检查频率
+                        if (index++ % 10 == 0)
+                        {
+                            linkedToken.ThrowIfCancellationRequested();
+                        }
+
+                        if (bitmap.GetPixel(x, y) == wantColor)
+                        {
+                            result.Add(new Point(x, y));
+                        }
+                    }
+                }
+
+                return result.ToArray();
             }, cancellationToken);
         }
 
@@ -552,6 +636,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
             return await Task.Run(() =>
             {
                 var index = 0;
+
                 for (var x = 0; x <= bitmap.Size.Width - wantBitmap.Width; x++)
                 {
                     for (var y = 0; y <= bitmap.Size.Height - wantBitmap.Height; y++)
