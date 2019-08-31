@@ -26,8 +26,6 @@ namespace FrHello.NetLib.Core.Serialization
             {
                 return new MapperConfiguration(cfg =>
                 {
-                    cfg.ValidateInlineMaps = false;
-
                     mapperConfigurationExpression?.Invoke(cfg);
                 });
             }
@@ -176,8 +174,6 @@ namespace FrHello.NetLib.Core.Serialization
                     }
                 }
             }
-
-            ValidateInlineMaps = false;
         }
 
         /// <summary>
