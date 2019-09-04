@@ -716,7 +716,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     }
                     else
                     {
-                        screenPixel.Save(stream, ImageFormat.MemoryBmp);
+                        screenPixel.Save(stream, ImageFormat.Bmp);
                         WindowsApi.WriteLog(
                             $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{ImageFormat.MemoryBmp}");
                     }
