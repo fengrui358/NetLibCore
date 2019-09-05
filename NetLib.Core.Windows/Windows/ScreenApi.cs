@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -8,6 +9,11 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenCvSharp;
+using OpenCvSharp.Extensions;
+using OpenCvSharp.XFeatures2D;
+using static FrHello.NetLib.Core.Windows.Windows.BitmapMatchOptions;
+using Point = System.Drawing.Point;
 
 namespace FrHello.NetLib.Core.Windows.Windows
 {
@@ -19,11 +25,17 @@ namespace FrHello.NetLib.Core.Windows.Windows
         private readonly Lazy<MouseApi> _innerMouseApi = new Lazy<MouseApi>(() => new MouseApi());
 
         [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
-        private static extern int BitBlt(IntPtr hDc, int x, int y, int nWidth, int nHeight, IntPtr hSrcDc, int xSrc, int ySrc, int dwRop);
+        private static extern int BitBlt(IntPtr hDc, int x, int y, int nWidth, int nHeight, IntPtr hSrcDc, int xSrc,
+            int ySrc, int dwRop);
 
         internal ScreenApi()
         {
         }
+
+        /// <summary>
+        /// 位图匹配算法
+        /// </summary>
+        public BitmapMatchOption BitmapMatchOption { get; } = BitmapMatchOptions.TemplateMatch;
 
         /// <summary>
         /// PrimaryScreen
@@ -77,14 +89,15 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 {
                     var hSrcDc = src.GetHdc();
                     var hDc = dest.GetHdc();
-                    BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int)CopyPixelOperation.SourceCopy);
+                    BitBlt(hDc, 0, 0, 1, 1, hSrcDc, point.X, point.Y, (int) CopyPixelOperation.SourceCopy);
                     dest.ReleaseHdc();
                     src.ReleaseHdc();
                 }
             }
 
             var color = screenPixel.GetPixel(0, 0);
-            WindowsApi.WriteLog($"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color}");
+            WindowsApi.WriteLog(
+                $"{nameof(GetColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)}:{color}");
 
             return color;
         }
@@ -178,7 +191,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             WindowsApi.WriteLog(
                                 $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} is {color.Value}");
                         }
-
                     } while (!getColor);
                 }
             }, linkedToken);
@@ -237,7 +249,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>If wait unit time out, the return color is null.</returns>
-        public async Task<bool> WaitColorNotAt(Point point, Color wantColor, TimeSpan? timeOut = null, CancellationToken cancellationToken = default)
+        public async Task<bool> WaitColorNotAt(Point point, Color wantColor, TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
             {
@@ -287,7 +300,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             WindowsApi.WriteLog(
                                 $"{nameof(WaitColorAt)} {nameof(point.X)}:{point.X},{nameof(point.Y)}:{point.Y} {nameof(color)} isn't {color.Value}");
                         }
-
                     } while (!getColor);
                 }
             }, linkedToken);
@@ -633,6 +645,250 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
                         .Token;
 
+            if (BitmapMatchOption == BitmapMatchOptions.TemplateMatch)
+            {
+                return await TemplateMatchLocation(wantBitmap, bitmap, (TemplateMatch) BitmapMatchOption, linkedToken);
+            }
+            else if (BitmapMatchOption == BitmapMatchOptions.SiftMatch)
+            {
+                return await SiftMatchLocation(wantBitmap, bitmap, linkedToken);
+            }
+            else if (BitmapMatchOption == BitmapMatchOptions.SurfMatch)
+            {
+                return await SurfMatchLocation(wantBitmap, bitmap, (SurfMatch) BitmapMatchOption, linkedToken);
+            }
+            else if (BitmapMatchOption == BitmapMatchOptions.Precision)
+            {
+                return await PrecisionMatchLocation(wantBitmap, bitmap, linkedToken);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Template match
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="templateMatch">template match option</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
+        private async Task<Rectangle?> TemplateMatchLocation(Bitmap wantBitmap, Bitmap bitmap,
+            TemplateMatch templateMatch, CancellationToken cancellationToken)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    using (var srcMat = bitmap.ToMat())
+                    using (var dstMat = wantBitmap.ToMat())
+                    using (var outArray = OutputArray.Create(srcMat))
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        Cv2.MatchTemplate(srcMat, dstMat, outArray, templateMatch.TemplateMatchModel);
+
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        Cv2.MinMaxLoc(InputArray.Create(outArray.GetMat()), out _,
+                            out var maxValue, out _, out var point);
+
+                        if (maxValue >= templateMatch.Threshold)
+                        {
+                            var rectangle =
+                                new Rectangle?(new Rectangle(point.X, point.Y, wantBitmap.Width, wantBitmap.Height));
+                            WindowsApi.WriteLog(
+                                $"{nameof(TemplateMatchLocation)} match success, {nameof(maxValue)}:{maxValue}, {rectangle}");
+
+                            return rectangle;
+                        }
+                        else
+                        {
+                            WindowsApi.WriteLog(
+                                $"{nameof(TemplateMatchLocation)} match failed, {nameof(maxValue)}:{maxValue}");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WindowsApi.WriteLog($"{nameof(TemplateMatchLocation)} ErrorMessage:{ex.Message}");
+                }
+
+                return null;
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sift match
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
+        private async Task<Rectangle?> SiftMatchLocation(Bitmap wantBitmap, Bitmap bitmap,
+            CancellationToken cancellationToken)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    using (var matSrc = bitmap.ToMat())
+                    using (var matTo = wantBitmap.ToMat())
+                    using (var matSrcRet = new Mat())
+                    using (var matToRet = new Mat())
+                    {
+                        KeyPoint[] keyPointsSrc, keyPointsTo;
+                        using (var sift = SIFT.Create())
+                        {
+                            sift.DetectAndCompute(matSrc, null, out keyPointsSrc, matSrcRet);
+                            sift.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
+                        }
+
+                        using (var bfMatcher = new BFMatcher())
+                        {
+                            var matches = bfMatcher.KnnMatch(matSrcRet, matToRet, k: 2);
+
+                            var pointsSrc = new List<Point2f>();
+                            var pointsDst = new List<Point2f>();
+                            foreach (var items in matches.Where(x => x.Length > 1))
+                            {
+                                if (items[0].Distance < 0.5 * items[1].Distance)
+                                {
+                                    pointsSrc.Add(keyPointsSrc[items[0].QueryIdx].Pt);
+                                    pointsDst.Add(keyPointsTo[items[0].TrainIdx].Pt);
+                                }
+                            }
+
+                            if (pointsSrc.Count > 0 && pointsDst.Count > 0)
+                            {
+                                var location = pointsSrc[0] - pointsDst[0];
+
+                                var rectangle =
+                                    new Rectangle?(new Rectangle((int) location.X, (int) location.Y, wantBitmap.Width,
+                                        wantBitmap.Height));
+                                WindowsApi.WriteLog(
+                                    $"{nameof(SiftMatchLocation)} match success, match count:{pointsSrc.Count}, {rectangle}");
+
+                                return rectangle;
+                            }
+                            else
+                            {
+                                WindowsApi.WriteLog(
+                                    $"{nameof(SiftMatchLocation)} match failed");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WindowsApi.WriteLog($"{nameof(SiftMatchLocation)} ErrorMessage:{ex.Message}");
+                }
+
+                return null;
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Surf match
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="surfMatch">surf match option</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
+        private async Task<Rectangle?> SurfMatchLocation(Bitmap wantBitmap, Bitmap bitmap, SurfMatch surfMatch,
+            CancellationToken cancellationToken)
+        {
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    using (var matSrc = bitmap.ToMat())
+                    using (var matTo = wantBitmap.ToMat())
+                    using (var matSrcRet = new Mat())
+                    using (var matToRet = new Mat())
+                    {
+                        KeyPoint[] keyPointsSrc, keyPointsTo;
+                        using (var surf = SURF.Create(surfMatch.HessianThreshold, 4, 3, true, true))
+                        {
+                            surf.DetectAndCompute(matSrc, null, out keyPointsSrc, matSrcRet);
+                            surf.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
+                        }
+
+                        using (var flnMatcher = new FlannBasedMatcher())
+                        {
+                            var matches = flnMatcher.Match(matSrcRet, matToRet);
+                            //求最小最大距离
+                            var minDistance = 1000d; //反向逼近
+                            var maxDistance = 0d;
+                            for (int i = 0; i < matSrcRet.Rows; i++)
+                            {
+                                var distance = matches[i].Distance;
+                                if (distance > maxDistance)
+                                {
+                                    maxDistance = distance;
+                                }
+
+                                if (distance < minDistance)
+                                {
+                                    minDistance = distance;
+                                }
+                            }
+
+                            var pointsSrc = new List<Point2f>();
+                            var pointsDst = new List<Point2f>();
+
+                            for (int i = 0; i < matSrcRet.Rows; i++)
+                            {
+                                double distance = matches[i].Distance;
+                                if (distance < Math.Max(minDistance * 2, 0.02))
+                                {
+                                    pointsSrc.Add(keyPointsSrc[matches[i].QueryIdx].Pt);
+                                    pointsDst.Add(keyPointsTo[matches[i].TrainIdx].Pt);
+                                }
+                            }
+
+                            if (pointsSrc.Count > 0 && pointsDst.Count > 0)
+                            {
+                                var location = pointsSrc[0] - pointsDst[0];
+
+                                var rectangle =
+                                    new Rectangle?(new Rectangle((int) location.X, (int) location.Y, wantBitmap.Width,
+                                        wantBitmap.Height));
+                                WindowsApi.WriteLog(
+                                    $"{nameof(SurfMatchLocation)} match success, {nameof(maxDistance)}:{maxDistance};{nameof(minDistance)}:{minDistance} match count:{pointsSrc.Count}, {rectangle}");
+
+                                return rectangle;
+                            }
+                            else
+                            {
+                                WindowsApi.WriteLog(
+                                    $"{nameof(SurfMatchLocation)} match failed, {nameof(maxDistance)}:{maxDistance};{nameof(minDistance)}:{minDistance}");
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    WindowsApi.WriteLog($"{nameof(SurfMatchLocation)} ErrorMessage:{ex.Message}");
+                }
+
+                return null;
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Precision match
+        /// </summary>
+        /// <param name="wantBitmap">Want match bitmap</param>
+        /// <param name="bitmap">target bitmap</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns>Target bitmap location</returns>
+        private async Task<Rectangle?> PrecisionMatchLocation(Bitmap wantBitmap, Bitmap bitmap,
+            CancellationToken cancellationToken)
+        {
             return await Task.Run(() =>
             {
                 var index = 0;
@@ -650,7 +906,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                                 //降低检查频率
                                 if (index++ % 10 == 0)
                                 {
-                                    linkedToken.ThrowIfCancellationRequested();
+                                    cancellationToken.ThrowIfCancellationRequested();
                                 }
 
                                 if (bitmap.GetPixel(x + x2, y + y2) != wantBitmap.GetPixel(x2, y2))
@@ -661,7 +917,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                                 if (x2 == wantBitmap.Size.Width - 1 && y2 == wantBitmap.Size.Height - 1)
                                 {
-                                    return new Rectangle?(new Rectangle(x, y, wantBitmap.Width, wantBitmap.Height));
+                                    var rectangle =
+                                        new Rectangle?(new Rectangle(x, y, wantBitmap.Width, wantBitmap.Height));
+
+                                    WindowsApi.WriteLog($"{nameof(PrecisionMatchLocation)} match success, {rectangle}");
+                                    return rectangle;
                                 }
                             }
 
@@ -673,6 +933,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     }
                 }
 
+                WindowsApi.WriteLog($"{nameof(PrecisionMatchLocation)} match failed");
                 return null;
             }, cancellationToken);
         }
@@ -686,7 +947,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task<Stream> ScreenCapture(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null, TimeSpan? timeOut = null,
+        public async Task<Stream> ScreenCapture(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null,
+            TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
@@ -738,7 +1000,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task ScreenCapture(Screen screen, string filePath, ImageFormat imageFormat = null, Rectangle? bounds = null, TimeSpan? timeOut = null,
+        public async Task ScreenCapture(Screen screen, string filePath, ImageFormat imageFormat = null,
+            Rectangle? bounds = null, TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
             if (WindowsApi.Delay.HasValue)
@@ -778,13 +1041,15 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="realRectangle">The real rectangle</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns>not null</returns>
-        private async Task<Bitmap> InnerScreenCapture(Rectangle realRectangle, CancellationToken cancellationToken = default)
+        private async Task<Bitmap> InnerScreenCapture(Rectangle realRectangle,
+            CancellationToken cancellationToken = default)
         {
             if (realRectangle.Width > 0 && realRectangle.Height > 0)
             {
                 return await Task.Run(() =>
                 {
-                    var screenPixel = new Bitmap(realRectangle.Width, realRectangle.Height, PixelFormat.Format32bppArgb);
+                    var screenPixel = new Bitmap(realRectangle.Width, realRectangle.Height,
+                        PixelFormat.Format32bppArgb);
                     cancellationToken.ThrowIfCancellationRequested();
 
                     using (var dest = Graphics.FromImage(screenPixel))
@@ -794,7 +1059,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             var hSrcDc = src.GetHdc();
                             var hDc = dest.GetHdc();
                             BitBlt(hDc, 0, 0, realRectangle.Width, realRectangle.Height, hSrcDc, realRectangle.X,
-                                realRectangle.Y, (int)CopyPixelOperation.SourceCopy);
+                                realRectangle.Y, (int) CopyPixelOperation.SourceCopy);
                             dest.ReleaseHdc();
                             src.ReleaseHdc();
                         }
