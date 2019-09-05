@@ -739,6 +739,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     using (var matSrcRet = new Mat())
                     using (var matToRet = new Mat())
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         KeyPoint[] keyPointsSrc, keyPointsTo;
                         using (var sift = SIFT.Create())
                         {
@@ -746,9 +748,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             sift.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
                         }
 
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         using (var bfMatcher = new BFMatcher())
                         {
                             var matches = bfMatcher.KnnMatch(matSrcRet, matToRet, k: 2);
+
+                            cancellationToken.ThrowIfCancellationRequested();
 
                             var pointsSrc = new List<Point2f>();
                             var pointsDst = new List<Point2f>();
@@ -810,6 +816,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     using (var matSrcRet = new Mat())
                     using (var matToRet = new Mat())
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         KeyPoint[] keyPointsSrc, keyPointsTo;
                         using (var surf = SURF.Create(surfMatch.HessianThreshold, 4, 3, true, true))
                         {
@@ -817,9 +825,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             surf.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
                         }
 
+                        cancellationToken.ThrowIfCancellationRequested();
+
                         using (var flnMatcher = new FlannBasedMatcher())
                         {
                             var matches = flnMatcher.Match(matSrcRet, matToRet);
+
+                            cancellationToken.ThrowIfCancellationRequested();
+
                             //求最小最大距离
                             var minDistance = 1000d; //反向逼近
                             var maxDistance = 0d;
