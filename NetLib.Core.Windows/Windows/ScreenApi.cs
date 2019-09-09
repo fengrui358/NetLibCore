@@ -35,7 +35,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <summary>
         /// 位图匹配算法
         /// </summary>
-        public BitmapMatchOption BitmapMatchOption { get; } = BitmapMatchOptions.TemplateMatch;
+        public BitmapMatchOption BitmapMatchOption { get; set; } = BitmapMatchOptions.TemplateMatch;
 
         /// <summary>
         /// PrimaryScreen
