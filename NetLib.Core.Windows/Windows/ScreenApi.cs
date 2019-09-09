@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -12,7 +11,6 @@ using System.Windows.Forms;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using OpenCvSharp.XFeatures2D;
-using static FrHello.NetLib.Core.Windows.Windows.BitmapMatchOptions;
 using Point = System.Drawing.Point;
 
 namespace FrHello.NetLib.Core.Windows.Windows
@@ -960,7 +958,35 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task<Stream> ScreenCapture(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null,
+        public async Task<Bitmap> ScreenCapture(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null,
+            TimeSpan? timeOut = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (WindowsApi.Delay.HasValue)
+            {
+                await Task.Delay(WindowsApi.Delay.Value, cancellationToken);
+            }
+
+            var linkedToken =
+                timeOut == null
+                    ? cancellationToken
+                    : CancellationTokenSource
+                        .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
+                        .Token;
+
+            return await InnerScreenCapture(GetValidIntersectRectangle(screen, bounds), linkedToken);
+        }
+
+        /// <summary>
+        /// Screen capture to stream
+        /// </summary>
+        /// <param name="screen">The screen want to capture</param>
+        /// <param name="imageFormat">Save image file path</param>
+        /// <param name="bounds">bounds</param>
+        /// <param name="timeOut">timeOut</param>
+        /// <param name="cancellationToken">cancellationToken</param>
+        /// <returns></returns>
+        public async Task<Stream> ScreenCaptureToStream(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null,
             TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
@@ -987,13 +1013,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     {
                         screenPixel.Save(stream, imageFormat);
                         WindowsApi.WriteLog(
-                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{imageFormat}");
+                            $"{nameof(ScreenCaptureToStream)} save to stream with {nameof(imageFormat)}:{imageFormat}");
                     }
                     else
                     {
                         screenPixel.Save(stream, ImageFormat.Bmp);
                         WindowsApi.WriteLog(
-                            $"{nameof(ScreenCapture)} save to stream with {nameof(imageFormat)}:{ImageFormat.MemoryBmp}");
+                            $"{nameof(ScreenCaptureToStream)} save to stream with {nameof(imageFormat)}:{ImageFormat.MemoryBmp}");
                     }
 
                     return stream;
@@ -1004,7 +1030,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         }
 
         /// <summary>
-        /// Screen capture
+        /// Screen capture to file
         /// </summary>
         /// <param name="screen">The screen want to capture</param>
         /// <param name="filePath">Save image file path</param>
@@ -1013,7 +1039,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task ScreenCapture(Screen screen, string filePath, ImageFormat imageFormat = null,
+        public async Task ScreenCaptureToFile(Screen screen, string filePath, ImageFormat imageFormat = null,
             Rectangle? bounds = null, TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
@@ -1037,12 +1063,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (imageFormat != null)
                     {
                         screenPixel.Save(filePath, imageFormat);
-                        WindowsApi.WriteLog($"Save to {filePath} with {nameof(imageFormat)}:{imageFormat}");
+                        WindowsApi.WriteLog($"{nameof(ScreenCaptureToFile)} Save to {filePath} with {nameof(imageFormat)}:{imageFormat}");
                     }
                     else
                     {
                         screenPixel.Save(filePath);
-                        WindowsApi.WriteLog($"Save to {filePath}");
+                        WindowsApi.WriteLog($"{nameof(ScreenCaptureToFile)} Save to {filePath}");
                     }
                 }
             }
