@@ -4,9 +4,9 @@ using System.Windows.Forms;
 namespace FrHello.NetLib.Core.Windows.Windows
 {
     /// <summary>
-    /// WindiwsExtension
+    /// WindowsExtension
     /// </summary>
-    public static class WindiwsExtension
+    public static class WindowsExtension
     {
         /// <summary>
         /// Get center point from a rectangle
