@@ -21,9 +21,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="OpenCvSharp4.Windows" Version="4.1.0.20190416" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
