@@ -30,10 +30,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
         /// <summary>
         /// 匹配模式
-        /// 经过测试准确率CCorrNormed和CCoeffNormed>SqDiff>CCorr>CCoeff
-        /// 效率CCorr>CCoeff>CCorrNormed>SqDiff>SqDiffNormed>CCoeffNormed
         /// </summary>
-        public TemplateMatchModes TemplateMatchModel { get; set; } = TemplateMatchModes.CCorrNormed;
+        public TemplateMatchModes TemplateMatchModel { get; set; } = TemplateMatchModes.CCoeffNormed;
 
         internal TemplateMatch()
         { }

@@ -693,7 +693,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         Cv2.MinMaxLoc(InputArray.Create(outArray.GetMat()), out _,
                             out var maxValue, out _, out var point);
 
-                        if (maxValue >= templateMatch.Threshold)
+                        if (maxValue >= templateMatch.Threshold && maxValue <= 1d)
                         {
                             var rectangle =
                                 new Rectangle?(new Rectangle(point.X, point.Y, wantBitmap.Width, wantBitmap.Height));
