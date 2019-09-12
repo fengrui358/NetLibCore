@@ -8,7 +8,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core windows utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.18</Version>
+    <Version>1.0.19</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Windows.xml</DocumentationFile>
@@ -20,6 +20,9 @@
     <DocumentationFile>bin\Release\net471\NetLib.Core.Windows.xml</DocumentationFile>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" Version="4.1.0.20190416" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="System.Windows.Forms" />
