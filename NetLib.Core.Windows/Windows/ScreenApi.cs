@@ -698,20 +698,20 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             var rectangle =
                                 new Rectangle?(new Rectangle(point.X, point.Y, wantBitmap.Width, wantBitmap.Height));
                             WindowsApi.WriteLog(
-                                $"{nameof(TemplateMatchLocation)} match success, {nameof(maxValue)}:{maxValue}, {rectangle}");
+                                $"{nameof(TemplateMatchLocation)} match success, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}, {rectangle}");
 
                             return rectangle;
                         }
                         else
                         {
                             WindowsApi.WriteLog(
-                                $"{nameof(TemplateMatchLocation)} match failed, {nameof(maxValue)}:{maxValue}");
+                                $"{nameof(TemplateMatchLocation)} match failed, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    WindowsApi.WriteLog($"{nameof(TemplateMatchLocation)} ErrorMessage:{ex.Message}");
+                    WindowsApi.WriteLog($"{nameof(TemplateMatchLocation)} {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, ErrorMessage:{ex.Message}");
                 }
 
                 return null;
