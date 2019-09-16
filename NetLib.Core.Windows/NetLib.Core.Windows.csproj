@@ -8,7 +8,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core windows utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.21</Version>
+    <Version>1.0.22</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Windows.xml</DocumentationFile>

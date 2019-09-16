@@ -643,21 +643,39 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         .CreateLinkedTokenSource(cancellationToken, new CancellationTokenSource(timeOut.Value).Token)
                         .Token;
 
-            if (BitmapMatchOption == BitmapMatchOptions.TemplateMatch)
+            Bitmap innerWantBitmap = null;
+            try
             {
-                return await TemplateMatchLocation(wantBitmap, bitmap, (TemplateMatch) BitmapMatchOption, linkedToken);
+                if (wantBitmap.PixelFormat != bitmap.PixelFormat)
+                {
+                    //如果两个位图的像素标准不一致需要转换
+                    innerWantBitmap = wantBitmap.Clone(
+                        new Rectangle(0, 0, wantBitmap.Size.Width, wantBitmap.Size.Height),
+                        bitmap.PixelFormat);
+                }
+
+                if (BitmapMatchOption == BitmapMatchOptions.TemplateMatch)
+                {
+                    return await TemplateMatchLocation(innerWantBitmap ?? wantBitmap, bitmap,
+                        (TemplateMatch) BitmapMatchOption, linkedToken);
+                }
+                else if (BitmapMatchOption == BitmapMatchOptions.SiftMatch)
+                {
+                    return await SiftMatchLocation(innerWantBitmap ?? wantBitmap, bitmap, linkedToken);
+                }
+                else if (BitmapMatchOption == BitmapMatchOptions.SurfMatch)
+                {
+                    return await SurfMatchLocation(innerWantBitmap ?? wantBitmap, bitmap, (SurfMatch) BitmapMatchOption,
+                        linkedToken);
+                }
+                else if (BitmapMatchOption == BitmapMatchOptions.Precision)
+                {
+                    return await PrecisionMatchLocation(innerWantBitmap ?? wantBitmap, bitmap, linkedToken);
+                }
             }
-            else if (BitmapMatchOption == BitmapMatchOptions.SiftMatch)
+            finally
             {
-                return await SiftMatchLocation(wantBitmap, bitmap, linkedToken);
-            }
-            else if (BitmapMatchOption == BitmapMatchOptions.SurfMatch)
-            {
-                return await SurfMatchLocation(wantBitmap, bitmap, (SurfMatch) BitmapMatchOption, linkedToken);
-            }
-            else if (BitmapMatchOption == BitmapMatchOptions.Precision)
-            {
-                return await PrecisionMatchLocation(wantBitmap, bitmap, linkedToken);
+                innerWantBitmap?.Dispose();
             }
 
             return null;
@@ -711,7 +729,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 }
                 catch (Exception ex)
                 {
-                    WindowsApi.WriteLog($"{nameof(TemplateMatchLocation)} {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, ErrorMessage:{ex.Message}");
+                    WindowsApi.WriteLog(
+                        $"{nameof(TemplateMatchLocation)} {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, ErrorMessage:{ex.Message}");
                 }
 
                 return null;
@@ -986,7 +1005,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="timeOut">timeOut</param>
         /// <param name="cancellationToken">cancellationToken</param>
         /// <returns></returns>
-        public async Task<Stream> ScreenCaptureToStream(Screen screen, ImageFormat imageFormat = null, Rectangle? bounds = null,
+        public async Task<Stream> ScreenCaptureToStream(Screen screen, ImageFormat imageFormat = null,
+            Rectangle? bounds = null,
             TimeSpan? timeOut = null,
             CancellationToken cancellationToken = default)
         {
@@ -1063,7 +1083,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (imageFormat != null)
                     {
                         screenPixel.Save(filePath, imageFormat);
-                        WindowsApi.WriteLog($"{nameof(ScreenCaptureToFile)} Save to {filePath} with {nameof(imageFormat)}:{imageFormat}");
+                        WindowsApi.WriteLog(
+                            $"{nameof(ScreenCaptureToFile)} Save to {filePath} with {nameof(imageFormat)}:{imageFormat}");
                     }
                     else
                     {
