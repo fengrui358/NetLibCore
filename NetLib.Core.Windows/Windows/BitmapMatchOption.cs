@@ -52,7 +52,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
     public sealed class SurfMatch : BitmapMatchOption
     {
         /// <summary>
-        /// Only features with keypoint.hessian larger than that are extracted.
+        /// Only features with key point.hessian larger than that are extracted.
         /// </summary>
         public double HessianThreshold { get; set; } = 400;
 
@@ -67,7 +67,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
     public class BitmapMatchOptions
     {
         /// <summary>
-        /// 模板匹配，常用，首选CCorrNormed和CCoeffNormed
+        /// 模板匹配，常用，首选CCorrNormed
         /// </summary>
         public static BitmapMatchOption TemplateMatch { get; } = new TemplateMatch();
 
