@@ -5,6 +5,8 @@
     <RootNamespace>FrHello.NetLib.Core.Net</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Net</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Product>NetLib.Core.Net</Product>
@@ -12,7 +14,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core net utility</PackageTags>
     <Product>NetLib.Core.Net</Product>
-    <Version>1.0.11</Version>
+    <Version>1.0.12</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -5,12 +5,14 @@
     <RootNamespace>FrHello.NetLib.Core.Mvx</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Mvx</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Description>Dotnet core mvx utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Product>NetLib.Core.Mvx</Product>
-    <Version>1.0.21</Version>
+    <Version>1.0.22</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

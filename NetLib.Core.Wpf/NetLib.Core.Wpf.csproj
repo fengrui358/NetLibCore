@@ -4,10 +4,12 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RootNamespace>FrHello.NetLib.Core.Wpf</RootNamespace>
     <PackageId>FrHello.NetLib.Core.Wpf</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
-    <Version>1.1.26</Version>
+    <Version>1.1.27</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Wpf.xml</DocumentationFile>

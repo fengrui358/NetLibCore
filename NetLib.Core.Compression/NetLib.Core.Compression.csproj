@@ -5,13 +5,15 @@
     <RootNamespace>FrHello.NetLib.Core.Compression</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Compression</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Description>Dotnet core compression utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core compression utility</PackageTags>
     <Product>NetLib.Core.Compression</Product>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

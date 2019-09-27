@@ -5,13 +5,15 @@
     <RootNamespace>FrHello.NetLib.Core.Reflection</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Reflection</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Description>Dotnet core reflection utility</Description>
     <PackageTags>Dotnet core reflection utility</PackageTags>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Product>NetLib.Core.Reflection</Product>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
