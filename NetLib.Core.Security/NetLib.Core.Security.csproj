@@ -4,6 +4,13 @@
     <TargetFrameworks>net461;net472;netstandard2.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Security</PackageId>
+    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>false</EmbedUntrackedSources>
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
     <Description>Dotnet core security utility</Description>
@@ -11,7 +18,7 @@
     <PackageTags>Dotnet core security utility</PackageTags>
     <RootNamespace>FrHello.NetLib.Core.Security</RootNamespace>
     <Product>NetLib.Core.Security</Product>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -25,6 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
   </ItemGroup>
 
