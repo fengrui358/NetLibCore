@@ -23,7 +23,7 @@ namespace FrHello.NetLib.Core.Serialization
         /// </summary>
         /// <typeparam name="T">需要序列化的对象类型</typeparam>
         /// <param name="obj">需要序列化的对象</param>
-        /// <returns>Xml字符串</returns>
+        /// <returns>Json字符串</returns>
         public static string SerializeJson<T>(this T obj)
         {
             return JsonConvert.SerializeObject(obj);
