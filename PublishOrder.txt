@@ -1,2 +1,13 @@
 NetLib.Core
 NetLib.Core.Compression
+NetLib.Core.IO
+NetLib.Core.Mvx
+NetLib.Core.Net
+NetLib.Core.Windows
+NetLib.Core.Wpf
+
+NetLib.Core.Reflection
+NetLib.Core.Serialization
+
+NetLib.Core.Framework
+NetLib.Core.Security
