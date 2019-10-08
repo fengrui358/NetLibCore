@@ -1,0 +1,2 @@
+NetLib.Core
+NetLib.Core.Compression
