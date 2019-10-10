@@ -14,11 +14,10 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <Company>rui feng</Company>
-    <Product>NetLib.Core.Net</Product>
     <Description>Dotnet core net utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <PackageTags>Dotnet core net utility</PackageTags>
     <Product>NetLib.Core.Net</Product>
+    <PackageTags>Dotnet core net utility</PackageTags>
     <Version>1.0.13</Version>
   </PropertyGroup>
 
