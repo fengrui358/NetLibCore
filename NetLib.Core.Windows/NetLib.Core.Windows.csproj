@@ -15,7 +15,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core windows utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
-    <Version>1.0.24</Version>
+    <Version>1.0.25</Version>
     <PackageTags>Dotnet core windows utility</PackageTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,6 +29,8 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="NHotkey" Version="1.2.1" />
+    <PackageReference Include="NHotkey.Wpf" Version="1.2.1" />
     <PackageReference Include="OpenCvSharp4" Version="4.1.0.20190416" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
     <Reference Include="PresentationCore" />
