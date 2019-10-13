@@ -9,8 +9,12 @@ using NHotkey.Wpf;
 
 namespace FrHello.NetLib.Core.Windows.Windows
 {
-    public static class HotKeyHelper
+    public class HotKeyHelper
     {
+        internal HotKeyHelper()
+        {
+        }
+
         /// <summary>
         /// 带有Identity的Cache，可以被移除
         /// Key:Identity
@@ -309,6 +313,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                             }
                             catch (Exception e)
                             {
+                                WindowsApi.WriteLog(e.Message);
                                 Debug.WriteLine(e);
                             }
                         }

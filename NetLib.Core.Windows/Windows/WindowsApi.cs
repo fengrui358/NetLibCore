@@ -43,6 +43,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
         public static ScreenApi ScreenApi { get; } = new ScreenApi();
 
         /// <summary>
+        /// 热键注册
+        /// </summary>
+        public static HotKeyHelper HotKeyHelper { get; } = new HotKeyHelper();
+
+        /// <summary>
         /// 记录日志
         /// </summary>
         /// <param name="log">日志信息</param>
