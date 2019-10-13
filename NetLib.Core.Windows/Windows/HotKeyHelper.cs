@@ -25,7 +25,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <summary>
         /// 带有全部快捷键的Cache
         /// </summary>
-        private readonly Dictionary<HotKeyIdentity, HotKeyModel> _hotKeyCache = new Dictionary<HotKeyIdentity, HotKeyModel>();
+        private readonly Dictionary<HotKeyIdentity, HotKeyModel> _hotKeyCache =
+            new Dictionary<HotKeyIdentity, HotKeyModel>();
 
         private readonly object _lock = new object();
 
@@ -67,7 +68,6 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (_hotKeyCache.ContainsKey(hotKeyIdentity))
                     {
                         _hotKeyCache[hotKeyIdentity].LinkedEventHandler(action, identity);
-                        return true;
                     }
                     else
                     {
@@ -76,13 +76,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         hotKeyModel.LinkedEventHandler(action, identity);
 
                         _hotKeyCache.Add(hotKeyIdentity, hotKeyModel);
+                    }
 
-                        if (!string.IsNullOrEmpty(identity))
-                        {
-                            _identityCache.Add(identity, hotKeyIdentity);
-                        }
-
-                        return true;
+                    if (!string.IsNullOrEmpty(identity))
+                    {
+                        _identityCache.Add(identity, hotKeyIdentity);
                     }
                 }
                 catch (HotkeyAlreadyRegisteredException hotkeyAlreadyRegisteredException)
@@ -105,12 +103,18 @@ namespace FrHello.NetLib.Core.Windows.Windows
         {
             lock (_lock)
             {
-                var hotKeyModel = (HotKeyModel)sender;
+                var hotKeyModel = (HotKeyModel) sender;
                 hotKeyModel.RemoveAllLinkedEvent -= HotKeyModelOnRemoveAllLinkedEvent;
 
                 if (_hotKeyCache.ContainsKey(hotKeyModel.HotKeyIdentity))
                 {
                     _hotKeyCache.Remove(hotKeyModel.HotKeyIdentity);
+                }
+
+                var f = _identityCache.FirstOrDefault(s => s.Value == hotKeyModel.HotKeyIdentity);
+                if (!string.IsNullOrEmpty(f.Key))
+                {
+                    _identityCache.Remove(f.Key);
                 }
             }
         }
@@ -182,8 +186,18 @@ namespace FrHello.NetLib.Core.Windows.Windows
             {
                 unchecked
                 {
-                    return ((int)Key * 397) ^ (int)ModifierKeys;
+                    return ((int) Key * 397) ^ (int) ModifierKeys;
                 }
+            }
+
+            public static bool operator == (HotKeyIdentity a, HotKeyIdentity b)
+            {
+                return a.Equals(b);
+            }
+
+            public static bool operator !=(HotKeyIdentity a, HotKeyIdentity b)
+            {
+                return !a.Equals(b);
             }
         }
 
@@ -197,12 +211,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
             /// <summary>
             /// 带Identity的链接的子事件
             /// </summary>
-            private Dictionary<string, Action> _linkedEventHandlersWithIdentity;
+            private Dictionary<string, WeakReference<Action>> _linkedEventHandlersWithIdentity;
 
             /// <summary>
             /// 所有链接的子事件
             /// </summary>
-            private List<Action> _linkedEventHandlers;
+            private List<WeakReference<Action>> _linkedEventHandlers;
 
             /// <summary>
             /// 移除所有链接的事件
@@ -229,12 +243,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 if (_linkedEventHandlers == null)
                 {
                     // ReSharper disable once InconsistentlySynchronizedField
-                    _linkedEventHandlers = new List<Action>();
+                    _linkedEventHandlers = new List<WeakReference<Action>>();
                 }
 
                 lock (_linkedEventHandlers)
                 {
-                    _linkedEventHandlers.Add(action);
+                    _linkedEventHandlers.Add(new WeakReference<Action>(action));
                 }
 
                 if (!string.IsNullOrEmpty(identity))
@@ -242,12 +256,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (_linkedEventHandlersWithIdentity == null)
                     {
                         // ReSharper disable once InconsistentlySynchronizedField
-                        _linkedEventHandlersWithIdentity = new Dictionary<string, Action>();
+                        _linkedEventHandlersWithIdentity = new Dictionary<string, WeakReference<Action>>();
                     }
 
                     lock (_linkedEventHandlersWithIdentity)
                     {
-                        _linkedEventHandlersWithIdentity.Add(identity, action);
+                        _linkedEventHandlersWithIdentity.Add(identity, new WeakReference<Action>(action));
                     }
                 }
             }
@@ -303,11 +317,32 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 {
                     lock (_linkedEventHandlers)
                     {
+                        if (_linkedEventHandlers.RemoveAll(s => !s.TryGetTarget(out _)) > 0)
+                        {
+                            var removeIdentity = new List<string>();
+
+                            foreach (var keyValuePair in _linkedEventHandlersWithIdentity)
+                            {
+                                if (!keyValuePair.Value.TryGetTarget(out _))
+                                {
+                                    removeIdentity.Add(keyValuePair.Key);
+                                }
+                            }
+
+                            foreach (var identity in removeIdentity)
+                            {
+                                _linkedEventHandlersWithIdentity.Remove(identity);
+                            }
+                        }
+
                         foreach (var linkedEventHandler in _linkedEventHandlers)
                         {
                             try
                             {
-                                linkedEventHandler?.Invoke();
+                                if (linkedEventHandler.TryGetTarget(out var action))
+                                {
+                                    action.Invoke();
+                                }
                             }
                             catch (Exception e)
                             {
