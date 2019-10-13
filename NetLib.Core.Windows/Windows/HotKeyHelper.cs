@@ -13,30 +13,26 @@ namespace FrHello.NetLib.Core.Windows.Windows
     {
         internal HotKeyHelper()
         {
+            HotkeyManager.HotkeyAlreadyRegistered += (sender, args) => HotkeyAlreadyRegistered?.Invoke(sender, args);
         }
 
         /// <summary>
         /// 带有Identity的Cache，可以被移除
         /// Key:Identity
         /// </summary>
-        private static readonly Dictionary<string, HotKeyIdentity> IdentityCache = new Dictionary<string, HotKeyIdentity>();
+        private readonly Dictionary<string, HotKeyIdentity> IdentityCache = new Dictionary<string, HotKeyIdentity>();
 
         /// <summary>
         /// 带有全部快捷键的Cache
         /// </summary>
-        private static readonly Dictionary<HotKeyIdentity, HotKeyModel> HotKeyCache = new Dictionary<HotKeyIdentity, HotKeyModel>();
+        private readonly Dictionary<HotKeyIdentity, HotKeyModel> HotKeyCache = new Dictionary<HotKeyIdentity, HotKeyModel>();
 
-        private static readonly object Lock = new object();
+        private readonly object Lock = new object();
 
         /// <summary>
         /// 热键已注册事件
         /// </summary>
-        public static event EventHandler<HotkeyAlreadyRegisteredEventArgs> HotkeyAlreadyRegistered;
-
-        static HotKeyHelper()
-        {
-            HotkeyManager.HotkeyAlreadyRegistered += (sender, args) => HotkeyAlreadyRegistered?.Invoke(sender, args);
-        }
+        public event EventHandler<HotkeyAlreadyRegisteredEventArgs> HotkeyAlreadyRegistered;
 
         /// <summary>
         /// 注册快捷键
@@ -45,7 +41,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="modifierKeys"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static bool Register(Key key, ModifierKeys modifierKeys, Action action)
+        public bool Register(Key key, ModifierKeys modifierKeys, Action action)
         {
             return RegisterOrReplace(string.Empty, key, modifierKeys, action);
         }
@@ -58,7 +54,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="modifierKeys"></param>
         /// <param name="action"></param>
         /// <returns></returns>
-        public static bool RegisterOrReplace(string identity, Key key, ModifierKeys modifierKeys, Action action)
+        public bool RegisterOrReplace(string identity, Key key, ModifierKeys modifierKeys, Action action)
         {
             lock (Lock)
             {
@@ -103,7 +99,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void HotKeyModelOnRemoveAllLinkedEvent(object sender, EventArgs e)
+        private void HotKeyModelOnRemoveAllLinkedEvent(object sender, EventArgs e)
         {
             lock (Lock)
             {
@@ -121,7 +117,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// 移除快捷键注册
         /// </summary>
         /// <param name="identity"></param>
-        public static void Remove(string identity)
+        public void Remove(string identity)
         {
             if (string.IsNullOrEmpty(identity))
             {
