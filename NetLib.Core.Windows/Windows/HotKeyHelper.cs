@@ -20,14 +20,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// 带有Identity的Cache，可以被移除
         /// Key:Identity
         /// </summary>
-        private readonly Dictionary<string, HotKeyIdentity> IdentityCache = new Dictionary<string, HotKeyIdentity>();
+        private readonly Dictionary<string, HotKeyIdentity> _identityCache = new Dictionary<string, HotKeyIdentity>();
 
         /// <summary>
         /// 带有全部快捷键的Cache
         /// </summary>
-        private readonly Dictionary<HotKeyIdentity, HotKeyModel> HotKeyCache = new Dictionary<HotKeyIdentity, HotKeyModel>();
+        private readonly Dictionary<HotKeyIdentity, HotKeyModel> _hotKeyCache = new Dictionary<HotKeyIdentity, HotKeyModel>();
 
-        private readonly object Lock = new object();
+        private readonly object _lock = new object();
 
         /// <summary>
         /// 热键已注册事件
@@ -56,7 +56,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <returns></returns>
         public bool RegisterOrReplace(string identity, Key key, ModifierKeys modifierKeys, Action action)
         {
-            lock (Lock)
+            lock (_lock)
             {
                 try
                 {
@@ -64,9 +64,9 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                     var hotKeyIdentity = new HotKeyIdentity(key, modifierKeys);
 
-                    if (HotKeyCache.ContainsKey(hotKeyIdentity))
+                    if (_hotKeyCache.ContainsKey(hotKeyIdentity))
                     {
-                        HotKeyCache[hotKeyIdentity].LinkedEventHandler(action, identity);
+                        _hotKeyCache[hotKeyIdentity].LinkedEventHandler(action, identity);
                         return true;
                     }
                     else
@@ -75,11 +75,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         hotKeyModel.RemoveAllLinkedEvent += HotKeyModelOnRemoveAllLinkedEvent;
                         hotKeyModel.LinkedEventHandler(action, identity);
 
-                        HotKeyCache.Add(hotKeyIdentity, hotKeyModel);
+                        _hotKeyCache.Add(hotKeyIdentity, hotKeyModel);
 
                         if (!string.IsNullOrEmpty(identity))
                         {
-                            IdentityCache.Add(identity, hotKeyIdentity);
+                            _identityCache.Add(identity, hotKeyIdentity);
                         }
 
                         return true;
@@ -87,11 +87,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 }
                 catch (HotkeyAlreadyRegisteredException hotkeyAlreadyRegisteredException)
                 {
+                    WindowsApi.WriteLog($"Hot key {hotkeyAlreadyRegisteredException.Name} already register");
                     HotkeyAlreadyRegistered?.Invoke(HotkeyManager.Current,
                         new HotkeyAlreadyRegisteredEventArgs(hotkeyAlreadyRegisteredException.Name));
-                    throw;
                 }
             }
+
+            return false;
         }
 
         /// <summary>
@@ -101,14 +103,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
         /// <param name="e"></param>
         private void HotKeyModelOnRemoveAllLinkedEvent(object sender, EventArgs e)
         {
-            lock (Lock)
+            lock (_lock)
             {
                 var hotKeyModel = (HotKeyModel)sender;
                 hotKeyModel.RemoveAllLinkedEvent -= HotKeyModelOnRemoveAllLinkedEvent;
 
-                if (HotKeyCache.ContainsKey(hotKeyModel.HotKeyIdentity))
+                if (_hotKeyCache.ContainsKey(hotKeyModel.HotKeyIdentity))
                 {
-                    HotKeyCache.Remove(hotKeyModel.HotKeyIdentity);
+                    _hotKeyCache.Remove(hotKeyModel.HotKeyIdentity);
                 }
             }
         }
@@ -124,16 +126,16 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 return;
             }
 
-            lock (Lock)
+            lock (_lock)
             {
-                if (IdentityCache.ContainsKey(identity))
+                if (_identityCache.ContainsKey(identity))
                 {
-                    var hotkeyIdentity = IdentityCache[identity];
-                    IdentityCache.Remove(identity);
+                    var hotkeyIdentity = _identityCache[identity];
+                    _identityCache.Remove(identity);
 
-                    if (HotKeyCache.ContainsKey(hotkeyIdentity))
+                    if (_hotKeyCache.ContainsKey(hotkeyIdentity))
                     {
-                        HotKeyCache[hotkeyIdentity].TryRemoveEventHandler(identity);
+                        _hotKeyCache[hotkeyIdentity].TryRemoveEventHandler(identity);
                     }
                 }
             }
