@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Input;
 using NHotkey;
@@ -82,6 +83,8 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     {
                         _identityCache.Add(identity, hotKeyIdentity);
                     }
+
+                    return true;
                 }
                 catch (HotkeyAlreadyRegisteredException hotkeyAlreadyRegisteredException)
                 {
@@ -190,7 +193,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 }
             }
 
-            public static bool operator == (HotKeyIdentity a, HotKeyIdentity b)
+            public static bool operator ==(HotKeyIdentity a, HotKeyIdentity b)
             {
                 return a.Equals(b);
             }
@@ -211,12 +214,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
             /// <summary>
             /// 带Identity的链接的子事件
             /// </summary>
-            private Dictionary<string, WeakReference<Action>> _linkedEventHandlersWithIdentity;
+            private Dictionary<string, WeakReferenceDelegate> _linkedEventHandlersWithIdentity;
 
             /// <summary>
             /// 所有链接的子事件
             /// </summary>
-            private List<WeakReference<Action>> _linkedEventHandlers;
+            private List<WeakReferenceDelegate> _linkedEventHandlers;
 
             /// <summary>
             /// 移除所有链接的事件
@@ -243,12 +246,12 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 if (_linkedEventHandlers == null)
                 {
                     // ReSharper disable once InconsistentlySynchronizedField
-                    _linkedEventHandlers = new List<WeakReference<Action>>();
+                    _linkedEventHandlers = new List<WeakReferenceDelegate>();
                 }
 
                 lock (_linkedEventHandlers)
                 {
-                    _linkedEventHandlers.Add(new WeakReference<Action>(action));
+                    _linkedEventHandlers.Add(new WeakReferenceDelegate(action.Target, action));
                 }
 
                 if (!string.IsNullOrEmpty(identity))
@@ -256,12 +259,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     if (_linkedEventHandlersWithIdentity == null)
                     {
                         // ReSharper disable once InconsistentlySynchronizedField
-                        _linkedEventHandlersWithIdentity = new Dictionary<string, WeakReference<Action>>();
+                        _linkedEventHandlersWithIdentity = new Dictionary<string, WeakReferenceDelegate>();
                     }
 
                     lock (_linkedEventHandlersWithIdentity)
                     {
-                        _linkedEventHandlersWithIdentity.Add(identity, new WeakReference<Action>(action));
+                        _linkedEventHandlersWithIdentity.Add(identity,
+                            new WeakReferenceDelegate(action.Target, action));
                     }
                 }
             }
@@ -317,13 +321,14 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 {
                     lock (_linkedEventHandlers)
                     {
-                        if (_linkedEventHandlers.RemoveAll(s => !s.TryGetTarget(out _)) > 0)
+                        if (_linkedEventHandlers.RemoveAll(s => !s.IsAlive()) > 0 &&
+                            _linkedEventHandlersWithIdentity != null)
                         {
                             var removeIdentity = new List<string>();
 
                             foreach (var keyValuePair in _linkedEventHandlersWithIdentity)
                             {
-                                if (!keyValuePair.Value.TryGetTarget(out _))
+                                if (!keyValuePair.Value.IsAlive())
                                 {
                                     removeIdentity.Add(keyValuePair.Key);
                                 }
@@ -339,10 +344,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
                         {
                             try
                             {
-                                if (linkedEventHandler.TryGetTarget(out var action))
-                                {
-                                    action.Invoke();
-                                }
+                                linkedEventHandler.Trigger();
                             }
                             catch (Exception e)
                             {
@@ -350,6 +352,39 @@ namespace FrHello.NetLib.Core.Windows.Windows
                                 Debug.WriteLine(e);
                             }
                         }
+                    }
+                }
+            }
+
+            private class WeakReferenceDelegate
+            {
+                private readonly WeakReference _weakReference;
+                private readonly MethodInfo _methodInfo;
+
+                public WeakReferenceDelegate(object target, Action action)
+                {
+                    _methodInfo = action.Method;
+
+                    if (!_methodInfo.IsStatic)
+                    {
+                        _weakReference = new WeakReference(target);
+                    }
+                }
+
+                public bool IsAlive()
+                {
+                    return _methodInfo.IsStatic || _weakReference.IsAlive;
+                }
+
+                public void Trigger()
+                {
+                    if (_methodInfo.IsStatic)
+                    {
+                        _methodInfo.Invoke(null, null);
+                    }
+                    else if (_weakReference.IsAlive)
+                    {
+                        _methodInfo.Invoke(_weakReference.Target, null);
                     }
                 }
             }
