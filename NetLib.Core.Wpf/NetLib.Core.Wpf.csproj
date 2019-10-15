@@ -14,7 +14,7 @@
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
-    <Version>1.1.27</Version>
+    <Version>1.1.28</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Wpf.xml</DocumentationFile>
@@ -26,8 +26,8 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
-    <PackageReference Include="MvvmCross" Version="6.3.1" />
-    <PackageReference Include="MvvmCross.Platforms.Wpf" Version="6.3.1" />
+    <PackageReference Include="MvvmCross" Version="6.4.1" />
+    <PackageReference Include="MvvmCross.Platforms.Wpf" Version="6.4.1" />
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +35,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\IconFontWpf\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\IconFontWpf\Properties\Resources.Designer.cs">
