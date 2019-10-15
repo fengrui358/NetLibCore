@@ -249,9 +249,10 @@ namespace FrHello.NetLib.Core.Windows.Windows
                     _linkedEventHandlers = new List<WeakReferenceDelegate>();
                 }
 
+                var weakReferenceDelegate = new WeakReferenceDelegate(action);
                 lock (_linkedEventHandlers)
                 {
-                    _linkedEventHandlers.Add(new WeakReferenceDelegate(action.Target, action));
+                    _linkedEventHandlers.Add(weakReferenceDelegate);
                 }
 
                 if (!string.IsNullOrEmpty(identity))
@@ -264,8 +265,7 @@ namespace FrHello.NetLib.Core.Windows.Windows
 
                     lock (_linkedEventHandlersWithIdentity)
                     {
-                        _linkedEventHandlersWithIdentity.Add(identity,
-                            new WeakReferenceDelegate(action.Target, action));
+                        _linkedEventHandlersWithIdentity.Add(identity, weakReferenceDelegate);
                     }
                 }
             }
@@ -361,13 +361,13 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 private readonly WeakReference _weakReference;
                 private readonly MethodInfo _methodInfo;
 
-                public WeakReferenceDelegate(object target, Action action)
+                public WeakReferenceDelegate(Action action)
                 {
                     _methodInfo = action.Method;
 
                     if (!_methodInfo.IsStatic)
                     {
-                        _weakReference = new WeakReference(target);
+                        _weakReference = new WeakReference(action.Target);
                     }
                 }
 
