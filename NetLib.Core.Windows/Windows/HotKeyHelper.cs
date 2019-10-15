@@ -14,7 +14,11 @@ namespace FrHello.NetLib.Core.Windows.Windows
     {
         internal HotKeyHelper()
         {
-            HotkeyManager.HotkeyAlreadyRegistered += (sender, args) => HotkeyAlreadyRegistered?.Invoke(sender, args);
+            HotkeyManager.HotkeyAlreadyRegistered += (sender, args) =>
+            {
+                WindowsApi.WriteLog($"Hot key {args.Name} already register");
+                HotkeyAlreadyRegistered?.Invoke(sender, args);
+            };
         }
 
         /// <summary>
