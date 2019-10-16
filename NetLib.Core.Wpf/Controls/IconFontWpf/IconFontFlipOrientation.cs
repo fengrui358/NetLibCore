@@ -1,5 +1,8 @@
-﻿namespace IconFontWpf
+﻿namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf
 {
+    /// <summary>
+    /// Icon font flip orientation
+    /// </summary>
     public enum IconFontFlipOrientation
     {
         /// <summary>No flip</summary>

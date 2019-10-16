@@ -4,15 +4,16 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using IconFontWpf;
 
-namespace IconFontWpf
+namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf
 {
     /// <summary>
     /// Class IconFontControl which is the custom base class for any PackIcon control.
     /// </summary>
     /// <typeparam name="TKind">The type of the enum kind.</typeparam>
     /// <seealso cref="T:ControlzEx.PackIconBase`1" />
-    public abstract class IconFontControl<TKind> : IconFontBase<TKind> where TKind : Enum
+    public abstract class IconFontControl<TKind> : IconFontBase<TKind> where TKind : System.Enum
     {
         /// <summary>Identifies the Flip dependency property.</summary>
         public static readonly DependencyProperty FlipProperty = DependencyProperty.Register(nameof(Flip),
@@ -49,10 +50,15 @@ namespace IconFontWpf
             nameof(SpinAutoReverse), typeof(bool), typeof(IconFontControl<TKind>),
             new PropertyMetadata(false, SpinAutoReversePropertyChangedCallback));
 
+        /// <summary>
+        /// ScaleX
+        /// </summary>
         public static readonly DependencyProperty ScaleXProperty = DependencyProperty.Register(
             "ScaleX", typeof(double), typeof(IconFontControl<TKind>), new PropertyMetadata(1d));
 
-
+        /// <summary>
+        /// ScaleY
+        /// </summary>
         public static readonly DependencyProperty ScaleYProperty = DependencyProperty.Register(
             "ScaleY", typeof(double), typeof(IconFontControl<TKind>), new PropertyMetadata(default(double)));
 

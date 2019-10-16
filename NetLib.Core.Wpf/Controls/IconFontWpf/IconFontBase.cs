@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace IconFontWpf
+#pragma warning disable 1591
+
+namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf
 {
     public abstract class IconFontBase : Control
     {
         internal abstract void UpdateData();
     }
 
-    public abstract class IconFontBase<TKind> : IconFontBase where TKind : Enum
+    public abstract class IconFontBase<TKind> : IconFontBase where TKind : System.Enum
     {
         private static Lazy<IDictionary<TKind, string>> _dataIndex;
 
