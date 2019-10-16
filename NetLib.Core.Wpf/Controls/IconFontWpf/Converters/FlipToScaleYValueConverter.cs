@@ -2,7 +2,6 @@
 using System.Globalization;
 using System.Windows;
 using FrHello.NetLib.Core.Wpf.UiConverters;
-using IconFontWpf;
 
 namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
 {

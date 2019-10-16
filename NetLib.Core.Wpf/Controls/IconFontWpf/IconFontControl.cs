@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using IconFontWpf;
+#pragma warning disable 1591
 
 namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf
 {

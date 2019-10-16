@@ -19,8 +19,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.IconFontWpf.Converters
         /// <returns></returns>
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return _instance ??
-                   (_instance = new NullToUnsetValueConverter());
+            return _instance ??= new NullToUnsetValueConverter();
         }
 
         /// <summary>

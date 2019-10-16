@@ -1,8 +1,6 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:IconFontWpf"
-    xmlns:converters="clr-namespace:IconFontWpf.Converters">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!--<Style TargetType="{x:Type local:IconFont}">
         <Setter Property="FrameworkElement.Height" Value="16" />
         <Setter Property="FrameworkElement.Width" Value="16" />
