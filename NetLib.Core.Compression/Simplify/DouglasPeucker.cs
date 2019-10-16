@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
+#pragma warning disable 1570
 
 namespace FrHello.NetLib.Core.Compression.Simplify
 {
@@ -11,6 +12,7 @@ namespace FrHello.NetLib.Core.Compression.Simplify
     /// </summary>
     public class DouglasPeucker
     {
+        // ReSharper disable once InconsistentNaming
         private static readonly Lazy<DouglasPeucker> _instance = new Lazy<DouglasPeucker>(() => new DouglasPeucker());
 
         /// <summary>
