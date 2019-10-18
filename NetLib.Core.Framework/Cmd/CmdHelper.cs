@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FrHello.NetLib.Core.Framework.Cmd
@@ -17,7 +16,7 @@ namespace FrHello.NetLib.Core.Framework.Cmd
         /// <param name="command">命令</param>
         public static async Task<string> Excute(string command)
         {
-            var cmd = GetCmd();
+            using var cmd = GetCmd();
             var realCommand = $"{command} &exit";
 
             await cmd.StandardInput.WriteLineAsync(realCommand);
