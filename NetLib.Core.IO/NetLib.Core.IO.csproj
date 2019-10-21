@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net461;net472;netstandard2.0;netstandard2.1</TargetFrameworks>
@@ -18,7 +18,7 @@
     <PackageTags>Dotnet core IO utility</PackageTags>
     <RootNamespace>FrHello.NetLib.Core.IO</RootNamespace>
     <Product>NetLib.Core.IO</Product>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
