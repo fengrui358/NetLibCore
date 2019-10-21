@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -11,13 +12,20 @@ namespace FrHello.NetLib.Core.Framework.Cmd
     public class CmdHelper
     {
         /// <summary>
+        /// command exit const string
+        /// </summary>
+        private static string ExitCommand = " &exit";
+
+        /// <summary>
         /// 执行命令
         /// </summary>
         /// <param name="command">命令</param>
-        public static async Task<string> Excute(string command)
+        /// <param name="excutePath">执行命令的路径</param>
+        public static async Task<string> Excute(string command, string excutePath = "")
         {
-            using var cmd = GetCmd();
-            var realCommand = $"{command} &exit";
+            using var cmd = GetCmd(excutePath);
+
+            var realCommand = $"{command}{ExitCommand}";
 
             await cmd.StandardInput.WriteLineAsync(realCommand);
             cmd.StandardInput.AutoFlush = true;
@@ -61,24 +69,59 @@ namespace FrHello.NetLib.Core.Framework.Cmd
         /// <summary>
         /// 获取Cmd进程
         /// </summary>
+        /// <param name="excutePath">执行命令的路径</param>
         /// <returns></returns>
-        public static Process GetCmd()
+        public static Process GetCmd(string excutePath = "")
         {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                UseShellExecute = false,
+                RedirectStandardInput = true,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                CreateNoWindow = true
+            };
+
+            if(!string.IsNullOrEmpty(excutePath) && Directory.Exists(excutePath))
+            {
+                startInfo.Arguments = $@"/k cd /d {WrapQuotes(excutePath)}";
+            }
+
             var proc = new Process
             {
-                StartInfo =
-                {
-                    FileName = "cmd.exe",
-                    UseShellExecute = false,
-                    RedirectStandardInput = true,
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    CreateNoWindow = true
-                }
+                StartInfo = startInfo
             };
 
             proc.Start();
             return proc;
+        }
+
+        /// <summary>
+        /// wrap quotes
+        /// </summary>
+        /// <param name="msg">message</param>
+        /// <returns>message with quotes</returns>
+        private static string WrapQuotes(string msg)
+        {
+            if (msg == null)
+            {
+                msg = @"""""";
+            }
+
+            var result = msg;
+
+            if (!msg.StartsWith(@"""", StringComparison.OrdinalIgnoreCase))
+            {
+                result = $@"""{msg}";
+            }
+
+            if (!msg.EndsWith(@"""", StringComparison.OrdinalIgnoreCase))
+            {
+                result = $@"{result}""";
+            }
+
+            return result;
         }
     }
 }
