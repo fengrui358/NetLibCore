@@ -21,5 +21,14 @@ namespace NetLib.Core.Test.Cmd.Test
         {
             CmdHelper.Excute($"ping {IPAddress.Parse("192.168.153.134")}").GetAwaiter().GetResult();
         }
+
+        /// <summary>
+        /// ChangeBaseDirTest
+        /// </summary>
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        public void ChangeBaseDirTest()
+        {
+            CmdHelper.Excute($"git.exe commit", @"G:\Users\Administrator\Desktop\Test").GetAwaiter().GetResult();
+        }
     }
 }
