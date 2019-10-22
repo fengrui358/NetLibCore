@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net461;net472;netstandard2.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>FrHello.NetLib.Core.Serialization</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>FrHello.NetLib.Core.Serialization</PackageId>
     <IncludeSymbols>true</IncludeSymbols>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
