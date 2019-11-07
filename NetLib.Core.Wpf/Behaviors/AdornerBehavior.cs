@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Documents;
 using FrHello.NetLib.Core.Wpf.Adorners;
 
@@ -29,7 +30,7 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
                 throw new ArgumentNullException(nameof(element));
             }
 
-            return (UIElement)element.GetValue(AdornerProperty);
+            return (UIElement) element.GetValue(AdornerProperty);
         }
 
         /// <summary>
@@ -52,17 +53,18 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
         /// </summary>
         /// <param name="dependencyObject">dependencyObject</param>
         /// <param name="args">args</param>
-        private static void OnAdornerChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        private static void OnAdornerChangedCallback(DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs args)
         {
             if (dependencyObject is UIElement element)
             {
-                var uiElement = (UIElement)args.NewValue;
+                var uiElement = (UIElement) args.NewValue;
 
                 var adornerLayer = AdornerLayer.GetAdornerLayer(element);
 
                 if (adornerLayer != null)
                 {
-                    var adorners = adornerLayer?.GetAdorners(element);
+                    var adorners = adornerLayer.GetAdorners(element);
 
                     if (adorners != null)
                     {
@@ -78,8 +80,32 @@ namespace FrHello.NetLib.Core.Wpf.Behaviors
 
                     if (uiElement != null)
                     {
+                        TrySetDataContext(uiElement, element);
                         adornerLayer.Add(new AttachedAdorner(uiElement, element));
                     }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 尝试设置Adorner
+        /// <param name="attachedAdornerElement">附加到其他元素上面的UIElement</param>
+        /// <param name="adornedTargetElement">需要附加的目标UIElement</param>
+        /// </summary>
+        private static void TrySetDataContext(UIElement attachedAdornerElement, UIElement adornedTargetElement)
+        {
+            if (attachedAdornerElement is FrameworkElement attachedAdornerFrameworkElement &&
+                adornedTargetElement is FrameworkElement)
+            {
+                if (attachedAdornerFrameworkElement.DataContext == null)
+                {
+                    var dateContextBinding = new Binding(nameof(FrameworkElement.DataContext))
+                    {
+                        Source = adornedTargetElement,
+                        Mode = BindingMode.OneWay
+                    };
+                    BindingOperations.SetBinding(attachedAdornerElement, FrameworkElement.DataContextProperty,
+                        dateContextBinding);
                 }
             }
         }
