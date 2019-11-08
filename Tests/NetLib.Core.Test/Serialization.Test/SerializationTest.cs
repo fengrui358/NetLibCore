@@ -98,6 +98,25 @@ namespace NetLib.Core.Test.Serialization.Test
 
             var c2 = xml.DeserializeXml<MockClass>();
 
+            Assert.NotEqual(c, c2);
+            Assert.Equal(c.A, c2.A);
+        }
+
+        /// <summary>
+        /// JsonSerializationTest
+        /// </summary>
+        [Fact]
+        public void JsonSerializationTest()
+        {
+            var c = new MockClass { A = "a" };
+            var json = c.SerializeJson();
+            var c2 = json.DeserializeJson<MockClass>();
+            Assert.NotEqual(c, c2);
+            Assert.Equal(c.A, c2.A);
+
+            json = c.SerializeJsonAsync().GetAwaiter().GetResult();
+            c2 = json.DeserializeJsonAsync<MockClass>().GetAwaiter().GetResult();
+            Assert.NotEqual(c, c2);
             Assert.Equal(c.A, c2.A);
         }
 
