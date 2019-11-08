@@ -113,11 +113,6 @@ namespace NetLib.Core.Test.Serialization.Test
             var c2 = json.DeserializeJson<MockClass>();
             Assert.NotEqual(c, c2);
             Assert.Equal(c.A, c2.A);
-
-            json = c.SerializeJsonAsync().GetAwaiter().GetResult();
-            c2 = json.DeserializeJsonAsync<MockClass>().GetAwaiter().GetResult();
-            Assert.NotEqual(c, c2);
-            Assert.Equal(c.A, c2.A);
         }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
