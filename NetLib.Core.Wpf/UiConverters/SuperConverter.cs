@@ -338,9 +338,12 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                             converterValue = !converterValue;
                         }
                     }
-                    else if (value is string str && string.IsNullOrEmpty(str))
+                    else if (value is string str)
                     {
-                        converterValue = !converterValue;
+                        if (!string.IsNullOrEmpty(str))
+                        {
+                            converterValue = !converterValue;
+                        }
                     }
                     else if (value is IEnumerable enumerableValue)
                     {
