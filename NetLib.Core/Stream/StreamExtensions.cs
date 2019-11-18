@@ -23,6 +23,24 @@ namespace FrHello.NetLib.Core
             long bufferSize = 81920, IProgress<double> progress = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            await CopyToAsync(source, source.Length, destination, bufferSize, progress, cancellationToken);
+        }
+
+        /// <summary>
+        /// 复制流
+        /// </summary>
+        /// <param name="source">原始流</param>
+        /// <param name="sourceLength">原始流长度</param>
+        /// <param name="destination">目标流</param>
+        /// <param name="bufferSize">分段复制流的大小</param>
+        /// <param name="progress">进度</param>
+        /// <param name="cancellationToken">取消标示</param>
+        /// <returns></returns>
+        public static async Task CopyToAsync(this System.IO.Stream source, long sourceLength,
+            System.IO.Stream destination,
+            long bufferSize = 81920, IProgress<double> progress = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (!source.CanRead)
@@ -35,7 +53,7 @@ namespace FrHello.NetLib.Core
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
 
             var buffer = new byte[bufferSize];
-            var totalLength = (double) source.Length;
+            var totalLength = (double) sourceLength;
             long totalBytesRead = 0;
             int bytesRead;
             while ((bytesRead =
@@ -43,7 +61,7 @@ namespace FrHello.NetLib.Core
             {
                 await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
                 totalBytesRead += bytesRead;
-                progress?.Report(totalLength / totalBytesRead);
+                progress?.Report(totalBytesRead / totalLength);
             }
         }
     }
