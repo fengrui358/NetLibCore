@@ -366,7 +366,18 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                         //如果参数等于空则进行一些基本判断
                         if (value != null && value != DependencyProperty.UnsetValue)
                         {
-                            converterValue = !converterValue;
+                            if (double.TryParse(value.ToString(), out double d))
+                            {
+                                //如果能够转换为数值类型，进一步判断数值不为0
+                                if (Math.Abs(d) > double.Epsilon)
+                                {
+                                    converterValue = !converterValue;
+                                }
+                            }
+                            else
+                            {
+                                converterValue = !converterValue;
+                            }
                         }
                     }
                 }
