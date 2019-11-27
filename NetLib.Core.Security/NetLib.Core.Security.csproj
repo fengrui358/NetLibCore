@@ -18,7 +18,7 @@
     <PackageTags>Dotnet core security utility</PackageTags>
     <RootNamespace>FrHello.NetLib.Core.Security</RootNamespace>
     <Product>NetLib.Core.Security</Product>
-    <Version>1.0.9</Version>
+    <Version>1.0.10</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
