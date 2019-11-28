@@ -308,6 +308,12 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         internal static object Convert(bool converterValue, object value, Type targetType, object parameter,
             CultureInfo culture)
         {
+            //如果TargetType的类型是Object，则该转换器很可能是被用在了多值转换器中，强制返回bool结果
+            if (targetType == typeof(object))
+            {
+                targetType = typeof(bool);
+            }
+
             //判断结果能否进行转换
             if (CanAutoConverterType(targetType))
             {
