@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 
@@ -49,6 +50,32 @@ namespace FrHello.NetLib.Core.Reflection.Enum
             }
 
             return description;
+        }
+
+        /// <summary>
+        /// 获取枚举对应的特性
+        /// </summary>
+        /// <typeparam name="TAttribute"></typeparam>
+        /// <param name="enumValue"></param>
+        /// <returns></returns>
+        public static TAttribute GetEnumValueAttribute<TAttribute>(this System.Enum enumValue)
+            where TAttribute : Attribute
+        {
+            var field = enumValue.GetType().GetField(enumValue.ToString());
+            return field.GetCustomAttribute<TAttribute>();
+        }
+
+        /// <summary>
+        /// 获取枚举对应的特性
+        /// </summary>
+        /// <typeparam name="TAttribute"></typeparam>
+        /// <param name="enumValue"></param>
+        /// <returns></returns>
+        public static IEnumerable<TAttribute> GetEnumValueAttributes<TAttribute>(this System.Enum enumValue)
+            where TAttribute : Attribute
+        {
+            var field = enumValue.GetType().GetField(enumValue.ToString());
+            return field.GetCustomAttributes<TAttribute>();
         }
     }
 }
