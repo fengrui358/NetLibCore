@@ -65,7 +65,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// 对象
         /// </summary>
         public static SuperConverter Instance { get; } =
-            _instance ?? (_instance = new SuperConverter());
+            _instance ??= new SuperConverter();
 
         /// <summary>
         /// 提供对象
@@ -115,7 +115,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// 对象
         /// </summary>
         public static SuperConverterInverse Instance { get; } =
-            _instance ?? (_instance = new SuperConverterInverse());
+            _instance ??= new SuperConverterInverse();
 
         /// <summary>
         /// 提供对象
@@ -165,7 +165,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// 对象
         /// </summary>
         public static SuperConverterForMulti Instance { get; } =
-            _instance ?? (_instance = new SuperConverterForMulti());
+            _instance ??= new SuperConverterForMulti();
 
         /// <summary>
         /// 提供对象
@@ -215,7 +215,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// 对象
         /// </summary>
         public static SuperConverterInverseForMulti Instance { get; } =
-            _instance ?? (_instance = new SuperConverterInverseForMulti());
+            _instance ??= new SuperConverterInverseForMulti();
 
         /// <summary>
         /// 提供对象
@@ -340,6 +340,14 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
                     {
                         //如果值为布尔值，则优先进行判断
                         if (boolValue)
+                        {
+                            converterValue = !converterValue;
+                        }
+                    }
+                    else if (value is Visibility visibility)
+                    {
+                        //如果值为可见性枚举
+                        if (visibility == Visibility.Visible)
                         {
                             converterValue = !converterValue;
                         }
