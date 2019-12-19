@@ -355,28 +355,77 @@ namespace FrHello.NetLib.Core.Net
         #region GetLocalIPAddress
 
         /// <summary>
-        /// 获取本地所有的IPv4地址
+        /// 获取本地所有的IP地址
         /// </summary>
         /// <param name="type">要获取IP地址的网卡类型</param>
+        /// <param name="addressFamily">寻址方案</param>
         /// <returns>对应类型的IP地址</returns>
-        public static IPAddress[] GetAllLocalIPv4(NetworkInterfaceType type)
+        public static IPAddress[] GetAllLocalIP(NetworkInterfaceType type,
+            AddressFamily addressFamily = AddressFamily.InterNetwork)
         {
-            var ipAddrList = new List<IPAddress>();
+            var ipAddressList = new List<IPAddress>();
             foreach (var item in NetworkInterface.GetAllNetworkInterfaces())
             {
                 if (item.NetworkInterfaceType == type && item.OperationalStatus == OperationalStatus.Up)
                 {
                     foreach (var ip in item.GetIPProperties().UnicastAddresses)
                     {
-                        if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                        if (ip.Address.AddressFamily == addressFamily)
                         {
-                            ipAddrList.Add(ip.Address);
+                            ipAddressList.Add(ip.Address);
                         }
                     }
                 }
             }
 
-            return ipAddrList.ToArray();
+            return ipAddressList.ToArray();
+        }
+
+        /// <summary>
+        /// 获取本地所有的IPv4地址
+        /// </summary>
+        /// <param name="type">要获取IP地址的网卡类型</param>
+        /// <returns></returns>
+        public static IPAddress[] GetAllLocalIPv4(NetworkInterfaceType type)
+        {
+            return GetAllLocalIP(type);
+        }
+
+
+        /// <summary>
+        /// 获取本地Ip
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="addressFamily"></param>
+        /// <returns></returns>
+        public static IPAddress GetLocalIp(NetworkInterfaceType type = NetworkInterfaceType.Ethernet,
+            AddressFamily addressFamily = AddressFamily.InterNetwork)
+        {
+            foreach (var item in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (item.NetworkInterfaceType == type && item.OperationalStatus == OperationalStatus.Up)
+                {
+                    foreach (var ip in item.GetIPProperties().UnicastAddresses)
+                    {
+                        if (ip.Address.AddressFamily == addressFamily)
+                        {
+                            return ip.Address;
+                        }
+                    }
+                }
+            }
+
+            return IPAddress.None;
+        }
+
+        /// <summary>
+        /// 获取本地Ip
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static IPAddress GetLocalIpv4(NetworkInterfaceType type = NetworkInterfaceType.Ethernet)
+        {
+            return GetLocalIp(type);
         }
 
         #endregion
