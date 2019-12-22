@@ -55,8 +55,6 @@ namespace FrHello.NetLib.Core.Serialization
             var configuration = await GetDefaultMapperConfiguration(assemblies, mapperConfigurationExpression);
             return configuration.CreateMapper();
         }
-
-        
     }
 
     /// <summary>
