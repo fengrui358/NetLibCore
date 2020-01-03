@@ -423,21 +423,8 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
             {
                 foreach (var value in values)
                 {
-                    if (value == null || value == DependencyProperty.UnsetValue)
-                    {
-                        converterValue = !converterValue;
-                        break;
-                    }
-
-                    //判断是否是字符串
-                    if (value is string str && string.IsNullOrEmpty(str))
-                    {
-                        converterValue = !converterValue;
-                        break;
-                    }
-
-                    //判断是否是bool值
-                    if (value is bool boolean && !boolean)
+                    var converterOutValue = (bool)Convert(!converterValue, value, typeof(bool), parameter, culture);
+                    if (!converterOutValue)
                     {
                         converterValue = !converterValue;
                         break;
