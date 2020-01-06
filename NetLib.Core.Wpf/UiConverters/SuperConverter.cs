@@ -423,7 +423,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
             {
                 foreach (var value in values)
                 {
-                    var converterOutValue = (bool)Convert(!converterValue, value, typeof(bool), parameter, culture);
+                    var converterOutValue = (bool)Convert(!converterValue, value, typeof(bool), null, culture);
                     if (!converterOutValue)
                     {
                         converterValue = !converterValue;
