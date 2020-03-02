@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 // ReSharper disable once CheckNamespace
@@ -68,7 +69,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = await ping.SendPingAsync(RemoveProtocolHead(hostNameOrAddress), timeout);
+            var pingReply = await ping.SendPingAsync(RemoveProtocolHead(hostNameOrAddress, out _), timeout);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -102,6 +103,54 @@ namespace FrHello.NetLib.Core.Net
         }
 
         /// <summary>
+        /// Ping某个地址是否正常工作，最大限度地址的正确性来让API易于使用
+        /// </summary>
+        /// <param name="hostNameOrAddress">地址</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
+        /// <returns></returns>
+        public static async Task<bool> PingEasy(string hostNameOrAddress, int? timeout = null)
+        {
+            if (string.IsNullOrEmpty(hostNameOrAddress))
+            {
+                return false;
+            }
+
+            var realAddress = RemoveProtocolHead(hostNameOrAddress, out _);
+            int? index = null;
+            for (var i = 0; i < realAddress.Length; i++)
+            {
+                if (realAddress[i] == '/' || realAddress[i] == ':')
+                {
+                    index = i;
+                    break;
+                }
+            }
+
+            if (index != null)
+            {
+                realAddress = realAddress.Substring(0, index.Value);
+            }
+
+            if (string.IsNullOrEmpty(realAddress))
+            {
+                return false;
+            }
+
+            try
+            {
+                var ping = new Ping();
+                var pingReply = await ping.SendPingAsync(RemoveProtocolHead(realAddress, out _),
+                    timeout ?? GlobalNetOptions.DefaultPingTimeOut);
+
+                return pingReply?.Status == IPStatus.Success;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
@@ -125,7 +174,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = ping.Send(RemoveProtocolHead(hostNameOrAddress), timeout);
+            var pingReply = ping.Send(RemoveProtocolHead(hostNameOrAddress, out _), timeout);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -161,17 +210,15 @@ namespace FrHello.NetLib.Core.Net
 
             try
             {
-                using (var client = new TcpClient())
+                using var client = new TcpClient();
+                var result = client.BeginConnect(address, port, null, null);
+                var success = result.AsyncWaitHandle.WaitOne(timeout);
+                if (!success)
                 {
-                    var result = client.BeginConnect(address, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(timeout);
-                    if (!success)
-                    {
-                        return false;
-                    }
-
-                    client.EndConnect(result);
+                    return false;
                 }
+
+                client.EndConnect(result);
             }
             catch
             {
@@ -208,17 +255,15 @@ namespace FrHello.NetLib.Core.Net
 
             try
             {
-                using (var client = new TcpClient())
+                using var client = new TcpClient();
+                var result = client.BeginConnect(hostNameOrAddress, port, null, null);
+                var success = result.AsyncWaitHandle.WaitOne(timeout);
+                if (!success)
                 {
-                    var result = client.BeginConnect(hostNameOrAddress, port, null, null);
-                    var success = result.AsyncWaitHandle.WaitOne(timeout);
-                    if (!success)
-                    {
-                        return false;
-                    }
-
-                    client.EndConnect(result);
+                    return false;
                 }
+
+                client.EndConnect(result);
             }
             catch
             {
@@ -244,7 +289,7 @@ namespace FrHello.NetLib.Core.Net
         /// </summary>
         /// <param name="address">地址</param>
         /// <param name="port">端口</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>端口是否正在使用</returns>
         public static async Task<bool> CheckRemotePortAsync(IPAddress address, int port, int timeout)
         {
@@ -257,17 +302,15 @@ namespace FrHello.NetLib.Core.Net
             {
                 try
                 {
-                    using (var client = new TcpClient())
+                    using var client = new TcpClient();
+                    var result = client.BeginConnect(address, port, null, null);
+                    var success = result.AsyncWaitHandle.WaitOne(timeout);
+                    if (!success)
                     {
-                        var result = client.BeginConnect(address, port, null, null);
-                        var success = result.AsyncWaitHandle.WaitOne(timeout);
-                        if (!success)
-                        {
-                            return false;
-                        }
-
-                        client.EndConnect(result);
+                        return false;
                     }
+
+                    client.EndConnect(result);
                 }
                 catch
                 {
@@ -294,7 +337,7 @@ namespace FrHello.NetLib.Core.Net
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
         /// <param name="port">端口</param>
-        /// <param name="timeout">超时(毫秒)</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>端口是否正在使用</returns>
         public static async Task<bool> CheckRemotePortAsync(string hostNameOrAddress, int port, int timeout)
         {
@@ -307,17 +350,117 @@ namespace FrHello.NetLib.Core.Net
             {
                 try
                 {
-                    using (var client = new TcpClient())
+                    using var client = new TcpClient();
+                    var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress, out _), port, null, null);
+                    var success = result.AsyncWaitHandle.WaitOne(timeout);
+                    if (!success)
                     {
-                        var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress), port, null, null);
-                        var success = result.AsyncWaitHandle.WaitOne(timeout);
-                        if (!success)
-                        {
-                            return false;
-                        }
-
-                        client.EndConnect(result);
+                        return false;
                     }
+
+                    client.EndConnect(result);
+                }
+                catch
+                {
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
+        /// <summary>
+        /// 检查某个远程地址的端口是否正在使用，最大限度地址的正确性来让API易于使用
+        /// </summary>
+        /// <param name="hostNameOrAddress">地址</param>
+        /// <param name="port">端口</param>
+        /// <param name="timeout">超时(MillionSeconds)</param>
+        /// <returns>端口是否正在使用</returns>
+        public static async Task<bool> CheckRemotePortEasy(string hostNameOrAddress, int? port = null,
+            int? timeout = null)
+        {
+            if (string.IsNullOrEmpty(hostNameOrAddress))
+            {
+                return false;
+            }
+
+            hostNameOrAddress = RemoveProtocolHead(hostNameOrAddress, out var protocol);
+            int? index = null;
+            for (var i = 0; i < hostNameOrAddress.Length; i++)
+            {
+                if (hostNameOrAddress[i] == '/')
+                {
+                    index = i;
+                    break;
+                }
+
+                if (hostNameOrAddress[i] == ':')
+                {
+                    index = i;
+                    //判断后续端口号
+                    var next = i + 1;
+                    var p = 0;
+
+                    while (next < hostNameOrAddress.Length)
+                    {
+                        if (char.IsDigit(hostNameOrAddress[next]))
+                        {
+                            p = p * 10 + (hostNameOrAddress[next] - 48);
+                            next++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    if (p != 0)
+                    {
+                        port = p;
+                    }
+
+                    break;
+                }
+            }
+
+            if (index != null)
+            {
+                hostNameOrAddress = hostNameOrAddress.Substring(0, index.Value);
+            }
+
+            if (port == null)
+            {
+                //判断协议
+                if (!string.IsNullOrEmpty(protocol))
+                {
+                    var p = GetDefaultPort(protocol);
+                    port = p ?? 80;
+                }
+                else
+                {
+                    port = 80;
+                }
+            }
+
+            if (port < 0 || port > 65535)
+            {
+                return false;
+            }
+
+            return await Task.Run(() =>
+            {
+                try
+                {
+                    using var client = new TcpClient();
+                    var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress, out _), port.Value, null,
+                        null);
+                    var success = result.AsyncWaitHandle.WaitOne(timeout ?? GlobalNetOptions.DefaultPingTimeOut);
+                    if (!success)
+                    {
+                        return false;
+                    }
+
+                    client.EndConnect(result);
                 }
                 catch
                 {
@@ -360,7 +503,7 @@ namespace FrHello.NetLib.Core.Net
         /// <param name="type">要获取IP地址的网卡类型</param>
         /// <param name="addressFamily">寻址方案</param>
         /// <returns>对应类型的IP地址</returns>
-        public static IPAddress[] GetAllLocalIP(NetworkInterfaceType type,
+        public static IPAddress[] GetAllLocalIp(NetworkInterfaceType type,
             AddressFamily addressFamily = AddressFamily.InterNetwork)
         {
             var ipAddressList = new List<IPAddress>();
@@ -388,7 +531,7 @@ namespace FrHello.NetLib.Core.Net
         /// <returns></returns>
         public static IPAddress[] GetAllLocalIPv4(NetworkInterfaceType type)
         {
-            return GetAllLocalIP(type);
+            return GetAllLocalIp(type);
         }
 
 
@@ -428,6 +571,37 @@ namespace FrHello.NetLib.Core.Net
             return GetLocalIp(type);
         }
 
+        /// <summary>
+        /// 根据协议名称获取默认端口
+        /// </summary>
+        /// <param name="protocol"></param>
+        /// <returns></returns>
+        public static int? GetDefaultPort(string protocol)
+        {
+            if (string.IsNullOrEmpty(protocol))
+            {
+                return null;
+            }
+
+            var index = protocol.FirstOrDefault(s => s == ':' || s == '/' || s == '\\');
+            if (index > 0)
+            {
+                protocol = protocol.Substring(0, index);
+            }
+
+            protocol = protocol.ToUpper();
+
+            foreach (ProtocolType protocolType in Enum.GetValues(typeof(ProtocolType)))
+            {
+                if (protocolType.ToString().ToUpper() == protocol)
+                {
+                    return protocolType.GetDefaultPort();
+                }
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region RemoveProtocolHead
@@ -436,9 +610,12 @@ namespace FrHello.NetLib.Core.Net
         /// 移除地址前面的协议头
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
+        /// <param name="protocol">协议</param>
         /// <returns></returns>
-        public static string RemoveProtocolHead(string hostNameOrAddress)
+        private static string RemoveProtocolHead(string hostNameOrAddress, out string protocol)
         {
+            protocol = null;
+
             if (string.IsNullOrWhiteSpace(hostNameOrAddress))
             {
                 throw new ArgumentNullException(nameof(hostNameOrAddress));
@@ -447,6 +624,7 @@ namespace FrHello.NetLib.Core.Net
             var symbolIndex = hostNameOrAddress.IndexOf("://", StringComparison.Ordinal);
             if (symbolIndex > 0)
             {
+                protocol = hostNameOrAddress.Substring(0, symbolIndex);
                 hostNameOrAddress = hostNameOrAddress.Remove(0, symbolIndex + "://".Length);
             }
 

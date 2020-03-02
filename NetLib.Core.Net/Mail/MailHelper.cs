@@ -35,7 +35,7 @@ namespace FrHello.NetLib.Core.Net
                 BodyEncoding = GlobalMailOptions.DefaultEncoding
             };
 
-            foreach (var address in toAddress.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var address in toAddress.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 mailMessage.To.Add(new MailAddress(address));
             }
@@ -116,7 +116,7 @@ namespace FrHello.NetLib.Core.Net
                 BodyEncoding = GlobalMailOptions.DefaultEncoding
             };
 
-            foreach (var address in toAddress.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var address in toAddress.Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries))
             {
                 mailMessage.To.Add(new MailAddress(address));
             }
@@ -152,40 +152,40 @@ namespace FrHello.NetLib.Core.Net
             //继续检查
             CheckSmtpServer();
 
-            using (var smtpClient = new SmtpClient())
+            using var smtpClient = new SmtpClient
             {
-                smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
-                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+                Host = GlobalMailOptions.SmtpServerInfo.SmtpHost,
+                EnableSsl = GlobalMailOptions.EnableSsl
+            };
 
-                if (GlobalMailOptions.SmtpServerInfo.Port != null)
-                {
-                    smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
-                }
-                else if (smtpClient.EnableSsl)
-                {
-                    smtpClient.Port = 587;
-                }
+            if (GlobalMailOptions.SmtpServerInfo.Port != null)
+            {
+                smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
+            }
+            else if (smtpClient.EnableSsl)
+            {
+                smtpClient.Port = 587;
+            }
 
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
-                    GlobalMailOptions.SmtpServerInfo.MailPassword);
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
+                GlobalMailOptions.SmtpServerInfo.MailPassword);
 
-                var sendMailAsync = smtpClient.SendMailAsync(mailMessage);
-                var delayTaskCancel = new CancellationTokenSource();
-                var delayTask = Task.Delay(GlobalMailOptions.DefaultTimeOut, delayTaskCancel.Token);
+            var sendMailAsync = smtpClient.SendMailAsync(mailMessage);
+            var delayTaskCancel = new CancellationTokenSource();
+            var delayTask = Task.Delay(GlobalMailOptions.DefaultTimeOut, delayTaskCancel.Token);
 
-                if (await Task.WhenAny(sendMailAsync, delayTask) == delayTask)
-                {
-                    //任务超时，取消发送
-                    smtpClient.SendAsyncCancel();
+            if (await Task.WhenAny(sendMailAsync, delayTask) == delayTask)
+            {
+                //任务超时，取消发送
+                smtpClient.SendAsyncCancel();
 
-                    //超时异常
-                    throw new OperationCanceledException("Send mail timeout");
-                }
-                else
-                {
-                    delayTaskCancel.Cancel();
-                }
+                //超时异常
+                throw new OperationCanceledException("Send mail timeout");
+            }
+            else
+            {
+                delayTaskCancel.Cancel();
             }
         }
 
