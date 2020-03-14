@@ -14,7 +14,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingTest
         /// </summary>
-        [Fact()]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void PingTest()
         {
             Assert.True(NetHelper.PingAsync("http://baidu.com").GetAwaiter().GetResult());
@@ -24,7 +24,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// PingEasyTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void PingEasyTest()
         {
             Assert.True(NetHelper.PingEasy("http://baidu.com/index.html").GetAwaiter().GetResult());
@@ -35,7 +35,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// CheckRemotePortTest
         /// </summary>
-        [Fact()]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void CheckRemotePortTest()
         {
             Assert.True(NetHelper.CheckRemotePortAsync("http://baidu.com", 80).GetAwaiter().GetResult());
@@ -44,7 +44,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// CheckRemotePortEasyTest
         /// </summary>
-        [Fact()]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void CheckRemotePortEasyTest()
         {
             Assert.True(NetHelper.CheckRemotePortEasy("http://baidu.com/index.html").GetAwaiter().GetResult());
@@ -55,7 +55,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// LocalPortInUse
         /// </summary>
-        [Fact()]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void LocalPortInUse()
         {
             Assert.True(NetHelper.CheckLocalPort(80));
@@ -64,7 +64,7 @@ namespace NetLib.Core.Test.Net.Test
         /// <summary>
         /// GetLocalIpAddressTest
         /// </summary>
-        [Fact()]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void GetLocalIpAddressTest()
         {
             var ethernetaAddresses = NetHelper.GetAllLocalIPv4(NetworkInterfaceType.Ethernet);
