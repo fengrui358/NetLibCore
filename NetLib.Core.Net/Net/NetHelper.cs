@@ -591,7 +591,7 @@ namespace FrHello.NetLib.Core.Net
 
             protocol = protocol.ToUpper();
 
-            foreach (ProtocolType protocolType in Enum.GetValues(typeof(ProtocolType)))
+            foreach (ProtocolType protocolType in System.Enum.GetValues(typeof(ProtocolType)))
             {
                 if (protocolType.ToString().ToUpper() == protocol)
                 {

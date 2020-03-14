@@ -1,8 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using FrHello.NetLib.Core.Regex;
 
 // ReSharper disable once CheckNamespace
 namespace FrHello.NetLib.Core.Net
@@ -71,26 +76,25 @@ namespace FrHello.NetLib.Core.Net
             //继续检查
             CheckSmtpServer();
 
-            using (var smtpClient = new SmtpClient())
+            using var smtpClient = new SmtpClient
             {
-                smtpClient.Host = GlobalMailOptions.SmtpServerInfo.SmtpHost;
-                smtpClient.EnableSsl = GlobalMailOptions.EnableSsl;
+                Host = GlobalMailOptions.SmtpServerInfo.SmtpHost, EnableSsl = GlobalMailOptions.EnableSsl
+            };
 
-                if (GlobalMailOptions.SmtpServerInfo.Port != null)
-                {
-                    smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
-                }
-                else if (smtpClient.EnableSsl)
-                {
-                    smtpClient.Port = 587;
-                }
-
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
-                    GlobalMailOptions.SmtpServerInfo.MailPassword);
-
-                smtpClient.Send(mailMessage);
+            if (GlobalMailOptions.SmtpServerInfo.Port != null)
+            {
+                smtpClient.Port = GlobalMailOptions.SmtpServerInfo.Port.Value;
             }
+            else if (smtpClient.EnableSsl)
+            {
+                smtpClient.Port = 587;
+            }
+
+            smtpClient.UseDefaultCredentials = false;
+            smtpClient.Credentials = new NetworkCredential(GlobalMailOptions.SmtpServerInfo.MailUserName,
+                GlobalMailOptions.SmtpServerInfo.MailPassword);
+
+            smtpClient.Send(mailMessage);
         }
 
         /// <summary>
@@ -187,6 +191,106 @@ namespace FrHello.NetLib.Core.Net
             {
                 delayTaskCancel.Cancel();
             }
+        }
+
+        /// <summary>
+        /// Create mail message
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public static MailMessage CreateMailMessage(string[] to, string subject, string body = null)
+        {
+            return CreateMailMessage(to, null, subject, body);
+        }
+
+        /// <summary>
+        /// Create mail message
+        /// </summary>
+        /// <param name="to"></param>
+        /// <param name="cc"></param>
+        /// <param name="subject"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        public static MailMessage CreateMailMessage(string[] to, string[] cc, string subject, string body = null)
+        {
+            if (to == null || !to.Any())
+            {
+                throw new ArgumentNullException(nameof(to));
+            }
+
+            var mailMessage = new MailMessage
+            {
+                Subject = subject,
+                Body = body
+            };
+
+            foreach (var address in to)
+            {
+                if (string.IsNullOrEmpty(address))
+                {
+                    throw new ArgumentNullException($"address in `to` is null");
+                }
+
+                if (RegexHelper.CheckEmail(address))
+                {
+                    mailMessage.To.Add(new MailAddress(address));
+                }
+                else
+                {
+                    throw new ArgumentException($"address[{address}] in `to` is error");
+                }
+            }
+
+            if (cc != null)
+            {
+                foreach (var address in cc)
+                {
+                    if (string.IsNullOrEmpty(address))
+                    {
+                        throw new ArgumentNullException($"address in `to` is null");
+                    }
+
+                    if (RegexHelper.CheckEmail(address))
+                    {
+                        mailMessage.CC.Add(new MailAddress(address));
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"address[{address}] in `to` is error");
+                    }
+                }
+            }
+
+            return mailMessage;
+        }
+
+        /// <summary>
+        /// Create mail attachment from file info
+        /// </summary>
+        /// <param name="filePath">file location path</param>
+        /// <returns></returns>
+        public static Attachment CreateAttachment(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+            {
+                throw new ArgumentNullException(nameof(filePath));
+            }
+
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Exists)
+            {
+                var attachment = new Attachment(filePath, MediaTypeNames.Application.Octet);
+
+                attachment.ContentDisposition.CreationDate = fileInfo.CreationTime;
+                attachment.ContentDisposition.ModificationDate = fileInfo.LastWriteTime;
+                attachment.ContentDisposition.ReadDate = fileInfo.LastAccessTime;
+
+                return attachment;
+            }
+
+            return null;
         }
 
         /// <summary>
