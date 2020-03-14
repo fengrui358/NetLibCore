@@ -14,7 +14,7 @@
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Description>Dotnet core wpf utility</Description>
-    <Version>1.1.38</Version>
+    <Version>1.1.39</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\net471\NetLib.Core.Wpf.xml</DocumentationFile>
