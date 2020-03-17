@@ -44,11 +44,11 @@ namespace NetLib.Core.Test.Net.Test
                 Body = "测试内容"
             };
 
-            var filePath1 = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+            var filePath1 = System.IO.Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
                 $"{Guid.NewGuid():N}.txt");
             File.WriteAllText(filePath1, "test attachment 1", Encoding.UTF8);
 
-            var filePath2 = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+            var filePath2 = System.IO.Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
                 $"{Guid.NewGuid():N}.txt");
             File.WriteAllText(filePath2, "测试 附件 1", Encoding.UTF8);
 

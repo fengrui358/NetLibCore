@@ -15,6 +15,13 @@ namespace FrHello.NetLib.Core.Framework
     /// </summary>
     public static partial class Extensions
     {
+#if DEBUG
+        static Extensions()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        }
+#endif
+
         /// <summary>
         /// 最后一行有数据的行号
         /// </summary>
@@ -112,53 +119,15 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             var type = typeof(T);
-
-            string sheetName;
-            var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
-            if (sheetAttribute is SheetAttribute sheetAttributeInner)
-            {
-                sheetName = sheetAttributeInner.SheetName;
-            }
-            else
-            {
-                sheetName = nameof(T);
-            }
-
-            ExcelWorksheet worksheet = null;
+            var sheetName = GetSheetName(type);
 
             //判断有无对应的表
-            foreach (var workbookWorksheet in excelPackage.Workbook.Worksheets)
-            {
-                if (workbookWorksheet.Name == sheetName)
-                {
-                    worksheet = workbookWorksheet;
-                    break;
-                }
-            }
+            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName);
 
             if (worksheet != null)
             {
-                var properties = new List<ColumnDescription>();
-
                 //收集有效的属性
-                var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-                foreach (var propertyInfo in allPropertyInfos)
-                {
-                    string columnName;
-                    var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
-                    if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
-                    {
-                        columnName = sheetColumnAttributeInner.ColumnName;
-                        var allowNull = sheetColumnAttributeInner.AllowNull;
-
-                        properties.Add(new ColumnDescription(columnName, propertyInfo, true) {AllowNull = allowNull});
-                    }
-                    else
-                    {
-                        columnName = propertyInfo.Name;
-                        properties.Add(new ColumnDescription(columnName, propertyInfo));
-                    }
-                }
+                var properties = ConvertProperitesToColumnDescription(typeof(T));
 
                 //有效的列
                 var validColums = new List<ColumnDescription>();
@@ -166,17 +135,17 @@ namespace FrHello.NetLib.Core.Framework
                 foreach (var property in properties)
                 {
                     //添加了明确列名找不到的情况需要提示
-
                     var column = worksheet.GetColumnNum(property.ColumnName);
                     if (column > 0)
                     {
                         property.ColumnNum = column;
                         validColums.Add(property);
                     }
-                    else if(property.IsNeed)
+                    else if (property.IsNeed)
                     {
                         //如果必须要该列又不存在则抛出异常
-                        var excelColumnNotFoundException = new ExcelColumnNotFoundException(property.ColumnName, excelPackage.File,
+                        var excelColumnNotFoundException = new ExcelColumnNotFoundException(property.ColumnName,
+                            excelPackage.File,
                             worksheet.Name);
                         throw excelColumnNotFoundException;
                     }
@@ -191,7 +160,8 @@ namespace FrHello.NetLib.Core.Framework
                         {
                             object value;
 
-                            var converterAttribute = columnDescription.PropertyInfo.GetCustomAttribute<SheetColumnValueConverterAttribute>();
+                            var converterAttribute = columnDescription.PropertyInfo
+                                .GetCustomAttribute<SheetColumnValueConverterAttribute>();
                             if (converterAttribute != null)
                             {
                                 value = converterAttribute.SimpleValueConverter.Convert(worksheet
@@ -239,6 +209,66 @@ namespace FrHello.NetLib.Core.Framework
         }
 
         /// <summary>
+        /// 将数据集合写入Excel文件
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="rowDatas">行数据</param>
+        /// <param name="excelPath">excel文件路径</param>
+        /// <param name="overWrite">覆盖写入还是追加写入</param>
+        public static void WriteDatas<T>(IEnumerable<T> rowDatas, string excelPath, bool overWrite)
+        {
+            if (rowDatas == null)
+            {
+                throw new ArgumentNullException(nameof(rowDatas));
+            }
+
+            if (string.IsNullOrWhiteSpace(excelPath))
+            {
+                throw new ArgumentNullException(nameof(excelPath));
+            }
+
+            if (overWrite && File.Exists(excelPath))
+            {
+                File.Delete(excelPath);
+            }
+
+            using ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelPath));
+            var workSheetName = GetSheetName(typeof(T));
+        }
+
+        /// <summary>
+        /// 向Excel中添加行数据
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="excelPath">excel文件路径</param>
+        /// <param name="rowData">行数据</param>
+        public static void AppendRow<T>(string excelPath, T rowData)
+        {
+            if (string.IsNullOrEmpty(excelPath))
+            {
+                throw new ArgumentNullException(nameof(excelPath));
+            }
+
+            if (!File.Exists(excelPath))
+            {
+            }
+        }
+
+        /// <summary>
+        /// 向Excel中添加行数据
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="excelPackage">excel文件</param>
+        /// <param name="rowData">行数据</param>
+        public static void AppendRow<T>(this ExcelPackage excelPackage, T rowData)
+        {
+            if (excelPackage == null)
+            {
+                throw new ArgumentNullException(nameof(excelPackage));
+            }
+        }
+
+        /// <summary>
         /// 根据列头名称获取列号
         /// </summary>
         /// <param name="excelWorksheet">工作表</param>
@@ -266,6 +296,55 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             return 0;
+        }
+
+        /// <summary>
+        /// 获取列标题
+        /// </summary>
+        /// <param name="type">数据类型</param>
+        /// <returns></returns>
+        private static string GetSheetName(MemberInfo type)
+        {
+            string sheetName;
+            var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
+            if (sheetAttribute is SheetAttribute sheetAttributeInner)
+            {
+                sheetName = sheetAttributeInner.SheetName;
+            }
+            else
+            {
+                sheetName = type.Name;
+            }
+
+            return sheetName;
+        }
+
+        /// <summary>
+        /// 转换类型信息为表列信息
+        /// </summary>
+        /// <param name="type">数据类型</param>
+        /// <returns></returns>
+        private static IEnumerable<ColumnDescription> ConvertProperitesToColumnDescription(Type type)
+        {
+            //收集有效的属性
+            var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var propertyInfo in allPropertyInfos)
+            {
+                string columnName;
+                var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
+                if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
+                {
+                    columnName = sheetColumnAttributeInner.ColumnName;
+                    var allowNull = sheetColumnAttributeInner.AllowNull;
+
+                    yield return new ColumnDescription(columnName, propertyInfo, true) {AllowNull = allowNull};
+                }
+                else
+                {
+                    columnName = propertyInfo.Name;
+                    yield return new ColumnDescription(columnName, propertyInfo);
+                }
+            }
         }
 
         /// <summary>

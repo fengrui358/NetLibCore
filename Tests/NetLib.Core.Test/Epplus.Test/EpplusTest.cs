@@ -22,17 +22,15 @@ namespace NetLib.Core.Test.Epplus.Test
             var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
             var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
 
-            using (var excelPackage = new ExcelPackage(testExcel))
-            {
-                var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
-                var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
-                var mockDepartments = excelPackage.FillDatas<MockDepartment>();
-                var mockPersons = excelPackage.FillDatas<MockPerson>();
+            using var excelPackage = new ExcelPackage(testExcel);
+            var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
+            var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
+            var mockDepartments = excelPackage.FillDatas<MockDepartment>();
+            var mockPersons = excelPackage.FillDatas<MockPerson>();
 
-                Assert.Equal(2, mockOrganizations.Count());
-                Assert.Equal(2, mockDepartments.Count());
-                Assert.Equal(3, mockPersons.Count());
-            }
+            Assert.Equal(2, mockOrganizations.Count());
+            Assert.Equal(2, mockDepartments.Count());
+            Assert.Equal(3, mockPersons.Count());
         }
     }
 
