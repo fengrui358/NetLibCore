@@ -1,8 +1,9 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using System;
+using System.Linq;
 using FrHello.NetLib.Core.Framework;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Interfaces;
+using NetLib.Core.Test.ConstString;
 using OfficeOpenXml;
 using Xunit;
 
@@ -28,9 +29,81 @@ namespace NetLib.Core.Test.Epplus.Test
             var mockDepartments = excelPackage.FillDatas<MockDepartment>();
             var mockPersons = excelPackage.FillDatas<MockPerson>();
 
+            Assert.True(mockAdministrativeRegion.Any());
             Assert.Equal(2, mockOrganizations.Count());
             Assert.Equal(2, mockDepartments.Count());
             Assert.Equal(3, mockPersons.Count());
+        }
+
+        /// <summary>
+        /// WriteDatasTest
+        /// </summary>
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        public void WriteDatasTest()
+        {
+            var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
+            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
+
+            using var excelPackage = new ExcelPackage(testExcel);
+            var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
+            var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
+            var mockDepartments = excelPackage.FillDatas<MockDepartment>();
+            var mockPersons = excelPackage.FillDatas<MockPerson>();
+
+            var outputExcelPath = System.IO.Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                $"{Guid.NewGuid():N}.xlsx");
+
+            Extensions.WriteDatas(mockAdministrativeRegion, outputExcelPath).GetAwaiter().GetResult();
+            Extensions.WriteDatas(mockOrganizations, outputExcelPath).GetAwaiter().GetResult();
+            Extensions.WriteDatas(mockDepartments, outputExcelPath).GetAwaiter().GetResult();
+            Extensions.WriteDatas(mockPersons, outputExcelPath).GetAwaiter().GetResult();
+
+            //测试追加写入
+            Extensions.WriteDatas(mockAdministrativeRegion, outputExcelPath).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// AppendRowTest
+        /// </summary>
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        public void AppendRowTest()
+        {
+            var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
+            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
+
+            using var excelPackage = new ExcelPackage(testExcel);
+            var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
+            var mockOrganizations = excelPackage.FillDatas<MockOrganization>();
+            var mockDepartments = excelPackage.FillDatas<MockDepartment>();
+            var mockPersons = excelPackage.FillDatas<MockPerson>();
+
+            var outputExcelPath = System.IO.Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                $"{Guid.NewGuid():N}.xlsx");
+
+            foreach (var administrativeRegion in mockAdministrativeRegion)
+            {
+                Extensions.AppendRow(outputExcelPath, administrativeRegion).GetAwaiter().GetResult();
+            }
+
+            foreach (var mockOrganization in mockOrganizations)
+            {
+                Extensions.AppendRow(outputExcelPath, mockOrganization).GetAwaiter().GetResult();
+            }
+
+            foreach (var mockDepartment in mockDepartments)
+            {
+                Extensions.AppendRow(outputExcelPath, mockDepartment).GetAwaiter().GetResult();
+            }
+
+            foreach (var mockPerson in mockPersons)
+            {
+                Extensions.AppendRow(outputExcelPath, mockPerson).GetAwaiter().GetResult();
+            }
+
+            foreach (var administrativeRegion in mockAdministrativeRegion)
+            {
+                Extensions.AppendRow(outputExcelPath, administrativeRegion).GetAwaiter().GetResult();
+            }
         }
     }
 
@@ -188,10 +261,13 @@ namespace NetLib.Core.Test.Epplus.Test
     [Sheet("行政区域")]
     internal class MockAdministrativeRegion
     {
+        // ReSharper disable once InconsistentNaming
         public string DISTRICTID { get; set; }
 
+        // ReSharper disable once InconsistentNaming
         public string PARENTID { get; set; }
 
+        // ReSharper disable once InconsistentNaming
         public string DISTRICTFULLNAME { get; set; }
     }
 

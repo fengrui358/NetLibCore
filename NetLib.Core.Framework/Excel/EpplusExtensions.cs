@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
@@ -215,7 +216,7 @@ namespace FrHello.NetLib.Core.Framework
         /// <param name="rowDatas">行数据</param>
         /// <param name="excelPath">excel文件路径</param>
         /// <param name="overWrite">覆盖写入还是追加写入</param>
-        public static void WriteDatas<T>(IEnumerable<T> rowDatas, string excelPath, bool overWrite)
+        public static async Task WriteDatas<T>(IEnumerable<T> rowDatas, string excelPath, bool overWrite = false)
         {
             if (rowDatas == null)
             {
@@ -232,8 +233,54 @@ namespace FrHello.NetLib.Core.Framework
                 File.Delete(excelPath);
             }
 
-            using ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelPath));
+            using var excelPackage = new ExcelPackage(new FileInfo(excelPath));
             var workSheetName = GetSheetName(typeof(T));
+
+            var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
+                            excelPackage.Workbook.Worksheets.Add(workSheetName);
+
+            //收集有效的属性
+            var properties = ConvertProperitesToColumnDescription(typeof(T)).ToList();
+
+            var maxColumnNum = workSheet.MaxColumnNum() + 1;
+            foreach (var columnDescription in properties)
+            {
+                var columnNum = workSheet.GetColumnNum(columnDescription.ColumnName);
+
+                if (columnNum == 0)
+                {
+                    workSheet.Cells[1, maxColumnNum].Value = columnDescription.ColumnName;
+                    columnDescription.ColumnNum = maxColumnNum;
+                    maxColumnNum++;
+                }
+                else
+                {
+                    columnDescription.ColumnNum = columnNum;
+                }
+            }
+
+            var maxRowNum = workSheet.MaxRowNum() + 1;
+            foreach (var rowData in rowDatas)
+            {
+                var writeSomething = false;
+                foreach (var columnDescription in properties)
+                {
+                    var value = columnDescription.PropertyInfo.GetValue(rowData);
+                    if (value != null)
+                    {
+                        workSheet.Cells[maxRowNum, columnDescription.ColumnNum].Value =
+                            TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
+                        writeSomething = true;
+                    }
+                }
+
+                if (writeSomething)
+                {
+                    maxRowNum++;
+                }
+            }
+
+            await excelPackage.SaveAsync();
         }
 
         /// <summary>
@@ -242,16 +289,15 @@ namespace FrHello.NetLib.Core.Framework
         /// <typeparam name="T">类型</typeparam>
         /// <param name="excelPath">excel文件路径</param>
         /// <param name="rowData">行数据</param>
-        public static void AppendRow<T>(string excelPath, T rowData)
+        public static async Task AppendRow<T>(string excelPath, T rowData)
         {
             if (string.IsNullOrEmpty(excelPath))
             {
                 throw new ArgumentNullException(nameof(excelPath));
             }
 
-            if (!File.Exists(excelPath))
-            {
-            }
+            using var excelPackage = new ExcelPackage(new FileInfo(excelPath));
+            await AppendRow(excelPackage, rowData);
         }
 
         /// <summary>
@@ -260,12 +306,54 @@ namespace FrHello.NetLib.Core.Framework
         /// <typeparam name="T">类型</typeparam>
         /// <param name="excelPackage">excel文件</param>
         /// <param name="rowData">行数据</param>
-        public static void AppendRow<T>(this ExcelPackage excelPackage, T rowData)
+        public static async Task AppendRow<T>(this ExcelPackage excelPackage, T rowData)
         {
             if (excelPackage == null)
             {
                 throw new ArgumentNullException(nameof(excelPackage));
             }
+
+            if (rowData == null)
+            {
+                return;
+            }
+
+            var workSheetName = GetSheetName(typeof(T));
+            var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
+                            excelPackage.Workbook.Worksheets.Add(workSheetName);
+
+            //收集有效的属性
+            var properties = ConvertProperitesToColumnDescription(typeof(T)).ToList();
+
+            var maxColumnNum = workSheet.MaxColumnNum() + 1;
+            foreach (var columnDescription in properties)
+            {
+                var columnNum = workSheet.GetColumnNum(columnDescription.ColumnName);
+
+                if (columnNum == 0)
+                {
+                    workSheet.Cells[1, maxColumnNum].Value = columnDescription.ColumnName;
+                    columnDescription.ColumnNum = maxColumnNum;
+                    maxColumnNum++;
+                }
+                else
+                {
+                    columnDescription.ColumnNum = columnNum;
+                }
+            }
+
+            var maxRowNum = workSheet.MaxRowNum() + 1;
+            foreach (var columnDescription in properties)
+            {
+                var value = columnDescription.PropertyInfo.GetValue(rowData);
+                if (value != null)
+                {
+                    workSheet.Cells[maxRowNum, columnDescription.ColumnNum].Value =
+                        TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
+                }
+            }
+
+            await excelPackage.SaveAsync();
         }
 
         /// <summary>
@@ -273,7 +361,7 @@ namespace FrHello.NetLib.Core.Framework
         /// </summary>
         /// <param name="excelWorksheet">工作表</param>
         /// <param name="headerName">列头名称</param>
-        /// <returns>列号</returns>
+        /// <returns>列号（返回0表示未找到对应列名）</returns>
         private static int GetColumnNum(this ExcelWorksheet excelWorksheet, string headerName)
         {
             if (excelWorksheet == null)
