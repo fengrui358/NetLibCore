@@ -9,7 +9,11 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+// ReSharper disable ArrangeAccessorOwnerBody
+// ReSharper disable RedundantBaseQualifier
+// ReSharper disable AssignNullToNotNullAttribute
 
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
 namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
 {
     /// <summary>
@@ -25,8 +29,8 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
         private Point _offset = new Point(0, 0);
         private Size _extent = new Size(0, 0);
         private Size _viewport = new Size(0, 0);
-        private int firstIndex = 0;
-        private Size childSize;
+        private int _firstIndex;
+        private Size _childSize;
         private Size _pixelMeasuredViewport = new Size(0, 0);
         Dictionary<UIElement, Rect> _realizedChildLayout = new Dictionary<UIElement, Rect>();
         WrapPanelAbstraction _abstractPanel;
@@ -64,6 +68,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             set { SetValue(OrientationProperty, value); }
         }
 
+
         public static readonly DependencyProperty ItemHeightProperty = DependencyProperty.Register("ItemHeight",
             typeof(double), typeof(VirtualizingWrapPanel), new FrameworkPropertyMetadata(double.PositiveInfinity));
 
@@ -80,19 +85,19 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
 
         public void SetFirstRowViewItemIndex(int index)
         {
-            SetVerticalOffset((index) / Math.Floor((_viewport.Width) / childSize.Width));
-            SetHorizontalOffset((index) / Math.Floor((_viewport.Height) / childSize.Height));
+            SetVerticalOffset((index) / Math.Floor((_viewport.Width) / _childSize.Width));
+            SetHorizontalOffset((index) / Math.Floor((_viewport.Height) / _childSize.Height));
         }
 
         private void Resizing(object sender, EventArgs e)
         {
-            if (_viewport.Width != 0)
+            if (Math.Abs(_viewport.Width) > double.Epsilon)
             {
-                int firstIndexCache = firstIndex;
+                int firstIndexCache = _firstIndex;
                 _abstractPanel = null;
                 MeasureOverride(_viewport);
-                SetFirstRowViewItemIndex(firstIndex);
-                firstIndex = firstIndexCache;
+                SetFirstRowViewItemIndex(_firstIndex);
+                _firstIndex = firstIndexCache;
             }
         }
 
@@ -119,7 +124,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             int section = GetFirstVisibleSection();
             var item = _abstractPanel.Where(x => x.Section == section).FirstOrDefault();
             if (item != null)
-                return item._index;
+                return item.Index;
             return 0;
         }
 
@@ -175,7 +180,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             {
                 var ret = _abstractPanel.Where(x => x.Section == abstractItem.Section + 1)
                     .OrderBy(x => Math.Abs(x.SectionIndex - abstractItem.SectionIndex)).First();
-                return ret._index;
+                return ret.Index;
             }
             else
                 return itemIndex;
@@ -188,7 +193,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             {
                 var ret = _abstractPanel.Where(x => x.Section == abstractItem.Section - 1)
                     .OrderBy(x => Math.Abs(x.SectionIndex - abstractItem.SectionIndex)).First();
-                return ret._index;
+                return ret.Index;
             }
             else
                 return itemIndex;
@@ -207,7 +212,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth++;
             }
 
-            DependencyObject next = null;
+            DependencyObject next;
             if (Orientation == Orientation.Horizontal)
             {
                 int nextIndex = GetNextSectionClosestIndex(itemIndex);
@@ -221,7 +226,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             }
             else
             {
-                if (itemIndex == _abstractPanel._itemCount - 1)
+                if (itemIndex == _abstractPanel.ItemCount - 1)
                     return;
                 next = gen.ContainerFromIndex(itemIndex + 1);
                 while (next == null)
@@ -238,7 +243,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth--;
             }
 
-            (next as UIElement).Focus();
+            (next as UIElement)?.Focus();
         }
 
         private void NavigateLeft()
@@ -255,7 +260,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth++;
             }
 
-            DependencyObject next = null;
+            DependencyObject next;
             if (Orientation == Orientation.Vertical)
             {
                 int nextIndex = GetLastSectionClosestIndex(itemIndex);
@@ -286,7 +291,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth--;
             }
 
-            (next as UIElement).Focus();
+            (next as UIElement)?.Focus();
         }
 
         private void NavigateRight()
@@ -302,7 +307,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth++;
             }
 
-            DependencyObject next = null;
+            DependencyObject next;
             if (Orientation == Orientation.Vertical)
             {
                 int nextIndex = GetNextSectionClosestIndex(itemIndex);
@@ -316,7 +321,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             }
             else
             {
-                if (itemIndex == _abstractPanel._itemCount - 1)
+                if (itemIndex == _abstractPanel.ItemCount - 1)
                     return;
                 next = gen.ContainerFromIndex(itemIndex + 1);
                 while (next == null)
@@ -333,7 +338,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth--;
             }
 
-            (next as UIElement).Focus();
+            (next as UIElement)?.Focus();
         }
 
         private void NavigateUp()
@@ -349,7 +354,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth++;
             }
 
-            DependencyObject next = null;
+            DependencyObject next;
             if (Orientation == Orientation.Horizontal)
             {
                 int nextIndex = GetLastSectionClosestIndex(itemIndex);
@@ -380,7 +385,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 depth--;
             }
 
-            (next as UIElement).Focus();
+            (next as UIElement)?.Focus();
         }
 
         #endregion
@@ -423,7 +428,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
 
         protected override void OnInitialized(EventArgs e)
         {
-            this.SizeChanged += new SizeChangedEventHandler(this.Resizing);
+            SizeChanged += Resizing;
             base.OnInitialized(e);
             _itemsControl = ItemsControl.GetItemsOwner(this);
             _children = InternalChildren;
@@ -486,46 +491,50 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                         Debug.Assert(child == _children[childIndex], "Wrong child was generated");
                     }
 
-                    childSize = child.DesiredSize;
-                    Rect childRect = new Rect(new Point(currentX, currentY), childSize);
-                    if (isHorizontal)
+                    if (child != null)
                     {
-                        maxItemSize = Math.Max(maxItemSize, childRect.Height);
-                        if (childRect.Right > realizedFrameSize.Width) //wrap to a new line
+                        _childSize = child.DesiredSize;
+                        Rect childRect = new Rect(new Point(currentX, currentY), _childSize);
+                        if (isHorizontal)
                         {
-                            currentY = currentY + maxItemSize;
-                            currentX = 0;
-                            maxItemSize = childRect.Height;
-                            childRect.X = currentX;
-                            childRect.Y = currentY;
-                            currentSection++;
-                            visibleSections++;
+                            maxItemSize = Math.Max(maxItemSize, childRect.Height);
+                            if (childRect.Right > realizedFrameSize.Width) //wrap to a new line
+                            {
+                                currentY = currentY + maxItemSize;
+                                currentX = 0;
+                                maxItemSize = childRect.Height;
+                                childRect.X = currentX;
+                                childRect.Y = currentY;
+                                currentSection++;
+                                visibleSections++;
+                            }
+
+                            if (currentY > realizedFrameSize.Height)
+                                stop = true;
+                            currentX = childRect.Right;
+                        }
+                        else
+                        {
+                            maxItemSize = Math.Max(maxItemSize, childRect.Width);
+                            if (childRect.Bottom > realizedFrameSize.Height) //wrap to a new column
+                            {
+                                currentX = currentX + maxItemSize;
+                                currentY = 0;
+                                maxItemSize = childRect.Width;
+                                childRect.X = currentX;
+                                childRect.Y = currentY;
+                                currentSection++;
+                                visibleSections++;
+                            }
+
+                            if (currentX > realizedFrameSize.Width)
+                                stop = true;
+                            currentY = childRect.Bottom;
                         }
 
-                        if (currentY > realizedFrameSize.Height)
-                            stop = true;
-                        currentX = childRect.Right;
-                    }
-                    else
-                    {
-                        maxItemSize = Math.Max(maxItemSize, childRect.Width);
-                        if (childRect.Bottom > realizedFrameSize.Height) //wrap to a new column
-                        {
-                            currentX = currentX + maxItemSize;
-                            currentY = 0;
-                            maxItemSize = childRect.Width;
-                            childRect.X = currentX;
-                            childRect.Y = currentY;
-                            currentSection++;
-                            visibleSections++;
-                        }
-
-                        if (currentX > realizedFrameSize.Width)
-                            stop = true;
-                        currentY = childRect.Bottom;
+                        _realizedChildLayout.Add(child, childRect);
                     }
 
-                    _realizedChildLayout.Add(child, childRect);
                     _abstractPanel.SetItemSection(current, currentSection);
 
                     if (stop)
@@ -560,21 +569,9 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
 
         #region IScrollInfo Members
 
-        private bool _canHScroll = false;
+        public bool CanHorizontallyScroll { get; set; }
 
-        public bool CanHorizontallyScroll
-        {
-            get { return _canHScroll; }
-            set { _canHScroll = value; }
-        }
-
-        private bool _canVScroll = false;
-
-        public bool CanVerticallyScroll
-        {
-            get { return _canVScroll; }
-            set { _canVScroll = value; }
-        }
+        public bool CanVerticallyScroll { get; set; } = false;
 
         public double ExtentHeight
         {
@@ -630,7 +627,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
 
         public Rect MakeVisible(Visual visual, Rect rectangle)
         {
-            var gen = (ItemContainerGenerator) _generator.GetItemContainerGeneratorForPanel(this);
+            var gen = _generator.GetItemContainerGeneratorForPanel(this);
             var element = (UIElement) visual;
             int itemIndex = gen.IndexFromContainer(element);
             while (itemIndex == -1)
@@ -639,7 +636,6 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 itemIndex = gen.IndexFromContainer(element);
             }
 
-            int section = _abstractPanel[itemIndex].Section;
             Rect elementRect = _realizedChildLayout[element];
             if (Orientation == Orientation.Horizontal)
             {
@@ -730,7 +726,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 _owner.InvalidateScrollInfo();
 
             InvalidateMeasure();
-            firstIndex = GetFirstVisibleIndex();
+            _firstIndex = GetFirstVisibleIndex();
         }
 
         public void SetVerticalOffset(double offset)
@@ -755,7 +751,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             //_trans.Y = -offset;
 
             InvalidateMeasure();
-            firstIndex = GetFirstVisibleIndex();
+            _firstIndex = GetFirstVisibleIndex();
         }
 
         public double ViewportHeight
@@ -777,12 +773,12 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
             public ItemAbstraction(WrapPanelAbstraction panel, int index)
             {
                 _panel = panel;
-                _index = index;
+                Index = index;
             }
 
             WrapPanelAbstraction _panel;
 
-            public readonly int _index;
+            public readonly int Index;
 
             int _sectionIndex = -1;
 
@@ -792,7 +788,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 {
                     if (_sectionIndex == -1)
                     {
-                        return _index % _panel._averageItemsPerSection - 1;
+                        return Index % _panel.AverageItemsPerSection - 1;
                     }
 
                     return _sectionIndex;
@@ -812,7 +808,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 {
                     if (_section == -1)
                     {
-                        return _index / _panel._averageItemsPerSection;
+                        return Index / _panel.AverageItemsPerSection;
                     }
 
                     return _section;
@@ -837,16 +833,16 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                 }
 
                 Items = new ReadOnlyCollection<ItemAbstraction>(items);
-                _averageItemsPerSection = itemCount;
-                _itemCount = itemCount;
+                AverageItemsPerSection = itemCount;
+                ItemCount = itemCount;
             }
 
-            public readonly int _itemCount;
-            public int _averageItemsPerSection;
+            public readonly int ItemCount;
+            public int AverageItemsPerSection;
             private int _currentSetSection = -1;
             private int _currentSetItemIndex = -1;
-            private int _itemsInCurrentSecction = 0;
-            private object _syncRoot = new object();
+            private int _itemsInCurrentSecction;
+            private readonly object _syncRoot = new object();
 
             public int SectionCount
             {
@@ -856,7 +852,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                     if (_currentSetItemIndex + 1 < Items.Count)
                     {
                         int itemsLeft = Items.Count - _currentSetItemIndex;
-                        ret += itemsLeft / _averageItemsPerSection + 1;
+                        ret += itemsLeft / AverageItemsPerSection + 1;
                     }
 
                     return ret;
@@ -878,7 +874,7 @@ namespace FrHello.NetLib.Core.Wpf.Controls.VirtualizingWrapPanel
                             _currentSetSection = section;
                             if (section > 0)
                             {
-                                _averageItemsPerSection = (index) / (section);
+                                AverageItemsPerSection = (index) / (section);
                             }
 
                             _itemsInCurrentSecction = 1;
