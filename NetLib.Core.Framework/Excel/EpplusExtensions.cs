@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FrHello.NetLib.Core.Attributes;
+using FrHello.NetLib.Core.Framework.Excel;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
@@ -431,12 +432,12 @@ namespace FrHello.NetLib.Core.Framework
                     columnName = sheetColumnAttributeInner.ColumnName;
                     var allowNull = sheetColumnAttributeInner.AllowNull;
 
-                    yield return new ColumnDescription(columnName, propertyInfo, true) {AllowNull = allowNull};
+                    yield return new ColumnDescription(ExcelHelper.ReplaceInvalidSheetName(columnName), propertyInfo, true) {AllowNull = allowNull};
                 }
                 else
                 {
                     columnName = propertyInfo.Name;
-                    yield return new ColumnDescription(columnName, propertyInfo);
+                    yield return new ColumnDescription(ExcelHelper.ReplaceInvalidSheetName(columnName), propertyInfo);
                 }
             }
         }

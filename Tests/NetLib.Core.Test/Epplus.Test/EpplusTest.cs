@@ -117,7 +117,7 @@ namespace NetLib.Core.Test.Epplus.Test
         /// <summary>
         /// 机构名称
         /// </summary>
-        [SheetColumn("Institución(机构名称)")]
+        [SheetColumn("Institución(机构/名称)")]
         public string Name { get; set; }
 
         /// <summary>
