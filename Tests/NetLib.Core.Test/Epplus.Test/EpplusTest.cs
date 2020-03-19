@@ -111,7 +111,7 @@ namespace NetLib.Core.Test.Epplus.Test
     /// <summary>
     /// 机构
     /// </summary>
-    [Sheet("Institución(机构名称)")]
+    [Sheet("Institución(机构/名称)")]
     internal class MockOrganization
     {
         /// <summary>

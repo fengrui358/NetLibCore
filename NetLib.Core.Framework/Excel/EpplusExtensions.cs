@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using FrHello.NetLib.Core.Attributes;
+using FrHello.NetLib.Core.Framework.Excel;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
@@ -398,11 +399,11 @@ namespace FrHello.NetLib.Core.Framework
             var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
             if (sheetAttribute is SheetAttribute sheetAttributeInner)
             {
-                sheetName = sheetAttributeInner.SheetName;
+                sheetName = ExcelHelper.ReplaceInvalidSheetName(sheetAttributeInner.SheetName);
             }
             else
             {
-                sheetName = type.Name;
+                sheetName = ExcelHelper.ReplaceInvalidSheetName(type.Name);
             }
 
             return sheetName;
