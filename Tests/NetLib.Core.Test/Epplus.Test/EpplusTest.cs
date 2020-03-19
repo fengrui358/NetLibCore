@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using FrHello.NetLib.Core.Attributes;
 using FrHello.NetLib.Core.Framework;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Interfaces;
@@ -227,6 +228,12 @@ namespace NetLib.Core.Test.Epplus.Test
         /// </summary>
         [SheetColumn("Nota(备注)")]
         public string Note { get; set; }
+
+        /// <summary>
+        /// 忽略该列
+        /// </summary>
+        [Ignore]
+        public string Ignore { get; set; }
     }
 
     /// <summary>

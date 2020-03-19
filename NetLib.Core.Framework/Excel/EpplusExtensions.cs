@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using FrHello.NetLib.Core.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
@@ -418,6 +419,11 @@ namespace FrHello.NetLib.Core.Framework
             var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             foreach (var propertyInfo in allPropertyInfos)
             {
+                if (propertyInfo.GetCustomAttribute(typeof(IgnoreAttribute)) != null)
+                {
+                    continue;
+                }
+
                 string columnName;
                 var sheetColumnAttribute = propertyInfo.GetCustomAttribute(typeof(SheetColumnAttribute));
                 if (sheetColumnAttribute is SheetColumnAttribute sheetColumnAttributeInner)
