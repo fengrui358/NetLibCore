@@ -399,11 +399,11 @@ namespace FrHello.NetLib.Core.Framework
             var sheetAttribute = type.GetCustomAttribute(typeof(SheetAttribute));
             if (sheetAttribute is SheetAttribute sheetAttributeInner)
             {
-                sheetName = sheetAttributeInner.SheetName;
+                sheetName = ExcelHelper.ReplaceInvalidSheetName(sheetAttributeInner.SheetName);
             }
             else
             {
-                sheetName = type.Name;
+                sheetName = ExcelHelper.ReplaceInvalidSheetName(type.Name);
             }
 
             return sheetName;
@@ -432,12 +432,12 @@ namespace FrHello.NetLib.Core.Framework
                     columnName = sheetColumnAttributeInner.ColumnName;
                     var allowNull = sheetColumnAttributeInner.AllowNull;
 
-                    yield return new ColumnDescription(ExcelHelper.ReplaceInvalidSheetName(columnName), propertyInfo, true) {AllowNull = allowNull};
+                    yield return new ColumnDescription(columnName, propertyInfo, true) {AllowNull = allowNull};
                 }
                 else
                 {
                     columnName = propertyInfo.Name;
-                    yield return new ColumnDescription(ExcelHelper.ReplaceInvalidSheetName(columnName), propertyInfo);
+                    yield return new ColumnDescription(columnName, propertyInfo);
                 }
             }
         }
