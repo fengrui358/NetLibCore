@@ -18,12 +18,10 @@ namespace FrHello.NetLib.Core.Framework
     /// </summary>
     public static partial class Extensions
     {
-#if DEBUG
         static Extensions()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
-#endif
 
         /// <summary>
         /// 最后一行有数据的行号
