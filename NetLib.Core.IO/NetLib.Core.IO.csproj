@@ -18,7 +18,7 @@
     <PackageTags>Dotnet core IO utility</PackageTags>
     <RootNamespace>FrHello.NetLib.Core.IO</RootNamespace>
     <Product>NetLib.Core.IO</Product>
-    <Version>1.0.29</Version>
+    <Version>1.0.30</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
