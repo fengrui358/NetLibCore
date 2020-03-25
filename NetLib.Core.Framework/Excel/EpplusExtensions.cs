@@ -18,12 +18,10 @@ namespace FrHello.NetLib.Core.Framework
     /// </summary>
     public static partial class Extensions
     {
-#if DEBUG
         static Extensions()
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
         }
-#endif
 
         /// <summary>
         /// 最后一行有数据的行号
@@ -241,6 +239,48 @@ namespace FrHello.NetLib.Core.Framework
             var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
                             excelPackage.Workbook.Worksheets.Add(workSheetName);
 
+            var maxRowNum = workSheet.MaxRowNum() + 1;
+
+            await InsertDatas(rowDatas, excelPath, maxRowNum);
+        }
+
+        /// <summary>
+        /// 向Excel插入数据集
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="rowDatas">行数据</param>
+        /// <param name="excelPath">excel文件路径</param>
+        /// <param name="rowFrom">起始行</param>
+        /// <returns></returns>
+        public static async Task InsertDatas<T>(IEnumerable<T> rowDatas, string excelPath, int rowFrom)
+        {
+            if (rowDatas == null)
+            {
+                throw new ArgumentNullException(nameof(rowDatas));
+            }
+
+            if (string.IsNullOrWhiteSpace(excelPath))
+            {
+                throw new ArgumentNullException(nameof(excelPath));
+            }
+
+            if (rowFrom < 1)
+            {
+                throw new ArgumentException($"{nameof(rowFrom)}:{rowFrom}");
+            }
+
+            var rows = rowDatas as T[] ?? rowDatas.ToArray();
+            if (!rows.Any())
+            {
+                return;
+            }
+
+            using var excelPackage = new ExcelPackage(new FileInfo(excelPath));
+            var workSheetName = GetSheetName(typeof(T));
+
+            var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
+                            excelPackage.Workbook.Worksheets.Add(workSheetName);
+
             //收集有效的属性
             var properties = ConvertProperitesToColumnDescription(typeof(T)).ToList();
 
@@ -261,8 +301,9 @@ namespace FrHello.NetLib.Core.Framework
                 }
             }
 
-            var maxRowNum = workSheet.MaxRowNum() + 1;
-            foreach (var rowData in rowDatas)
+            workSheet.InsertRow(rowFrom, rows.Length, rowFrom);
+
+            foreach (var rowData in rows)
             {
                 var writeSomething = false;
                 foreach (var columnDescription in properties)
@@ -270,7 +311,7 @@ namespace FrHello.NetLib.Core.Framework
                     var value = columnDescription.PropertyInfo.GetValue(rowData);
                     if (value != null)
                     {
-                        workSheet.Cells[maxRowNum, columnDescription.ColumnNum].Value =
+                        workSheet.Cells[rowFrom, columnDescription.ColumnNum].Value =
                             TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
                         writeSomething = true;
                     }
@@ -278,7 +319,7 @@ namespace FrHello.NetLib.Core.Framework
 
                 if (writeSomething)
                 {
-                    maxRowNum++;
+                    rowFrom++;
                 }
             }
 
@@ -324,6 +365,40 @@ namespace FrHello.NetLib.Core.Framework
             var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
                             excelPackage.Workbook.Worksheets.Add(workSheetName);
 
+            var maxRowNum = workSheet.MaxRowNum() + 1;
+
+            await InsertRow(excelPackage, maxRowNum, rowData);
+        }
+
+        /// <summary>
+        /// 像Excel中插入行数据
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="excelPackage">excel文件</param>
+        /// <param name="rowFrom">起始行</param>
+        /// <param name="rowData">行数据</param>
+        /// <returns></returns>
+        public static async Task InsertRow<T>(this ExcelPackage excelPackage, int rowFrom, T rowData)
+        {
+            if (excelPackage == null)
+            {
+                throw new ArgumentNullException(nameof(excelPackage));
+            }
+
+            if (rowFrom < 1)
+            {
+                throw new ArgumentException($"{nameof(rowFrom)}:{rowFrom}");
+            }
+
+            if (rowData == null)
+            {
+                return;
+            }
+
+            var workSheetName = GetSheetName(typeof(T));
+            var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == workSheetName) ??
+                            excelPackage.Workbook.Worksheets.Add(workSheetName);
+
             //收集有效的属性
             var properties = ConvertProperitesToColumnDescription(typeof(T)).ToList();
 
@@ -344,13 +419,13 @@ namespace FrHello.NetLib.Core.Framework
                 }
             }
 
-            var maxRowNum = workSheet.MaxRowNum() + 1;
+            workSheet.InsertRow(rowFrom, 1, rowFrom);
             foreach (var columnDescription in properties)
             {
                 var value = columnDescription.PropertyInfo.GetValue(rowData);
                 if (value != null)
                 {
-                    workSheet.Cells[maxRowNum, columnDescription.ColumnNum].Value =
+                    workSheet.Cells[rowFrom, columnDescription.ColumnNum].Value =
                         TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
                 }
             }
