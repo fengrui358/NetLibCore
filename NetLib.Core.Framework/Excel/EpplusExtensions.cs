@@ -127,6 +127,48 @@ namespace FrHello.NetLib.Core.Framework
 
             if (worksheet != null)
             {
+                var startRow = worksheet.Dimension.Start.Row + 1;
+                return FillDatas<T>(excelPackage, startRow, worksheet.MaxRowNum());
+            }
+            else
+            {
+                throw new InvalidOperationException($"Sheet name: {sheetName} not found.");
+            }
+        }
+
+        /// <summary>
+        /// 从Excel中获取特定的类型数据集合
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="excelPackage">工作表</param>
+        /// <param name="rowFrom">起始行</param>
+        /// <param name="count">读取数据</param>
+        /// <returns>填充后的集合对象</returns>
+        public static IEnumerable<T> FillDatas<T>(this ExcelPackage excelPackage, int rowFrom, int count)
+        {
+            if (excelPackage == null)
+            {
+                throw new ArgumentNullException(nameof(excelPackage));
+            }
+
+            if (excelPackage.File != null && !excelPackage.File.Exists)
+            {
+                throw new FileNotFoundException($"{excelPackage.File.FullName} not found.");
+            }
+
+            if (rowFrom < 1)
+            {
+                throw new ArgumentException($"{nameof(rowFrom)}:{rowFrom}");
+            }
+
+            var type = typeof(T);
+            var sheetName = GetSheetName(type);
+
+            //判断有无对应的表
+            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName);
+
+            if (worksheet != null)
+            {
                 //收集有效的属性
                 var properties = ConvertProperitesToColumnDescription(typeof(T));
 
@@ -154,7 +196,12 @@ namespace FrHello.NetLib.Core.Framework
 
                 if (validColums.Any())
                 {
-                    for (var i = worksheet.Dimension.Start.Row + 1; i <= worksheet.MaxRowNum(); i++)
+                    var maxRow = worksheet.MaxRowNum();
+                    maxRow = Math.Min(maxRow, rowFrom + count);
+
+                    var startRow = Math.Max(rowFrom, worksheet.Dimension.Start.Row + 1);
+
+                    for (var i = startRow; i <= maxRow; i++)
                     {
                         var instance = Activator.CreateInstance<T>();
                         foreach (var columnDescription in validColums)
