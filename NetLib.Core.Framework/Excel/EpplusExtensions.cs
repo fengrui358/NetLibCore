@@ -287,6 +287,11 @@ namespace FrHello.NetLib.Core.Framework
                             excelPackage.Workbook.Worksheets.Add(workSheetName);
 
             var maxRowNum = workSheet.MaxRowNum() + 1;
+            if (maxRowNum == 1)
+            {
+                //如果只有一行数据，要为列头预留一行
+                maxRowNum++;
+            }
 
             await InsertDatas(rowDatas, excelPath, maxRowNum);
         }
