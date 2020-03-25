@@ -197,7 +197,7 @@ namespace FrHello.NetLib.Core.Framework
                 if (validColums.Any())
                 {
                     var maxRow = worksheet.MaxRowNum();
-                    maxRow = Math.Min(maxRow, rowFrom + count);
+                    maxRow = Math.Min(maxRow, rowFrom + count -1);
 
                     var startRow = Math.Max(rowFrom, worksheet.Dimension.Start.Row + 1);
 
