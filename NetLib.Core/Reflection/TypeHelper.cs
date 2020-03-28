@@ -7,7 +7,7 @@ namespace FrHello.NetLib.Core.Reflection
     /// <summary>
     /// 类型辅助
     /// </summary>
-    public class TypeHelper
+    public static class TypeHelper
     {
         private const string TryParse = "TryParse";
         private const string Parse = "Parse";
@@ -17,7 +17,7 @@ namespace FrHello.NetLib.Core.Reflection
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static bool IsNullableType(Type type)
+        public static bool IsNullableType(this Type type)
         {
             if (type == null)
             {
@@ -25,6 +25,16 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
+        /// 获取真正的类型，排除可空类型的情况
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetRealType(this Type type)
+        {
+            return IsNullableType(type) ? type.GetGenericArguments().FirstOrDefault() : type;
         }
 
         /// <summary>

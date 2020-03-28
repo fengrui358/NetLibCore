@@ -22,6 +22,18 @@ namespace NetLib.Core.Test.Reflection.Test
             Assert.False(TypeHelper.HasDefaultConstructor(typeof(MockPrivateClass)));
             Assert.True(TypeHelper.HasDefaultConstructor(typeof(MockParamsClass)));
         }
+
+        /// <summary>
+        /// GetRealTypeTest
+        /// </summary>
+        [Fact]
+        public void GetRealTypeTest()
+        {
+            var type1 = typeof(MockAbstractClass);
+            Assert.Equal(typeof(MockAbstractClass), type1.GetRealType());
+
+            Assert.Equal(typeof(double), typeof(double?).GetRealType());
+        }
     }
 
     /// <summary>
