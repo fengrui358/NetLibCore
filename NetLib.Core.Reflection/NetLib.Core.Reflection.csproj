@@ -18,7 +18,7 @@
     <PackageTags>Dotnet core reflection utility</PackageTags>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Product>NetLib.Core.Reflection</Product>
-    <Version>1.0.30</Version>
+    <Version>1.0.31</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
