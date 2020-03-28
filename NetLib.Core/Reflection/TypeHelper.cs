@@ -28,13 +28,64 @@ namespace FrHello.NetLib.Core.Reflection
         }
 
         /// <summary>
-        /// 获取真正的类型，排除可空类型的情况
+        /// 获取可空类型对应的真正类型
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static Type GetRealType(this Type type)
+        public static Type GetNullableInnerType(this Type type)
         {
             return IsNullableType(type) ? type.GetGenericArguments().FirstOrDefault() : type;
+        }
+
+        /// <summary>
+        /// 是否为指定类型子类，包括泛型子类的情况
+        /// </summary>
+        /// <param name="type">子类型</param>
+        /// <param name="superType">父类型</param>
+        /// <param name="recursive">递归查找</param>
+        /// <returns></returns>
+        public static bool IsInheritedFrom(this Type type, Type superType, bool recursive = false)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+
+            if (superType == null)
+            {
+                throw new ArgumentNullException(nameof(superType));
+            }
+
+            type = GetNullableInnerType(type);
+            superType = GetNullableInnerType(superType);
+
+            if (type == superType)
+            {
+                return false;
+            }
+
+            if (superType.IsAssignableFrom(type))
+            {
+                return true;
+            }
+            else
+            {
+                if (type.BaseType != null && type.BaseType.IsGenericType && type.BaseType.GetGenericTypeDefinition() == superType)
+                {
+                    return true;
+                }
+                else
+                {
+                    if (recursive && type.BaseType != null && type.BaseType != typeof(object))
+                    {
+                        return type.BaseType.IsInheritedFrom(superType);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
         }
 
         /// <summary>
