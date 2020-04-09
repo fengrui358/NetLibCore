@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using FrHello.NetLib.Core.Regex;
@@ -32,7 +31,7 @@ namespace FrHello.NetLib.Core.Net
 
             CheckSmtpServer();
 
-            var mailMessage = new MailMessage
+            using var mailMessage = new MailMessage
             {
                 From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.DefaultSenderDisplayerName, GlobalMailOptions.DefaultEncoding),
@@ -113,7 +112,7 @@ namespace FrHello.NetLib.Core.Net
 
             CheckSmtpServer();
 
-            var mailMessage = new MailMessage
+            using var mailMessage = new MailMessage
             {
                 From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.DefaultSenderDisplayerName, GlobalMailOptions.DefaultEncoding),
