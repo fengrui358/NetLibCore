@@ -18,7 +18,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core framework utility</PackageTags>
     <Product>NetLib.Core.Framework</Product>
-    <Version>1.0.43</Version>
+    <Version>1.0.44</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
