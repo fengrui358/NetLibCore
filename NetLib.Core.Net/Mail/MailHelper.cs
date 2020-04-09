@@ -30,6 +30,8 @@ namespace FrHello.NetLib.Core.Net
                 throw new ArgumentNullException(nameof(toAddress));
             }
 
+            CheckSmtpServer();
+
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
@@ -59,6 +61,8 @@ namespace FrHello.NetLib.Core.Net
                 throw new ArgumentNullException(nameof(mailMessage));
             }
 
+            CheckSmtpServer();
+
             //检查有无发件人信息
             if (mailMessage.From != null)
             {
@@ -72,9 +76,6 @@ namespace FrHello.NetLib.Core.Net
                 mailMessage.From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.DefaultSenderDisplayerName, GlobalMailOptions.DefaultEncoding);
             }
-
-            //继续检查
-            CheckSmtpServer();
 
             using var smtpClient = new SmtpClient
             {
@@ -110,6 +111,8 @@ namespace FrHello.NetLib.Core.Net
                 throw new ArgumentNullException(nameof(toAddress));
             }
 
+            CheckSmtpServer();
+
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
@@ -139,6 +142,8 @@ namespace FrHello.NetLib.Core.Net
                 throw new ArgumentNullException(nameof(mailMessage));
             }
 
+            CheckSmtpServer();
+
             //检查有无发件人信息
             if (mailMessage.From != null)
             {
@@ -152,9 +157,6 @@ namespace FrHello.NetLib.Core.Net
                 mailMessage.From = new MailAddress(GlobalMailOptions.SmtpServerInfo.MailUserName,
                     GlobalMailOptions.DefaultSenderDisplayerName, GlobalMailOptions.DefaultEncoding);
             }
-
-            //继续检查
-            CheckSmtpServer();
 
             using var smtpClient = new SmtpClient
             {
