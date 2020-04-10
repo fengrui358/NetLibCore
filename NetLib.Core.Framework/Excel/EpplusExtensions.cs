@@ -161,6 +161,12 @@ namespace FrHello.NetLib.Core.Framework
                 throw new ArgumentException($"{nameof(rowFrom)}:{rowFrom}");
             }
 
+            if (rowFrom == 1)
+            {
+                //不能插在列头前
+                rowFrom = 2;
+            }
+
             var type = typeof(T);
             var sheetName = GetSheetName(type);
 
@@ -169,97 +175,109 @@ namespace FrHello.NetLib.Core.Framework
 
             if (worksheet != null)
             {
-                //收集有效的属性
-                var properties = ConvertProperitesToColumnDescription(typeof(T));
-
-                //有效的列
-                var validColums = new List<ColumnDescription>();
-
-                foreach (var property in properties)
-                {
-                    //添加了明确列名找不到的情况需要提示
-                    var column = worksheet.GetColumnNum(property.ColumnName);
-                    if (column > 0)
-                    {
-                        property.ColumnNum = column;
-                        validColums.Add(property);
-                    }
-                    else if (property.IsNeed)
-                    {
-                        //如果必须要该列又不存在则抛出异常
-                        var excelColumnNotFoundException = new ExcelColumnNotFoundException(property.ColumnName,
-                            excelPackage.File,
-                            worksheet.Name);
-                        throw excelColumnNotFoundException;
-                    }
-                }
-
-                if (validColums.Any())
-                {
-                    var rowNumProperty = GetRowNumPropertyInfo(typeof(T));
-
-                    var maxRow = worksheet.MaxRowNum();
-                    maxRow = Math.Min(maxRow, rowFrom + count -1);
-
-                    var startRow = Math.Max(rowFrom, worksheet.Dimension.Start.Row + 1);
-
-                    for (var i = startRow; i <= maxRow; i++)
-                    {
-                        var instance = Activator.CreateInstance<T>();
-                        foreach (var columnDescription in validColums)
-                        {
-                            object value;
-
-                            var converterAttribute = columnDescription.PropertyInfo
-                                .GetCustomAttribute<SheetColumnValueConverterAttribute>();
-                            if (converterAttribute != null)
-                            {
-                                value = converterAttribute.SimpleValueConverter.Convert(worksheet
-                                    .Cells[i, columnDescription.ColumnNum].Value);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    value = TypeHelper.ChangeType(worksheet.Cells[i, columnDescription.ColumnNum].Value,
-                                        columnDescription.PropertyInfo.PropertyType);
-                                }
-                                catch (Exception e)
-                                {
-                                    throw new ExcelCellChangeTypeException(i, columnDescription.ColumnNum,
-                                        excelPackage.File, worksheet.Name, e);
-                                }
-                            }
-
-                            if (value == null || (value is string valueStr && string.IsNullOrWhiteSpace(valueStr)))
-                            {
-                                //判断是否有空特性
-                                if (!columnDescription.AllowNull)
-                                {
-                                    throw new ExcelCellNotAllowNullException(i, columnDescription.ColumnNum,
-                                        excelPackage.File, worksheet.Name);
-                                }
-                            }
-
-                            columnDescription.PropertyInfo.SetValue(instance, value);
-                        }
-
-                        if (rowNumProperty != null)
-                        {
-                            rowNumProperty.SetValue(instance, i);
-                        }
-
-                        yield return instance;
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException($"Sheet name:{sheetName} not found any columns to convert.");
-                }
+                return worksheet.FillDatas<T>(rowFrom, count);
             }
             else
             {
                 throw new InvalidOperationException($"Sheet name: {sheetName} not found.");
+            }
+        }
+
+        /// <summary>
+        /// 从Excel指定表中获取特定的类型数据集合
+        /// </summary>
+        /// <typeparam name="T">类型</typeparam>
+        /// <param name="worksheet">工作表</param>
+        /// <param name="rowFrom">起始行</param>
+        /// <param name="count">读取数据</param>
+        /// <returns>填充后的集合对象</returns>
+        public static IEnumerable<T> FillDatas<T>(this ExcelWorksheet worksheet, int rowFrom, int count)
+        {
+            //收集有效的属性
+            var properties = ConvertProperitesToColumnDescription(typeof(T));
+
+            //有效的列
+            var validColums = new List<ColumnDescription>();
+
+            foreach (var property in properties)
+            {
+                //添加了明确列名找不到的情况需要提示
+                var column = worksheet.GetColumnNum(property.ColumnName);
+                if (column > 0)
+                {
+                    property.ColumnNum = column;
+                    validColums.Add(property);
+                }
+                else if (property.IsNeed)
+                {
+                    //如果必须要该列又不存在则抛出异常
+                    var excelColumnNotFoundException = new ExcelColumnNotFoundException(property.ColumnName,
+                        worksheet.Name);
+                    throw excelColumnNotFoundException;
+                }
+            }
+
+            if (validColums.Any())
+            {
+                var rowNumProperty = GetRowNumPropertyInfo(typeof(T));
+
+                var maxRow = worksheet.MaxRowNum();
+                maxRow = Math.Min(maxRow, rowFrom + count - 1);
+
+                var startRow = Math.Max(rowFrom, worksheet.Dimension.Start.Row + 1);
+
+                for (var i = startRow; i <= maxRow; i++)
+                {
+                    var instance = Activator.CreateInstance<T>();
+                    foreach (var columnDescription in validColums)
+                    {
+                        object value;
+
+                        var converterAttribute = columnDescription.PropertyInfo
+                            .GetCustomAttribute<SheetColumnValueConverterAttribute>();
+                        if (converterAttribute != null)
+                        {
+                            value = converterAttribute.SimpleValueConverter.Convert(worksheet
+                                .Cells[i, columnDescription.ColumnNum].Value);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                value = TypeHelper.ChangeType(worksheet.Cells[i, columnDescription.ColumnNum].Value,
+                                    columnDescription.PropertyInfo.PropertyType);
+                            }
+                            catch (Exception e)
+                            {
+                                throw new ExcelCellChangeTypeException(i, columnDescription.ColumnNum,
+                                    worksheet.Name, e);
+                            }
+                        }
+
+                        if (value == null || (value is string valueStr && string.IsNullOrWhiteSpace(valueStr)))
+                        {
+                            //判断是否有空特性
+                            if (!columnDescription.AllowNull)
+                            {
+                                throw new ExcelCellNotAllowNullException(i, columnDescription.ColumnNum,
+                                    worksheet.Name);
+                            }
+                        }
+
+                        columnDescription.PropertyInfo.SetValue(instance, value);
+                    }
+
+                    if (rowNumProperty != null)
+                    {
+                        rowNumProperty.SetValue(instance, i);
+                    }
+
+                    yield return instance;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"Sheet name:{worksheet.Name} not found any columns to convert.");
             }
         }
 

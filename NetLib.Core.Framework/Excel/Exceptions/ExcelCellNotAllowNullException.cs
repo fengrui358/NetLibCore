@@ -19,11 +19,6 @@ namespace FrHello.NetLib.Core.Framework.Excel.Exceptions
         public int ColumnNum { get; }
 
         /// <summary>
-        /// 对应的文件
-        /// </summary>
-        public FileInfo ExcelFileInfo { get; }
-
-        /// <summary>
         /// 表名
         /// </summary>
         public string SheetName { get; }
@@ -38,13 +33,11 @@ namespace FrHello.NetLib.Core.Framework.Excel.Exceptions
         /// </summary>
         /// <param name="rowNum">行号</param>
         /// <param name="columnNum">列号</param>
-        /// <param name="excelFileInfo">Excel文件</param>
         /// <param name="sheetName">Excel表名</param>
-        public ExcelCellNotAllowNullException(int rowNum, int columnNum, FileInfo excelFileInfo, string sheetName)
+        public ExcelCellNotAllowNullException(int rowNum, int columnNum, string sheetName)
         {
             RowNum = rowNum;
             ColumnNum = columnNum;
-            ExcelFileInfo = excelFileInfo;
             SheetName = sheetName;
         }
     }

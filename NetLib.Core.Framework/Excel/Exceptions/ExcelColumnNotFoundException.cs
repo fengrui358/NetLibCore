@@ -14,11 +14,6 @@ namespace FrHello.NetLib.Core.Framework.Excel.Exceptions
         public string ColumnName { get; }
 
         /// <summary>
-        /// 对应的文件
-        /// </summary>
-        public FileInfo ExcelFileInfo { get; }
-
-        /// <summary>
         /// 表名
         /// </summary>
         public string SheetName { get; }
@@ -32,12 +27,10 @@ namespace FrHello.NetLib.Core.Framework.Excel.Exceptions
         /// 构造
         /// </summary>
         /// <param name="columnName">Excel列号</param>
-        /// <param name="excelFileInfo">Excel文件</param>
         /// <param name="sheetName">Excel表名</param>
-        public ExcelColumnNotFoundException(string columnName, FileInfo excelFileInfo, string sheetName)
+        public ExcelColumnNotFoundException(string columnName, string sheetName)
         {
             ColumnName = columnName;
-            ExcelFileInfo = excelFileInfo;
             SheetName = sheetName;
         }
     }
