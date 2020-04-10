@@ -196,6 +196,8 @@ namespace FrHello.NetLib.Core.Framework
 
                 if (validColums.Any())
                 {
+                    var rowNumProperty = GetRowNumPropertyInfo(typeof(T));
+
                     var maxRow = worksheet.MaxRowNum();
                     maxRow = Math.Min(maxRow, rowFrom + count -1);
 
@@ -240,6 +242,11 @@ namespace FrHello.NetLib.Core.Framework
                             }
 
                             columnDescription.PropertyInfo.SetValue(instance, value);
+                        }
+
+                        if (rowNumProperty != null)
+                        {
+                            rowNumProperty.SetValue(instance, i);
                         }
 
                         yield return instance;
@@ -287,11 +294,6 @@ namespace FrHello.NetLib.Core.Framework
                             excelPackage.Workbook.Worksheets.Add(workSheetName);
 
             var maxRowNum = workSheet.MaxRowNum() + 1;
-            if (maxRowNum == 1)
-            {
-                //如果只有一行数据，要为列头预留一行
-                maxRowNum++;
-            }
 
             await InsertDatas(rowDatas, excelPath, maxRowNum);
         }
@@ -327,6 +329,12 @@ namespace FrHello.NetLib.Core.Framework
                 return;
             }
 
+            if (rowFrom == 1)
+            {
+                //不能插在列头前
+                rowFrom = 2;
+            }
+
             using var excelPackage = new ExcelPackage(new FileInfo(excelPath));
             var workSheetName = GetSheetName(typeof(T));
 
@@ -354,6 +362,7 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             workSheet.InsertRow(rowFrom, rows.Length, rowFrom);
+            var rowNumProperty = GetRowNumPropertyInfo(typeof(T));
 
             foreach (var rowData in rows)
             {
@@ -366,6 +375,11 @@ namespace FrHello.NetLib.Core.Framework
                         workSheet.Cells[rowFrom, columnDescription.ColumnNum].Value =
                             TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
                         writeSomething = true;
+
+                        if (rowNumProperty != null)
+                        {
+                            rowNumProperty.SetValue(rowData, rowFrom);
+                        }
                     }
                 }
 
@@ -423,7 +437,7 @@ namespace FrHello.NetLib.Core.Framework
         }
 
         /// <summary>
-        /// 像Excel中插入行数据
+        /// 向Excel中插入行数据
         /// </summary>
         /// <typeparam name="T">类型</typeparam>
         /// <param name="excelPackage">excel文件</param>
@@ -445,6 +459,12 @@ namespace FrHello.NetLib.Core.Framework
             if (rowData == null)
             {
                 return;
+            }
+
+            if (rowFrom == 1)
+            {
+                //不能插在列头前
+                rowFrom = 2;
             }
 
             var workSheetName = GetSheetName(typeof(T));
@@ -472,6 +492,8 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             workSheet.InsertRow(rowFrom, 1, rowFrom);
+
+            var rowNumProperty = GetRowNumPropertyInfo(typeof(T));
             foreach (var columnDescription in properties)
             {
                 var value = columnDescription.PropertyInfo.GetValue(rowData);
@@ -479,6 +501,11 @@ namespace FrHello.NetLib.Core.Framework
                 {
                     workSheet.Cells[rowFrom, columnDescription.ColumnNum].Value =
                         TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
+
+                    if (rowNumProperty != null)
+                    {
+                        rowNumProperty.SetValue(rowData, rowFrom);
+                    }
                 }
             }
 
@@ -547,7 +574,8 @@ namespace FrHello.NetLib.Core.Framework
             var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
             foreach (var propertyInfo in allPropertyInfos)
             {
-                if (propertyInfo.GetCustomAttribute(typeof(IgnoreAttribute)) != null)
+                if (propertyInfo.GetCustomAttribute(typeof(IgnoreAttribute)) != null ||
+                    propertyInfo.GetCustomAttribute(typeof(RowNumAttribute)) != null)
                 {
                     continue;
                 }
@@ -567,6 +595,26 @@ namespace FrHello.NetLib.Core.Framework
                     yield return new ColumnDescription(columnName, propertyInfo);
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取行号属性
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        private static PropertyInfo GetRowNumPropertyInfo(Type type)
+        {
+            var allPropertyInfos = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            foreach (var propertyInfo in allPropertyInfos)
+            {
+                var rowNumAttribute = propertyInfo.GetCustomAttribute<RowNumAttribute>();
+                if (rowNumAttribute != null)
+                {
+                    return propertyInfo;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

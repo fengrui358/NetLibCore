@@ -234,6 +234,9 @@ namespace NetLib.Core.Test.Epplus.Test
         /// </summary>
         [Ignore]
         public string Ignore { get; set; }
+
+        [RowNum]
+        public int RowNum { get; set; }
     }
 
     /// <summary>
@@ -260,6 +263,9 @@ namespace NetLib.Core.Test.Epplus.Test
         /// </summary>
         [SheetColumn("Número ID(身份证号)")]
         public string IdCard { get; set; }
+
+        [RowNum]
+        public int RowNum { get; set; }
     }
 
     /// <summary>
@@ -276,6 +282,9 @@ namespace NetLib.Core.Test.Epplus.Test
 
         // ReSharper disable once InconsistentNaming
         public string DISTRICTFULLNAME { get; set; }
+
+        [RowNum]
+        public int RowNum { get; set; }
     }
 
     internal class GenderColumnValueConverter : SimpleValueConverter<string, Gender>
