@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using FrHello.NetLib.Core.Reflection;
+﻿using FrHello.NetLib.Core.Reflection;
 using Xunit;
 
 namespace NetLib.Core.Test.Reflection.Test
@@ -61,6 +58,24 @@ namespace NetLib.Core.Test.Reflection.Test
         }
 
 #pragma warning restore xUnit2004 // Do not use equality check to test for boolean conditions
+
+        /// <summary>
+        /// ChangeTypeTest
+        /// </summary>
+        [Fact]
+        public void ChangeTypeTest()
+        {
+            var test = new MockGenericType
+            {
+                EnumMockEnum = EnumMockEnum.EnumMockEnum
+            };
+
+            var result = TypeHelper.ChangeType(nameof(EnumMockEnum.EnumMockEnum2), test.EnumMockEnum.GetType());
+            Assert.Equal(EnumMockEnum.EnumMockEnum2, result);
+
+            var result2 = TypeHelper.ChangeType(EnumMockEnum.EnumMockEnum2, test.EnumMockEnum.GetType());
+            Assert.Equal(EnumMockEnum.EnumMockEnum2, result2);
+        }
     }
 
     /// <summary>
@@ -123,7 +138,13 @@ namespace NetLib.Core.Test.Reflection.Test
     /// <summary>
     /// MockGenericType
     /// </summary>
-    public class MockGenericType : MockGenericType<object> { }
+    public class MockGenericType : MockGenericType<object>
+    {
+        /// <summary>
+        /// EnumMockEnum
+        /// </summary>
+        public EnumMockEnum EnumMockEnum { get; set; }
+    }
 
     /// <summary>
     /// MockGenericTypeSubType
@@ -134,4 +155,20 @@ namespace NetLib.Core.Test.Reflection.Test
     /// MockGenericTypeSubType2
     /// </summary>
     public class MockGenericTypeSubType2 : MockGenericType { }
+
+    /// <summary>
+    /// EnumMockEnum
+    /// </summary>
+    public enum EnumMockEnum
+    {
+        /// <summary>
+        /// EnumMockEnum
+        /// </summary>
+        EnumMockEnum,
+
+        /// <summary>
+        /// EnumMockEnum2
+        /// </summary>
+        EnumMockEnum2,
+    }
 }

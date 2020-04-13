@@ -155,11 +155,26 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             var destType = type;
-            Type destNullableType = null;
             if (IsNullableType(destType))
             {
-                destNullableType = destType;
                 destType = Nullable.GetUnderlyingType(destType);
+            }
+
+            if (sourceType == destType)
+            {
+                return value;
+            }
+
+            if (destType != null && destType.IsEnum)
+            {
+                if (int.TryParse(value.ToString(), out var enumInt))
+                {
+                    return System.Enum.ToObject(destType, enumInt);
+                }
+                else
+                {
+                    return System.Enum.Parse(destType, value.ToString());
+                }
             }
 
             object converterValue;
@@ -192,14 +207,6 @@ namespace FrHello.NetLib.Core.Reflection
             {
                 converterValue =
                     Convert.ChangeType(value, destType ?? throw new ArgumentNullException(nameof(destType)));
-            }
-
-            if (destNullableType != null)
-            {
-                //包装成可空类型
-                var result = Activator.CreateInstance(destNullableType);
-                result = converterValue;
-                return result;
             }
 
             return converterValue;
