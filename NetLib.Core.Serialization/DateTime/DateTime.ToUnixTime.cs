@@ -13,11 +13,21 @@ namespace FrHello.NetLib.Core.Serialization.DateTime
         /// Unix 时间戳是从格林威治时间1970 年 01 月 01 日 00 时 00 分 00 秒(北京时间 1970 年 01 月 01 日 08 时 00 分 00 秒)起至现在的总秒数
         /// </summary>
         /// <param name="time">要转换的时间</param>
-        /// <returns></returns>
+        /// <returns>时间戳</returns>
         public static long ToUnixTime(this System.DateTime time)
         {
-            return (long)Math.Round(time.ToUniversalTime().Subtract(Time19700101).TotalMilliseconds,
+            return (long) Math.Round(time.ToUniversalTime().Subtract(Time19700101).TotalMilliseconds,
                 MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// Unix 时间戳是从格林威治时间1970 年 01 月 01 日 00 时 00 分 00 秒(北京时间 1970 年 01 月 01 日 08 时 00 分 00 秒)起至现在的总秒数
+        /// </summary>
+        /// <param name="unixTimestamp">时间戳</param>
+        /// <returns>转换回的时间</returns>
+        public static System.DateTime FromUnixTime(long unixTimestamp)
+        {
+            return Time19700101.AddMilliseconds(unixTimestamp);
         }
     }
 }
