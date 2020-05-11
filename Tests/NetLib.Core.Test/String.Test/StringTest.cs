@@ -87,5 +87,18 @@ namespace NetLib.Core.Test.String.Test
             var c = "abcdfatrfds dsafrtd dsgsdg";
             Assert.Equal(2, StringHelper.LevenshteinDistanceCompute(a, c));
         }
+
+        /// <summary>
+        /// ContainsTest
+        /// </summary>
+        [Fact]
+        public void ContainsTest()
+        {
+            var str1 = "freeAndyoyoAndPeppy";
+
+            Assert.True(str1.Contains("yoyoand", StringComparison.OrdinalIgnoreCase));
+            Assert.False(str1.Contains("yoyoand2", StringComparison.OrdinalIgnoreCase));
+            Assert.False(str1.Contains("yoyoand", StringComparison.Ordinal));
+        }
     }
 }
