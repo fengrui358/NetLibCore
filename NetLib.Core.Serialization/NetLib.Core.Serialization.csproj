@@ -19,7 +19,7 @@
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core serialization utility</PackageTags>
     <Product>NetLib.Core.Serialization</Product>
-    <Version>1.0.48</Version>
+    <Version>1.0.49</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
