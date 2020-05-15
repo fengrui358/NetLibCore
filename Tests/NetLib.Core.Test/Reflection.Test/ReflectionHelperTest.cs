@@ -1,5 +1,4 @@
-﻿using FrHello.NetLib.Core.Reflection;
-using Xunit;
+﻿using Xunit;
 
 namespace NetLib.Core.Test.Reflection.Test
 {
@@ -20,13 +19,13 @@ namespace NetLib.Core.Test.Reflection.Test
 
         private string GetClassName()
         {
-            ReflectionHelper.GetInvokerInfo(out var className, out var methodName);
+            FrHello.NetLib.Core.Reflection.ReflectionHelper.GetInvokerInfo(out var className, out var methodName);
             return className;
         }
 
         private string GetMethodName()
         {
-            ReflectionHelper.GetInvokerInfo(out var className, out var methodName);
+            FrHello.NetLib.Core.Reflection.ReflectionHelper.GetInvokerInfo(out var className, out var methodName);
             return methodName;
         }
     }
