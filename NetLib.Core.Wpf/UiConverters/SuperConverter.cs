@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 
@@ -100,7 +101,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <returns></returns>
         protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Binding.DoNothing;
+            return ConverterResultHelper.Convert(false, value, targetType, parameter, culture);
         }
     }
 
@@ -150,7 +151,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <returns></returns>
         protected override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return Binding.DoNothing;
+            return ConverterResultHelper.Convert(true, value, targetType, parameter, culture);
         }
     }
 
@@ -200,7 +201,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <returns></returns>
         protected override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return targetTypes.Select(s => ConverterResultHelper.Convert(true, value, s, parameter, culture)).ToArray();
         }
     }
 
@@ -250,7 +251,7 @@ namespace FrHello.NetLib.Core.Wpf.UiConverters
         /// <returns></returns>
         protected override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return targetTypes.Select(s => ConverterResultHelper.Convert(false, value, s, parameter, culture)).ToArray();
         }
     }
 
