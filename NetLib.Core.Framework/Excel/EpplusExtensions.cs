@@ -394,7 +394,7 @@ namespace FrHello.NetLib.Core.Framework
                             TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
                         writeSomething = true;
 
-                        if (rowNumProperty != null)
+                        if (rowNumProperty != null && rowNumProperty.CanWrite)
                         {
                             rowNumProperty.SetValue(rowData, rowFrom);
                         }
