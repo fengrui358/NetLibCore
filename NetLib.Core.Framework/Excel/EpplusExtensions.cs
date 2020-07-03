@@ -264,10 +264,13 @@ namespace FrHello.NetLib.Core.Framework
                             }
                         }
 
-                        columnDescription.PropertyInfo.SetValue(instance, value);
+                        if (columnDescription.PropertyInfo.CanWrite)
+                        {
+                            columnDescription.PropertyInfo.SetValue(instance, value);
+                        }
                     }
 
-                    if (rowNumProperty != null)
+                    if (rowNumProperty != null && rowNumProperty.CanWrite)
                     {
                         rowNumProperty.SetValue(instance, i);
                     }
@@ -520,7 +523,7 @@ namespace FrHello.NetLib.Core.Framework
                     workSheet.Cells[rowFrom, columnDescription.ColumnNum].Value =
                         TypeHelper.ChangeType(value, columnDescription.PropertyInfo.PropertyType);
 
-                    if (rowNumProperty != null)
+                    if (rowNumProperty != null && rowNumProperty.CanWrite)
                     {
                         rowNumProperty.SetValue(rowData, rowFrom);
                     }
