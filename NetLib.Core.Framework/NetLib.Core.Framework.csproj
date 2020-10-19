@@ -32,7 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="EPPlus" Version="5.4.0" />
     <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
