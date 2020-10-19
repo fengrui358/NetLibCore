@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using OpenCvSharp.Features2D;
 using OpenCvSharp.XFeatures2D;
 using Point = System.Drawing.Point;
 
@@ -698,33 +699,32 @@ namespace FrHello.NetLib.Core.Windows.Windows
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    using (var srcMat = bitmap.ToMat())
-                    using (var dstMat = wantBitmap.ToMat())
-                    using (var outArray = OutputArray.Create(srcMat))
+                    using var srcMat = bitmap.ToMat();
+                    using var dstMat = wantBitmap.ToMat();
+                    using var outArray = OutputArray.Create(srcMat);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    Cv2.MatchTemplate(srcMat, dstMat, outArray, templateMatch.TemplateMatchModel);
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    Cv2.MinMaxLoc(InputArray.Create(outArray.GetMat()!), out _,
+                        out var maxValue, out _, out var point);
+
+                    if (maxValue >= templateMatch.Threshold && maxValue <= 1d)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
+                        var rectangle =
+                            new Rectangle?(new Rectangle(point.X, point.Y, wantBitmap.Width, wantBitmap.Height));
+                        WindowsApi.WriteLog(
+                            $"{nameof(TemplateMatchLocation)} match success, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}, {rectangle}");
 
-                        Cv2.MatchTemplate(srcMat, dstMat, outArray, templateMatch.TemplateMatchModel);
-
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        Cv2.MinMaxLoc(InputArray.Create(outArray.GetMat()), out _,
-                            out var maxValue, out _, out var point);
-
-                        if (maxValue >= templateMatch.Threshold && maxValue <= 1d)
-                        {
-                            var rectangle =
-                                new Rectangle?(new Rectangle(point.X, point.Y, wantBitmap.Width, wantBitmap.Height));
-                            WindowsApi.WriteLog(
-                                $"{nameof(TemplateMatchLocation)} match success, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}, {rectangle}");
-
-                            return rectangle;
-                        }
-                        else
-                        {
-                            WindowsApi.WriteLog(
-                                $"{nameof(TemplateMatchLocation)} match failed, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}");
-                        }
+                        return rectangle;
+                    }
+                    else
+                    {
+                        WindowsApi.WriteLog(
+                            $"{nameof(TemplateMatchLocation)} match failed, {nameof(TemplateMatch.TemplateMatchModel)}:{templateMatch.TemplateMatchModel}, {nameof(TemplateMatch.Threshold)}:{templateMatch.Threshold}, {nameof(maxValue)}:{maxValue}");
                     }
                 }
                 catch (Exception ex)
@@ -751,56 +751,55 @@ namespace FrHello.NetLib.Core.Windows.Windows
             {
                 try
                 {
-                    using (var matSrc = bitmap.ToMat())
-                    using (var matTo = wantBitmap.ToMat())
-                    using (var matSrcRet = new Mat())
-                    using (var matToRet = new Mat())
+                    using var matSrc = bitmap.ToMat();
+                    using var matTo = wantBitmap.ToMat();
+                    using var matSrcRet = new Mat();
+                    using var matToRet = new Mat();
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    KeyPoint[] keyPointsSrc, keyPointsTo;
+                    using (var sift = SIFT.Create())
                     {
+                        sift.DetectAndCompute(matSrc, null, out keyPointsSrc, matSrcRet);
+                        sift.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    using (var bfMatcher = new BFMatcher())
+                    {
+                        var matches = bfMatcher.KnnMatch(matSrcRet, matToRet, k: 2);
+
                         cancellationToken.ThrowIfCancellationRequested();
 
-                        KeyPoint[] keyPointsSrc, keyPointsTo;
-                        using (var sift = SIFT.Create())
+                        var pointsSrc = new List<Point2f>();
+                        var pointsDst = new List<Point2f>();
+                        foreach (var items in matches.Where(x => x.Length > 1))
                         {
-                            sift.DetectAndCompute(matSrc, null, out keyPointsSrc, matSrcRet);
-                            sift.DetectAndCompute(matTo, null, out keyPointsTo, matToRet);
+                            if (items[0].Distance < 0.5 * items[1].Distance)
+                            {
+                                pointsSrc.Add(keyPointsSrc[items[0].QueryIdx].Pt);
+                                pointsDst.Add(keyPointsTo[items[0].TrainIdx].Pt);
+                            }
                         }
 
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        using (var bfMatcher = new BFMatcher())
+                        if (pointsSrc.Count > 0 && pointsDst.Count > 0)
                         {
-                            var matches = bfMatcher.KnnMatch(matSrcRet, matToRet, k: 2);
+                            var location = pointsSrc[0] - pointsDst[0];
 
-                            cancellationToken.ThrowIfCancellationRequested();
+                            var rectangle =
+                                new Rectangle?(new Rectangle((int) location.X, (int) location.Y, wantBitmap.Width,
+                                    wantBitmap.Height));
+                            WindowsApi.WriteLog(
+                                $"{nameof(SiftMatchLocation)} match success, match count:{pointsSrc.Count}, {rectangle}");
 
-                            var pointsSrc = new List<Point2f>();
-                            var pointsDst = new List<Point2f>();
-                            foreach (var items in matches.Where(x => x.Length > 1))
-                            {
-                                if (items[0].Distance < 0.5 * items[1].Distance)
-                                {
-                                    pointsSrc.Add(keyPointsSrc[items[0].QueryIdx].Pt);
-                                    pointsDst.Add(keyPointsTo[items[0].TrainIdx].Pt);
-                                }
-                            }
-
-                            if (pointsSrc.Count > 0 && pointsDst.Count > 0)
-                            {
-                                var location = pointsSrc[0] - pointsDst[0];
-
-                                var rectangle =
-                                    new Rectangle?(new Rectangle((int) location.X, (int) location.Y, wantBitmap.Width,
-                                        wantBitmap.Height));
-                                WindowsApi.WriteLog(
-                                    $"{nameof(SiftMatchLocation)} match success, match count:{pointsSrc.Count}, {rectangle}");
-
-                                return rectangle;
-                            }
-                            else
-                            {
-                                WindowsApi.WriteLog(
-                                    $"{nameof(SiftMatchLocation)} match failed");
-                            }
+                            return rectangle;
+                        }
+                        else
+                        {
+                            WindowsApi.WriteLog(
+                                $"{nameof(SiftMatchLocation)} match failed");
                         }
                     }
                 }

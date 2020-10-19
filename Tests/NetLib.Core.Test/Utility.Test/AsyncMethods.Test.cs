@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using FrHello.NetLib.Core.Utility;
+using NetLib.Core.Test.ConstString;
 using Xunit;
 
 namespace NetLib.Core.Test.Utility.Test
@@ -15,7 +16,7 @@ namespace NetLib.Core.Test.Utility.Test
         /// <summary>
         /// DeBounceTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void DeBounceTest()
         {
             var t = Task.Run(() =>
@@ -38,7 +39,7 @@ namespace NetLib.Core.Test.Utility.Test
         /// <summary>
         /// DeBounceTest
         /// </summary>
-        [Fact]
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void ThrottleTest()
         {
             var t = Task.Run(() =>
