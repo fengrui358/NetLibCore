@@ -10,7 +10,7 @@ namespace FrHello.NetLib.Core
     public static partial class StringHelper
     {
         /// <summary>
-        /// 整理字符串，修改为首字母大写，清理单词间的多余空格
+        /// 整理字符串，修改为首字母大写，清理单词间的多余空格test1
         /// </summary>
         /// <param name="str">需要整理的字符串</param>
         /// <returns>整理后的字符串</returns>
