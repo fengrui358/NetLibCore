@@ -19,7 +19,7 @@
     <PackageTags>Dotnet core utility</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core</Product>
-    <Version>1.0.80</Version>
+    <Version>1.0.81</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
