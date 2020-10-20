@@ -16,6 +16,7 @@
     <Description>Dotnet core security utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core security utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RootNamespace>FrHello.NetLib.Core.Security</RootNamespace>
     <Product>NetLib.Core.Security</Product>
     <Version>1.0.39</Version>

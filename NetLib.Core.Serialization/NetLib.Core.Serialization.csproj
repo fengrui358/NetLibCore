@@ -18,6 +18,7 @@
     <Description>Dotnet core serialization utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core serialization utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core.Serialization</Product>
     <Version>1.0.56</Version>
   </PropertyGroup>

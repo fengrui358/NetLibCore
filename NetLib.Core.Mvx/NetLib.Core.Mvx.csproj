@@ -19,6 +19,7 @@
     <Product>NetLib.Core.Mvx</Product>
     <Version>1.0.71</Version>
     <PackageTags>Dotnet core mvx utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

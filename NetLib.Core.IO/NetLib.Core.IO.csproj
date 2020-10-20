@@ -16,6 +16,7 @@
     <Description>Dotnet core IO utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core IO utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RootNamespace>FrHello.NetLib.Core.IO</RootNamespace>
     <Product>NetLib.Core.IO</Product>
     <Version>1.0.52</Version>

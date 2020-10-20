@@ -13,6 +13,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <Authors>rui feng</Authors>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Dotnet core wpf utility</Description>
     <Version>1.1.63</Version>
   </PropertyGroup>

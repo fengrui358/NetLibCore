@@ -17,6 +17,7 @@
     <Description>Dotnet core utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core</Product>
     <Version>1.0.78</Version>
   </PropertyGroup>

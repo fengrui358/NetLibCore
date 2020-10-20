@@ -16,6 +16,7 @@
     <Company>rui feng</Company>
     <Description>Dotnet core reflection utility</Description>
     <PackageTags>Dotnet core reflection utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <Product>NetLib.Core.Reflection</Product>
     <Version>1.0.47</Version>

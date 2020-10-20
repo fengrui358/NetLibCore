@@ -17,6 +17,7 @@
     <Description>Dotnet core compression utility</Description>
     <PackageProjectUrl>https://github.com/fengrui358/NetLibCore</PackageProjectUrl>
     <PackageTags>Dotnet core compression utility</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core.Compression</Product>
     <Version>1.0.46</Version>
   </PropertyGroup>
