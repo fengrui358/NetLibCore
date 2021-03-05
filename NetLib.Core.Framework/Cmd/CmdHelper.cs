@@ -104,10 +104,7 @@ namespace FrHello.NetLib.Core.Framework.Cmd
         /// <returns>message with quotes</returns>
         private static string WrapQuotes(string msg)
         {
-            if (msg == null)
-            {
-                msg = @"""""";
-            }
+            msg ??= @"""""";
 
             var result = msg;
 
