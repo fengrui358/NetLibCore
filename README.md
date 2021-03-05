@@ -1,8 +1,8 @@
 # NetLibCore
 
-![<img src="https://fengrui358.visualstudio.com/VSTSCI/_apis/build/status/VSTSCI-NetLibCore-Package?branchName=master">](https://fengrui358.visualstudio.com/VSTSCI/_apis/build/status/VSTSCI-NetLibCore-Package?branchName=master)
-![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/dt/FrHello.NetLib.Core)
-![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/v/FrHello.NetLib.Core)
+![https://fengrui358.visualstudio.com/VSTSCI/_apis/build/status/VSTSCI-NetLibCore-Package?branchName=master](https://fengrui358.visualstudio.com/VSTSCI/_apis/build/status/VSTSCI-NetLibCore-Package?branchName=master)
+[![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/dt/FrHello.NetLib.Core)](https://www.nuget.org/packages/FrHello.NetLib.Core/)
+[![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/v/FrHello.NetLib.Core)](https://www.nuget.org/packages/FrHello.NetLib.Core/)
 
 ## NetLib.Core
 
