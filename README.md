@@ -4,6 +4,12 @@
 [![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/dt/FrHello.NetLib.Core)](https://www.nuget.org/packages/FrHello.NetLib.Core/)
 [![https://www.nuget.org/packages/FrHello.NetLib.Core/](https://img.shields.io/nuget/v/FrHello.NetLib.Core)](https://www.nuget.org/packages/FrHello.NetLib.Core/)
 
+本项目包含 .net 以及 windows 平台下的一些辅助方法和工具
+
+## 本项目已得到[JetBrains](https://www.jetbrains.com/)的支持
+
+<img src="https://www.jetbrains.com/shop/static/images/jetbrains-logo-inv.svg" height="100">
+
 ## NetLib.Core
 
 包含一些常用的基础类型，各种基本操作
