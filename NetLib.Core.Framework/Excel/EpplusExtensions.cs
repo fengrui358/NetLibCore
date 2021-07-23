@@ -123,7 +123,8 @@ namespace FrHello.NetLib.Core.Framework
             var sheetName = GetSheetName(type);
 
             //判断有无对应的表
-            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName);
+            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName) ??
+                            excelPackage.Workbook.Worksheets.FirstOrDefault();
 
             if (worksheet != null)
             {
@@ -171,7 +172,8 @@ namespace FrHello.NetLib.Core.Framework
             var sheetName = GetSheetName(type);
 
             //判断有无对应的表
-            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName);
+            var worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == sheetName) ??
+                            excelPackage.Workbook.Worksheets.FirstOrDefault();
 
             if (worksheet != null)
             {
