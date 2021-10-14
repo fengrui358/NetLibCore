@@ -28,6 +28,7 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: MSBuild@1
+  continueOnError: true
   inputs:
     solution: '**/*.sln'
     platform: '$(buildPlatform)'
