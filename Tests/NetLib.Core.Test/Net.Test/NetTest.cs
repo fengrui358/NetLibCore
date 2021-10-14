@@ -27,9 +27,9 @@ namespace NetLib.Core.Test.Net.Test
         [Fact(Skip = TestStrings.ManuallyExcuteTip)]
         public void PingEasyTest()
         {
-            Assert.True(NetHelper.PingEasy("http://baidu.com/index.html").GetAwaiter().GetResult());
-            Assert.True(NetHelper.PingEasy("http://baidu.com:80/index.html").GetAwaiter().GetResult());
-            Assert.True(NetHelper.PingEasy("127.0.0.1").GetAwaiter().GetResult());
+            Assert.True(NetHelper.PingAsync("http://baidu.com/index.html").GetAwaiter().GetResult());
+            Assert.True(NetHelper.PingAsync("http://baidu.com:80/index.html").GetAwaiter().GetResult());
+            Assert.True(NetHelper.PingAsync("127.0.0.1").GetAwaiter().GetResult());
         }
 
         /// <summary>

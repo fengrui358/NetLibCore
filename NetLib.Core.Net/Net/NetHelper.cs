@@ -6,6 +6,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using FrHello.NetLib.Core.Utility;
 
 // ReSharper disable once CheckNamespace
 namespace FrHello.NetLib.Core.Net
@@ -21,19 +22,9 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="address">IP地址</param>
-        /// <returns>是否连接成功</returns>
-        public static bool Ping(IPAddress address)
-        {
-            return Ping(address, GlobalNetOptions.DefaultPingTimeOut);
-        }
-
-        /// <summary>
-        /// Ping某个地址是否正常工作
-        /// </summary>
-        /// <param name="address">IP地址</param>
         /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
-        public static bool Ping(IPAddress address, int timeout)
+        public static bool Ping(IPAddress address, int? timeout = null)
         {
             if (timeout < 0)
             {
@@ -41,7 +32,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = ping.Send(address, timeout);
+            var pingReply = ping.Send(address, timeout ?? GlobalNetOptions.DefaultPingTimeOut);
             return pingReply?.Status == IPStatus.Success;
         }
 
@@ -49,19 +40,9 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
-        /// <returns>是否连接成功</returns>
-        public static async Task<bool> PingAsync(string hostNameOrAddress)
-        {
-            return await PingAsync(hostNameOrAddress, GlobalNetOptions.DefaultPingTimeOut);
-        }
-
-        /// <summary>
-        /// Ping某个地址是否正常工作
-        /// </summary>
-        /// <param name="hostNameOrAddress">地址</param>
         /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
-        public static async Task<bool> PingAsync(string hostNameOrAddress, int timeout)
+        public static async Task<bool> PingAsync(string hostNameOrAddress, int? timeout = null)
         {
             if (timeout < 0)
             {
@@ -69,7 +50,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = await ping.SendPingAsync(RemoveProtocolHead(hostNameOrAddress, out _), timeout);
+            var pingReply = await ping.SendPingAsync(UriHelper.BuildUri(hostNameOrAddress).Host, timeout ?? GlobalNetOptions.DefaultPingTimeOut);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -78,19 +59,9 @@ namespace FrHello.NetLib.Core.Net
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="address">IP地址</param>
-        /// <returns>是否连接成功</returns>
-        public static async Task<bool> PingAsync(IPAddress address)
-        {
-            return await PingAsync(address, GlobalNetOptions.DefaultPingTimeOut);
-        }
-
-        /// <summary>
-        /// Ping某个地址是否正常工作
-        /// </summary>
-        /// <param name="address">IP地址</param>
         /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
-        public static async Task<bool> PingAsync(IPAddress address, int timeout)
+        public static async Task<bool> PingAsync(IPAddress address, int? timeout = null)
         {
             if (timeout < 0)
             {
@@ -98,75 +69,17 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = await ping.SendPingAsync(address, timeout);
+            var pingReply = await ping.SendPingAsync(address, timeout ?? GlobalNetOptions.DefaultPingTimeOut);
             return pingReply?.Status == IPStatus.Success;
         }
 
         /// <summary>
-        /// Ping某个地址是否正常工作，最大限度地址的正确性来让API易于使用
-        /// </summary>
-        /// <param name="hostNameOrAddress">地址</param>
-        /// <param name="timeout">超时(MillionSeconds)</param>
-        /// <returns></returns>
-        public static async Task<bool> PingEasy(string hostNameOrAddress, int? timeout = null)
-        {
-            if (string.IsNullOrEmpty(hostNameOrAddress))
-            {
-                return false;
-            }
-
-            var realAddress = RemoveProtocolHead(hostNameOrAddress, out _);
-            int? index = null;
-            for (var i = 0; i < realAddress.Length; i++)
-            {
-                if (realAddress[i] == '/' || realAddress[i] == ':')
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (index != null)
-            {
-                realAddress = realAddress.Substring(0, index.Value);
-            }
-
-            if (string.IsNullOrEmpty(realAddress))
-            {
-                return false;
-            }
-
-            try
-            {
-                var ping = new Ping();
-                var pingReply = await ping.SendPingAsync(RemoveProtocolHead(realAddress, out _),
-                    timeout ?? GlobalNetOptions.DefaultPingTimeOut);
-
-                return pingReply?.Status == IPStatus.Success;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Ping某个地址是否正常工作
-        /// </summary>
-        /// <param name="hostNameOrAddress">地址</param>
-        /// <returns>是否连接成功</returns>
-        public static bool Ping(string hostNameOrAddress)
-        {
-            return Ping(hostNameOrAddress, GlobalNetOptions.DefaultPingTimeOut);
-        }
-
-        /// <summary>
         /// Ping某个地址是否正常工作
         /// </summary>
         /// <param name="hostNameOrAddress">地址</param>
         /// <param name="timeout">超时(MillionSeconds)</param>
         /// <returns>是否连接成功</returns>
-        public static bool Ping(string hostNameOrAddress, int timeout)
+        public static bool Ping(string hostNameOrAddress, int? timeout = null)
         {
             if (timeout < 0)
             {
@@ -174,7 +87,7 @@ namespace FrHello.NetLib.Core.Net
             }
 
             var ping = new Ping();
-            var pingReply = ping.Send(RemoveProtocolHead(hostNameOrAddress, out _), timeout);
+            var pingReply = ping.Send(UriHelper.BuildUri(hostNameOrAddress).Host, timeout ?? GlobalNetOptions.DefaultPingTimeOut);
 
             return pingReply?.Status == IPStatus.Success;
         }
@@ -351,7 +264,7 @@ namespace FrHello.NetLib.Core.Net
                 try
                 {
                     using var client = new TcpClient();
-                    var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress, out _), port, null, null);
+                    var result = client.BeginConnect(UriHelper.BuildUri(hostNameOrAddress).Host, port, null, null);
                     var success = result.AsyncWaitHandle.WaitOne(timeout);
                     if (!success)
                     {
@@ -384,56 +297,19 @@ namespace FrHello.NetLib.Core.Net
                 return false;
             }
 
-            hostNameOrAddress = RemoveProtocolHead(hostNameOrAddress, out var protocol);
-            int? index = null;
-            for (var i = 0; i < hostNameOrAddress.Length; i++)
+            var uri = UriHelper.BuildUri(hostNameOrAddress);
+            hostNameOrAddress = uri.Host;
+            if (uri.Port != 0 && port is null or 0)
             {
-                if (hostNameOrAddress[i] == '/')
-                {
-                    index = i;
-                    break;
-                }
-
-                if (hostNameOrAddress[i] == ':')
-                {
-                    index = i;
-                    //判断后续端口号
-                    var next = i + 1;
-                    var p = 0;
-
-                    while (next < hostNameOrAddress.Length)
-                    {
-                        if (char.IsDigit(hostNameOrAddress[next]))
-                        {
-                            p = p * 10 + (hostNameOrAddress[next] - 48);
-                            next++;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-
-                    if (p != 0)
-                    {
-                        port = p;
-                    }
-
-                    break;
-                }
-            }
-
-            if (index != null)
-            {
-                hostNameOrAddress = hostNameOrAddress.Substring(0, index.Value);
+                port = uri.Port;
             }
 
             if (port == null)
             {
                 //判断协议
-                if (!string.IsNullOrEmpty(protocol))
+                if (!string.IsNullOrEmpty(uri.Scheme))
                 {
-                    var p = GetDefaultPort(protocol);
+                    var p = GetDefaultPort(uri.Scheme);
                     port = p ?? 80;
                 }
                 else
@@ -452,7 +328,7 @@ namespace FrHello.NetLib.Core.Net
                 try
                 {
                     using var client = new TcpClient();
-                    var result = client.BeginConnect(RemoveProtocolHead(hostNameOrAddress, out _), port.Value, null,
+                    var result = client.BeginConnect(UriHelper.BuildUri(hostNameOrAddress).Host, port.Value, null,
                         null);
                     var success = result.AsyncWaitHandle.WaitOne(timeout ?? GlobalNetOptions.DefaultPingTimeOut);
                     if (!success)
@@ -600,35 +476,6 @@ namespace FrHello.NetLib.Core.Net
             }
 
             return null;
-        }
-
-        #endregion
-
-        #region RemoveProtocolHead
-
-        /// <summary>
-        /// 移除地址前面的协议头
-        /// </summary>
-        /// <param name="hostNameOrAddress">地址</param>
-        /// <param name="protocol">协议</param>
-        /// <returns></returns>
-        private static string RemoveProtocolHead(string hostNameOrAddress, out string protocol)
-        {
-            protocol = null;
-
-            if (string.IsNullOrWhiteSpace(hostNameOrAddress))
-            {
-                throw new ArgumentNullException(nameof(hostNameOrAddress));
-            }
-
-            var symbolIndex = hostNameOrAddress.IndexOf("://", StringComparison.Ordinal);
-            if (symbolIndex > 0)
-            {
-                protocol = hostNameOrAddress.Substring(0, symbolIndex);
-                hostNameOrAddress = hostNameOrAddress.Remove(0, symbolIndex + "://".Length);
-            }
-
-            return hostNameOrAddress;
         }
 
         #endregion
