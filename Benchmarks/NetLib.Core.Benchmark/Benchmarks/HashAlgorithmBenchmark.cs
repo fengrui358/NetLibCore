@@ -5,7 +5,8 @@ namespace NetLib.Core.Benchmark.Benchmarks
 {
     //[ClrJob]
     //[MonoJob("Mono x64", @"C:\Program Files\Mono\bin\mono.exe")]
-    [CoreJob(baseline: true)]
+    //[CoreJob(baseline: true)]
+    [SimpleJob(baseline: true)]
     public class HashAlgorithmBenchmark
     {
         private const string TestStr1 = "The [Arguments] allows you to provide a set of values. Every value must be a compile-time constant (it's C# lanugage limitation for attributes in general). You can also combine [Arguments] with [Params]. As a result, you will get results for each combination of params values.";
