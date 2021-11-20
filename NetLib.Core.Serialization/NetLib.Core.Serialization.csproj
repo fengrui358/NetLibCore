@@ -20,7 +20,7 @@
     <PackageTags>Dotnet core serialization utility</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core.Serialization</Product>
-    <Version>1.0.65</Version>
+    <Version>1.0.66</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
