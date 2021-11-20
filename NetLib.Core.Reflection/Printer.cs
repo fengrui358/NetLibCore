@@ -279,12 +279,13 @@ namespace FrHello.NetLib.Core.Reflection
 
             if (!table)
             {
-                var maxKeyLength = enumerable.Max(s => s.Item1.Length);
-                var maxValueLength = enumerable.Max(s => s.Item2.Length);
+                var maxKeyLength = enumerable.Max(s => GetLength(s.Item1));
+                var maxValueLength = enumerable.Max(s => GetLength(s.Item2));
 
                 foreach (var value in enumerable)
                 {
-                    var line = $"|{value.Item1.PadRight(maxKeyLength, ' ')}|{value.Item2.PadRight(maxValueLength, ' ')}|";
+                    var line =
+                        $"|{value.Item1.PadRight(GetDisplayLength(value.Item1, maxKeyLength), ' ')}|{value.Item2.PadRight(GetDisplayLength(value.Item2, maxValueLength), ' ')}|";
                     sb.AppendLine(line);
                 }
             }
@@ -298,14 +299,14 @@ namespace FrHello.NetLib.Core.Reflection
                     var headerTuple = headers.FirstOrDefault(s => s.Item1 == value.Item1);
                     if (headerTuple == null)
                     {
-                        headerTuple = new Tuple<string, int>(value.Item1, value.Item1.Length);
+                        headerTuple = new Tuple<string, int>(value.Item1, GetLength(value.Item1));
                         headers.Add(headerTuple);
                     }
 
-                    if (headerTuple.Item2 < value.Item2.Length)
+                    if (headerTuple.Item2 < GetLength(value.Item2))
                     {
                         var index = headers.IndexOf(headerTuple);
-                        headers[index] = new Tuple<string, int>(value.Item1, value.Item2.Length);
+                        headers[index] = new Tuple<string, int>(value.Item1, GetLength(value.Item2));
                     }
 
                     if (value.Item1 == headers[0].Item1)
@@ -320,7 +321,7 @@ namespace FrHello.NetLib.Core.Reflection
                 var headerStr = new StringBuilder();
                 foreach (var header in headers)
                 {
-                    headerStr.Append($"|{header.Item1.PadRight(header.Item2, ' ')}");
+                    headerStr.Append($"|{header.Item1.PadRight(GetDisplayLength(header.Item1, header.Item2), ' ')}");
                 }
 
                 headerStr.Append("|");
@@ -333,7 +334,7 @@ namespace FrHello.NetLib.Core.Reflection
                     for (var i = 0; i < row.Count; i++)
                     {
                         var header = headers[i];
-                        rowStr.Append($"|{row[i].PadRight(header.Item2, ' ')}");
+                        rowStr.Append($"|{row[i].PadRight(GetDisplayLength(row[i], header.Item2), ' ')}");
                     }
                     rowStr.Append("|");
                     sb.AppendLine(rowStr.ToString());
@@ -341,6 +342,29 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             return sb;
+        }
+
+        /// <summary>
+        /// 获取字符长度
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private static int GetLength(string s)
+        {
+            var matchs = System.Text.RegularExpressions.Regex.Matches(s, "[\u4e00-\u9fa5]");
+            return s.Length + matchs.Count;
+        }
+
+        /// <summary>
+        /// 获取显示长度
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="maxLength"></param>
+        /// <returns></returns>
+        private static int GetDisplayLength(string s, int maxLength)
+        {
+            var matchs = System.Text.RegularExpressions.Regex.Matches(s, "[\u4e00-\u9fa5]");
+            return maxLength - matchs.Count;
         }
     }
 }

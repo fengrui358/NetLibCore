@@ -40,9 +40,10 @@ namespace NetLib.Core.Test.Reflection.Test
         [Fact]
         public void PrintOutputPublicPropertyTest()
         {
-            var obj = new MockClass
+            var obj = new 
             {
-                PublicProperty = 343423523
+                PublicProperty = 343423523,
+                Chinese = "a中文b字符32测试4"
             };
 
             var output = Printer.OutputPublicProperty(obj);
