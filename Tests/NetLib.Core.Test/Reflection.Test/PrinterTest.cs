@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FrHello.NetLib.Core.Reflection;
 using Xunit;
 
@@ -48,6 +49,23 @@ namespace NetLib.Core.Test.Reflection.Test
 
             var output = Printer.OutputPublicProperty(obj);
             Assert.NotNull(output);
+
+            var list = new List<object>
+            {
+                new
+                {
+                    PublicProperty = 123,
+                    Chinese = "asdf在345"
+                },
+                new
+                {
+                    PublicProperty = 343423523,
+                    Chinese = "a中文b字符32测试4"
+                }
+            };
+
+            var output2 = Printer.OutputPublicProperty(list);
+            Assert.NotNull(output2);
         }
     }
 

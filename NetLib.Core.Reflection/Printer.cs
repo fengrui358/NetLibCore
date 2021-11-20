@@ -99,6 +99,40 @@ namespace FrHello.NetLib.Core.Reflection
         }
 
         /// <summary>
+        /// 打印集合对象公共属性
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static string OutputPublicProperty<T>(IEnumerable<T> list)
+        {
+            if (list == null)
+            {
+                throw new ArgumentNullException(nameof(list));
+            }
+
+            var enumerable = list as T[] ?? list.ToArray();
+            var f = enumerable.FirstOrDefault();
+            if (f == null)
+            {
+                return string.Empty;
+            }
+
+            var type = f.GetType();
+            var outPutValues = new List<Tuple<string, string>>();
+
+            foreach (var obj in enumerable)
+            {
+                foreach (var reflectionInfo in GetReflectionInfos(MemberTypes.Property, type, obj, shortName: true))
+                {
+                    outPutValues.Add(reflectionInfo);
+                }
+            }
+
+            return GetPrintStringBuilder(outPutValues, true).ToString();
+        }
+
+        /// <summary>
         /// 获取类型的静态相关字段、属性、方法
         /// </summary>
         /// <param name="memberType">要获取的类型</param>
@@ -293,7 +327,7 @@ namespace FrHello.NetLib.Core.Reflection
             {
                 var headers = new List<Tuple<string, int>>();
                 var rows = new List<List<string>>();
-                
+
                 foreach (var value in enumerable)
                 {
                     var headerTuple = headers.FirstOrDefault(s => s.Item1 == value.Item1);
