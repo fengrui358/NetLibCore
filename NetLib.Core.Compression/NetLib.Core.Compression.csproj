@@ -19,7 +19,7 @@
     <PackageTags>Dotnet core compression utility</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>NetLib.Core.Compression</Product>
-    <Version>1.0.55</Version>
+    <Version>1.0.56</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
