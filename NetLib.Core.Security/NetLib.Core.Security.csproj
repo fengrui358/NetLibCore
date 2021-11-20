@@ -19,7 +19,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RootNamespace>FrHello.NetLib.Core.Security</RootNamespace>
     <Product>NetLib.Core.Security</Product>
-    <Version>1.0.45</Version>
+    <Version>1.0.46</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
