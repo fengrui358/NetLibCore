@@ -81,7 +81,7 @@ namespace FrHello.NetLib.Core.Reflection
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static string OutputPublicProperty(object obj)
+        public static string OutputObjectPublicProperty(object obj)
         {
             if (obj == null)
             {
@@ -104,7 +104,7 @@ namespace FrHello.NetLib.Core.Reflection
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <returns></returns>
-        public static string OutputPublicProperty<T>(IEnumerable<T> list)
+        public static string OutputListPublicProperty<T>(IEnumerable<T> list)
         {
             if (list == null)
             {

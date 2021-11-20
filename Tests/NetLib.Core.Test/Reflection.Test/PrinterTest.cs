@@ -47,7 +47,7 @@ namespace NetLib.Core.Test.Reflection.Test
                 Chinese = "a中文b字符32测试4"
             };
 
-            var output = Printer.OutputPublicProperty(obj);
+            var output = Printer.OutputObjectPublicProperty(obj);
             Assert.NotNull(output);
 
             var list = new List<object>
@@ -64,7 +64,7 @@ namespace NetLib.Core.Test.Reflection.Test
                 }
             };
 
-            var output2 = Printer.OutputPublicProperty(list);
+            var output2 = Printer.OutputListPublicProperty(list);
             Assert.NotNull(output2);
         }
     }
