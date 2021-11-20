@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -94,7 +95,7 @@ namespace FrHello.NetLib.Core.Reflection
                 outPutValues.Add(reflectionInfo);
             }
 
-            return GetPrintStringBuilder(outPutValues).ToString();
+            return GetPrintStringBuilder(outPutValues, true).ToString();
         }
 
         /// <summary>
@@ -259,29 +260,84 @@ namespace FrHello.NetLib.Core.Reflection
         /// 获取打印信息
         /// </summary>
         /// <param name="values">需要打印的内容</param>
+        /// <param name="table">使用表格形式打印</param>
         /// <returns>返回打印字符的拼接</returns>
-        private static StringBuilder GetPrintStringBuilder(IEnumerable<Tuple<string, string>> values)
+        private static StringBuilder GetPrintStringBuilder(IEnumerable<Tuple<string, string>> values, bool table = false)
         {
             if (values == null)
             {
                 throw new ArgumentNullException(nameof(values));
             }
 
-            var sb = new StringBuilder();
-            
             var enumerable = values as Tuple<string, string>[] ?? values.ToArray();
+            var sb = new StringBuilder();
+
             if (!enumerable.Any())
             {
                 return sb;
             }
 
-            var maxKeyLength = enumerable.Max(s => s.Item1.Length);
-            var maxValueLength = enumerable.Max(s => s.Item2.Length);
-
-            foreach (var value in enumerable)
+            if (!table)
             {
-                var line = $"|{value.Item1.PadRight(maxKeyLength, ' ')}|{value.Item2.PadRight(maxValueLength, ' ')}|";
-                sb.AppendLine(line);
+                var maxKeyLength = enumerable.Max(s => s.Item1.Length);
+                var maxValueLength = enumerable.Max(s => s.Item2.Length);
+
+                foreach (var value in enumerable)
+                {
+                    var line = $"|{value.Item1.PadRight(maxKeyLength, ' ')}|{value.Item2.PadRight(maxValueLength, ' ')}|";
+                    sb.AppendLine(line);
+                }
+            }
+            else
+            {
+                var headers = new List<Tuple<string, int>>();
+                var rows = new List<List<string>>();
+                
+                foreach (var value in enumerable)
+                {
+                    var headerTuple = headers.FirstOrDefault(s => s.Item1 == value.Item1);
+                    if (headerTuple == null)
+                    {
+                        headerTuple = new Tuple<string, int>(value.Item1, value.Item1.Length);
+                        headers.Add(headerTuple);
+                    }
+
+                    if (headerTuple.Item2 < value.Item2.Length)
+                    {
+                        var index = headers.IndexOf(headerTuple);
+                        headers[index] = new Tuple<string, int>(value.Item1, value.Item2.Length);
+                    }
+
+                    if (value.Item1 == headers[0].Item1)
+                    {
+                        rows.Add(new List<string>());
+                    }
+
+                    var row = rows[rows.Count - 1];
+                    row.Add(value.Item2);
+                }
+                // 打印头
+                var headerStr = new StringBuilder();
+                foreach (var header in headers)
+                {
+                    headerStr.Append($"|{header.Item1.PadRight(header.Item2, ' ')}");
+                }
+
+                headerStr.Append("|");
+                sb.AppendLine(headerStr.ToString());
+
+                // 打印行
+                foreach (var row in rows)
+                {
+                    var rowStr = new StringBuilder();
+                    for (var i = 0; i < row.Count; i++)
+                    {
+                        var header = headers[i];
+                        rowStr.Append($"|{row[i].PadRight(header.Item2, ' ')}");
+                    }
+                    rowStr.Append("|");
+                    sb.AppendLine(rowStr.ToString());
+                }
             }
 
             return sb;

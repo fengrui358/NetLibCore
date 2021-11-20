@@ -33,6 +33,21 @@ namespace NetLib.Core.Test.Reflection.Test
             var output = Printer.Output(obj, true);
             Assert.NotNull(output);
         }
+
+        /// <summary>
+        /// PrintOutputPublicPropertyTest
+        /// </summary>
+        [Fact]
+        public void PrintOutputPublicPropertyTest()
+        {
+            var obj = new MockClass
+            {
+                PublicProperty = 343423523
+            };
+
+            var output = Printer.OutputPublicProperty(obj);
+            Assert.NotNull(output);
+        }
     }
 
     internal class MockClass
