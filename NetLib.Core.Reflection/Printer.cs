@@ -89,7 +89,7 @@ namespace FrHello.NetLib.Core.Reflection
 
             var type = obj.GetType();
             var outPutValues = new List<Tuple<string, string>>();
-            foreach (var reflectionInfo in GetReflectionInfos(MemberTypes.Property, type, obj))
+            foreach (var reflectionInfo in GetReflectionInfos(MemberTypes.Property, type, obj, shortName: true))
             {
                 outPutValues.Add(reflectionInfo);
             }
