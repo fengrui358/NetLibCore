@@ -76,6 +76,28 @@ namespace FrHello.NetLib.Core.Reflection
         }
 
         /// <summary>
+        /// 打印对象公共属性
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public static string OutputPublicProperty(object obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            var type = obj.GetType();
+            var outPutValues = new List<Tuple<string, string>>();
+            foreach (var reflectionInfo in GetReflectionInfos(MemberTypes.Property, type, obj))
+            {
+                outPutValues.Add(reflectionInfo);
+            }
+
+            return GetPrintStringBuilder(outPutValues).ToString();
+        }
+
+        /// <summary>
         /// 获取类型的静态相关字段、属性、方法
         /// </summary>
         /// <param name="memberType">要获取的类型</param>
