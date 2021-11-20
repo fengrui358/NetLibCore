@@ -82,9 +82,10 @@ namespace FrHello.NetLib.Core.Reflection
         /// <param name="type">类型</param>
         /// <param name="obj">对象</param>
         /// <param name="includeNonPublic">是否包括非公有信息</param>
+        /// <param name="shortName">精简属性名、方法名</param>
         /// <returns>打印信息</returns>
         private static IEnumerable<Tuple<string, string>> GetReflectionInfos(MemberTypes memberType, Type type,
-            object obj = null, bool includeNonPublic = false)
+            object obj = null, bool includeNonPublic = false, bool shortName = false)
         {
             if (type == null)
             {
@@ -135,7 +136,7 @@ namespace FrHello.NetLib.Core.Reflection
                         value = "error";
                     }
 
-                    result.Add(new Tuple<string, string>(fieldInfo.ToString(), value));
+                    result.Add(new Tuple<string, string>(shortName ? fieldInfo.Name : fieldInfo.ToString(), value));
                 }
 
                 #endregion
@@ -177,7 +178,7 @@ namespace FrHello.NetLib.Core.Reflection
                         value = "error";
                     }
 
-                    result.Add(new Tuple<string, string>(propertyInfo.ToString(), value));
+                    result.Add(new Tuple<string, string>(shortName ? propertyInfo.Name : propertyInfo.ToString(), value));
                 }
 
                 #endregion
@@ -222,7 +223,7 @@ namespace FrHello.NetLib.Core.Reflection
                             value = "error";
                         }
 
-                        result.Add(new Tuple<string, string>(methodInfo.ToString(), value));
+                        result.Add(new Tuple<string, string>(shortName ? methodInfo.Name : methodInfo.ToString(), value));
                     }
                 }
 
