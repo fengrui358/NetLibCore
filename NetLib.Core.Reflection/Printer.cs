@@ -353,13 +353,24 @@ namespace FrHello.NetLib.Core.Reflection
                 }
                 // 打印头
                 var headerStr = new StringBuilder();
+                var divider = new StringBuilder();
                 foreach (var header in headers)
                 {
-                    headerStr.Append($"|{header.Item1.PadRight(GetDisplayLength(header.Item1, header.Item2), ' ')}");
+                    var displaylength = GetDisplayLength(header.Item1, header.Item2);
+                    var dividerChars = new char[displaylength];
+                    for (var i = 0; i < displaylength; i++)
+                    {
+                        dividerChars[i] = '-';
+                    }
+
+                    divider.Append($"-{new string(dividerChars)}");
+                    headerStr.Append($"|{header.Item1.PadRight(displaylength, ' ')}");
                 }
 
                 headerStr.Append("|");
+                divider.Append("-");
                 sb.AppendLine(headerStr.ToString());
+                sb.AppendLine(divider.ToString());
 
                 // 打印行
                 foreach (var row in rows)
@@ -373,6 +384,8 @@ namespace FrHello.NetLib.Core.Reflection
                     rowStr.Append("|");
                     sb.AppendLine(rowStr.ToString());
                 }
+
+                sb.AppendLine(divider.ToString());
             }
 
             return sb;
