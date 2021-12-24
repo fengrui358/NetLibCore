@@ -140,9 +140,10 @@ namespace FrHello.NetLib.Core.Reflection
         /// <param name="obj">对象</param>
         /// <param name="includeNonPublic">是否包括非公有信息</param>
         /// <param name="shortName">精简属性名、方法名</param>
+        /// <param name="fillSpace">优化显示效果，在前后填充空格</param>
         /// <returns>打印信息</returns>
         private static IEnumerable<Tuple<string, string>> GetReflectionInfos(MemberTypes memberType, Type type,
-            object obj = null, bool includeNonPublic = false, bool shortName = false)
+            object obj = null, bool includeNonPublic = false, bool shortName = false, bool fillSpace = true)
         {
             if (type == null)
             {
@@ -155,6 +156,17 @@ namespace FrHello.NetLib.Core.Reflection
             }
 
             var result = new List<Tuple<string, string>>();
+
+            // 用于优化显示效果，在前后填充空格
+            string FillSpace(string input)
+            {
+                if (fillSpace)
+                {
+                    return $" {input} ";
+                }
+
+                return input;
+            }
 
             if ((memberType & MemberTypes.Field) != 0)
             {
@@ -193,7 +205,7 @@ namespace FrHello.NetLib.Core.Reflection
                         value = "error";
                     }
 
-                    result.Add(new Tuple<string, string>(shortName ? fieldInfo.Name : fieldInfo.ToString(), value));
+                    result.Add(new Tuple<string, string>(FillSpace(shortName ? fieldInfo.Name : fieldInfo.ToString()), FillSpace(value)));
                 }
 
                 #endregion
@@ -235,7 +247,7 @@ namespace FrHello.NetLib.Core.Reflection
                         value = "error";
                     }
 
-                    result.Add(new Tuple<string, string>(shortName ? propertyInfo.Name : propertyInfo.ToString(), value));
+                    result.Add(new Tuple<string, string>(FillSpace(shortName ? propertyInfo.Name : propertyInfo.ToString()), FillSpace(value)));
                 }
 
                 #endregion
@@ -280,7 +292,7 @@ namespace FrHello.NetLib.Core.Reflection
                             value = "error";
                         }
 
-                        result.Add(new Tuple<string, string>(shortName ? methodInfo.Name : methodInfo.ToString(), value));
+                        result.Add(new Tuple<string, string>(FillSpace(shortName ? methodInfo.Name : methodInfo.ToString()), FillSpace(value)));
                     }
                 }
 
@@ -337,10 +349,11 @@ namespace FrHello.NetLib.Core.Reflection
                         headers.Add(headerTuple);
                     }
 
-                    if (headerTuple.Item2 < GetLength(value.Item2))
+                    var valueLength = GetLength(value.Item2);
+                    if (headerTuple.Item2 < valueLength)
                     {
                         var index = headers.IndexOf(headerTuple);
-                        headers[index] = new Tuple<string, int>(value.Item1, GetLength(value.Item2));
+                        headers[index] = new Tuple<string, int>(value.Item1, valueLength);
                     }
 
                     if (value.Item1 == headers[0].Item1)
@@ -357,18 +370,22 @@ namespace FrHello.NetLib.Core.Reflection
                 foreach (var header in headers)
                 {
                     var displaylength = GetDisplayLength(header.Item1, header.Item2);
-                    var dividerChars = new char[displaylength];
-                    for (var i = 0; i < displaylength; i++)
+                    var dividerChars = new char[header.Item2];
+                    for (var i = 0; i < header.Item2; i++)
                     {
                         dividerChars[i] = '-';
                     }
 
-                    divider.Append($"-{new string(dividerChars)}");
-                    headerStr.Append($"|{header.Item1.PadRight(displaylength, ' ')}");
+                    divider.Append($"|{new string(dividerChars)}");
+                    var headerDisplayLength = GetDisplayLength(header.Item1, GetLength(header.Item1));
+                    var padLeft = (displaylength - headerDisplayLength) / 2;
+                    
+                    headerStr.Append($"|{header.Item1.PadLeft(padLeft + headerDisplayLength, ' ').PadRight(displaylength, ' ')}");
                 }
 
                 headerStr.Append("|");
-                divider.Append("-");
+                divider.Append("|");
+                sb.AppendLine(divider.ToString());
                 sb.AppendLine(headerStr.ToString());
                 sb.AppendLine(divider.ToString());
 

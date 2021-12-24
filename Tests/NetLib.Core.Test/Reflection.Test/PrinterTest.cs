@@ -55,11 +55,13 @@ namespace NetLib.Core.Test.Reflection.Test
                 new
                 {
                     PublicProperty = 123,
+                    中文属性 = "sadf你好32435",
                     Chinese = "asdf在345"
                 },
                 new
                 {
                     PublicProperty = 343423523,
+                    中文属性 = "sadf你335",
                     Chinese = "a中文b字符32测试4"
                 }
             };
