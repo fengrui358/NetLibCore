@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
 using FrHello.NetLib.Core.Attributes;
 using FrHello.NetLib.Core.Framework;
 using FrHello.NetLib.Core.Framework.Excel.Attributes;
@@ -70,7 +73,7 @@ namespace NetLib.Core.Test.Epplus.Test
         public void AppendRowTest()
         {
             var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
-            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
+            using var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First(s => s.EndsWith("xlsx")));
 
             using var excelPackage = new ExcelPackage(testExcel);
             var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
@@ -105,6 +108,35 @@ namespace NetLib.Core.Test.Epplus.Test
             {
                 Extensions.AppendRow(outputExcelPath, administrativeRegion).GetAwaiter().GetResult();
             }
+        }
+
+        /// <summary>
+        /// InsertImageTest
+        /// </summary>
+        [Fact(Skip = TestStrings.ManuallyExcuteTip)]
+        public void InsertImageTest()
+        {
+            var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
+            using var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First(s => s.EndsWith("xlsx")));
+            using var testJpg = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First(s => s.EndsWith("jpg")));
+
+            using var excelPackage = new ExcelPackage(testExcel);
+            var mockPersons = excelPackage.FillDatas<MockPerson>();
+
+            var bytes = new byte[testJpg.Length];
+            testJpg.Read(bytes, 0, bytes.Length);
+            var workSheet = excelPackage.Workbook.Worksheets.FirstOrDefault(s => s.Name == "Usuario(用户管理)");
+            for (int i = 0; i < mockPersons.Count(); i++)
+            {
+                // 在人员部分测试插入图片
+                workSheet.Row(i + 2).Height = 80;
+                Extensions.InsertImage(workSheet, bytes, i + 1, 4, true);
+            }
+
+            var outputExcelPath = System.IO.Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase,
+                $"{Guid.NewGuid():N}.xlsx");
+            using var fileStream = new FileStream(outputExcelPath, FileMode.Create);
+            excelPackage.SaveAs(fileStream);
         }
     }
 
