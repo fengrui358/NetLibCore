@@ -421,7 +421,8 @@ namespace FrHello.NetLib.Core.Framework
         /// <typeparam name="T">类型</typeparam>
         /// <param name="excelPath">excel文件路径</param>
         /// <param name="rowData">行数据</param>
-        public static async Task AppendRow<T>(string excelPath, T rowData)
+        /// <returns>插入数据的行数，-1 表示未实际插入数据</returns>
+        public static async Task<int> AppendRow<T>(string excelPath, T rowData)
         {
             if (string.IsNullOrEmpty(excelPath))
             {
@@ -429,7 +430,7 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             using var excelPackage = new ExcelPackage(new FileInfo(excelPath));
-            await AppendRow(excelPackage, rowData);
+            return await AppendRow(excelPackage, rowData);
         }
 
         /// <summary>
@@ -438,7 +439,8 @@ namespace FrHello.NetLib.Core.Framework
         /// <typeparam name="T">类型</typeparam>
         /// <param name="excelPackage">excel文件</param>
         /// <param name="rowData">行数据</param>
-        public static async Task AppendRow<T>(this ExcelPackage excelPackage, T rowData)
+        /// <returns>插入数据的行数，-1 表示未实际插入数据</returns>
+        public static async Task<int> AppendRow<T>(this ExcelPackage excelPackage, T rowData)
         {
             if (excelPackage == null)
             {
@@ -447,7 +449,7 @@ namespace FrHello.NetLib.Core.Framework
 
             if (rowData == null)
             {
-                return;
+                return -1;
             }
 
             var workSheetName = GetSheetName(typeof(T));
@@ -456,7 +458,7 @@ namespace FrHello.NetLib.Core.Framework
 
             var maxRowNum = workSheet.MaxRowNum() + 1;
 
-            await InsertRow(excelPackage, maxRowNum, rowData);
+            return await InsertRow(excelPackage, maxRowNum, rowData);
         }
 
         /// <summary>
@@ -466,8 +468,8 @@ namespace FrHello.NetLib.Core.Framework
         /// <param name="excelPackage">excel文件</param>
         /// <param name="rowFrom">起始行</param>
         /// <param name="rowData">行数据</param>
-        /// <returns></returns>
-        public static async Task InsertRow<T>(this ExcelPackage excelPackage, int rowFrom, T rowData)
+        /// <returns>插入数据的行数，-1 表示未实际插入数据</returns>
+        public static async Task<int> InsertRow<T>(this ExcelPackage excelPackage, int rowFrom, T rowData)
         {
             if (excelPackage == null)
             {
@@ -481,7 +483,7 @@ namespace FrHello.NetLib.Core.Framework
 
             if (rowData == null)
             {
-                return;
+                return -1;
             }
 
             if (rowFrom == 1)
@@ -533,6 +535,7 @@ namespace FrHello.NetLib.Core.Framework
             }
 
             await excelPackage.SaveAsync();
+            return rowFrom;
         }
 
         /// <summary>
