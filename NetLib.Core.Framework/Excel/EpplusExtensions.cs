@@ -449,10 +449,26 @@ public static class Extensions
     /// <param name="imageBytes"></param>
     /// <param name="rowNum"></param>
     /// <param name="columnNum"></param>
-    /// <param name="autofit"></param>
-    public static void InsertImage(ExcelWorksheet worksheet, byte[] imageBytes, int rowNum, int columnNum, bool autofit)
+    /// <param name="autoFit"></param>
+    public static void InsertImage(ExcelWorksheet worksheet, byte[] imageBytes, int rowNum, int columnNum, bool autoFit)
     {
-        using (var image = Image.FromStream(new MemoryStream(imageBytes)))
+        using (var stream = new MemoryStream(imageBytes))
+        {
+            InsertImage(worksheet, stream, rowNum, columnNum, autoFit);
+        }
+    }
+
+    /// <summary>
+    ///     插入图片
+    /// </summary>
+    /// <param name="worksheet"></param>
+    /// <param name="stream"></param>
+    /// <param name="rowNum"></param>
+    /// <param name="columnNum"></param>
+    /// <param name="autoFit"></param>
+    public static void InsertImage(ExcelWorksheet worksheet, Stream stream, int rowNum, int columnNum, bool autoFit)
+    {
+        using (var image = Image.FromStream(stream))
         {
             var picture = worksheet.Drawings.AddPicture($"image_{DateTime.Now.Ticks}", image);
             var cell = worksheet.Cells[rowNum, columnNum];
@@ -460,7 +476,7 @@ public static class Extensions
             var cellRowHeightInPix = GetHeightInPixels(cell);
             var adjustImageWidthInPix = cellColumnWidthInPix;
             var adjustImageHeightInPix = cellRowHeightInPix;
-            if (autofit)
+            if (autoFit)
             {
                 //图片尺寸适应单元格
                 var adjustImageSize = GetAdjustImageSize(image, cellColumnWidthInPix, cellRowHeightInPix);
@@ -469,8 +485,8 @@ public static class Extensions
             }
 
             //设置为居中显示
-            var columnOffsetPixels = (int) ((cellColumnWidthInPix - adjustImageWidthInPix) / 2.0);
-            var rowOffsetPixels = (int) ((cellRowHeightInPix - adjustImageHeightInPix) / 2.0);
+            var columnOffsetPixels = (int)((cellColumnWidthInPix - adjustImageWidthInPix) / 2.0);
+            var rowOffsetPixels = (int)((cellRowHeightInPix - adjustImageHeightInPix) / 2.0);
             picture.SetSize(adjustImageWidthInPix, adjustImageHeightInPix);
             picture.SetPosition(rowNum - 1, rowOffsetPixels, columnNum - 1, columnOffsetPixels);
         }
