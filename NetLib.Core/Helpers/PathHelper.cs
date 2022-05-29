@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -58,6 +59,29 @@ namespace FrHello.NetLib.Core.Helpers
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// 获取一个桌面文件名
+        /// </summary>
+        /// <param name="fileName">文件名</param>
+        /// <param name="withTimestamp"></param>
+        /// <returns></returns>
+        public static string GetDesktopFileName(string fileName, bool withTimestamp = false)
+        {
+            if (withTimestamp)
+            {
+                var f = $"{Path.GetFileNameWithoutExtension(fileName)}_{DateTime.Now:yyyyMMddHHmmss}";
+                var extension = Path.GetExtension(fileName);
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    f = $"{f}{extension}";
+                }
+
+                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), f);
+            }
+            
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), fileName);
         }
     }
 }
