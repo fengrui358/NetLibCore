@@ -166,7 +166,7 @@ namespace FrHello.NetLib.Core.Security.Hash
 
                 using (var destinationStream = new MemoryStream())
                 {
-                    //最后还有一段Hash预算，预留1/segmentCount的进度
+                    //最后还有一段Hash预估，预留1/segmentCount的进度
                     totalComputerSize += totalComputerSize * (1 / segmentCount);
 
                     for (long i = 0; i < segmentCount; i++)
