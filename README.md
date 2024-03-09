@@ -6,6 +6,8 @@
 
 本项目包含 .net 以及 windows 平台下的一些辅助方法和工具
 
+This project includes some helper methods and tools for the .NET and Windows platforms
+
 ## 本项目已得到[JetBrains](https://www.jetbrains.com/)的支持
 
 <img src="https://www.jetbrains.com/shop/static/images/jetbrains-logo-inv.svg" height="100">
