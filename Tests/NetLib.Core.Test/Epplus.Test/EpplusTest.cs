@@ -25,7 +25,8 @@ namespace NetLib.Core.Test.Epplus.Test
         public void FillDatasTest()
         {
             var resourceNames = typeof(EpplusTest).Assembly.GetManifestResourceNames();
-            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(resourceNames.First());
+            var fileName = resourceNames.FirstOrDefault(s => s.EndsWith("测试数据.xlsx"));
+            var testExcel = typeof(EpplusTest).Assembly.GetManifestResourceStream(fileName);
 
             using var excelPackage = new ExcelPackage(testExcel);
             var mockAdministrativeRegion = excelPackage.FillDatas<MockAdministrativeRegion>().ToList();
