@@ -12,6 +12,7 @@ using FrHello.NetLib.Core.Framework.Excel.Attributes;
 using FrHello.NetLib.Core.Framework.Excel.Exceptions;
 using FrHello.NetLib.Core.Reflection;
 using OfficeOpenXml;
+using Image = System.Drawing.Image;
 
 // ReSharper disable once CheckNamespace
 namespace FrHello.NetLib.Core.Framework;
@@ -468,28 +469,28 @@ public static class Extensions
     /// <param name="autoFit"></param>
     public static void InsertImage(ExcelWorksheet worksheet, Stream stream, int rowNum, int columnNum, bool autoFit)
     {
-        using (var image = Image.FromStream(stream))
+        var picture = worksheet.Drawings.AddPicture($"image_{DateTime.Now.Ticks}", stream);
+        var cell = worksheet.Cells[rowNum, columnNum];
+        var cellColumnWidthInPix = GetWidthInPixels(cell);
+        var cellRowHeightInPix = GetHeightInPixels(cell);
+        var adjustImageWidthInPix = cellColumnWidthInPix;
+        var adjustImageHeightInPix = cellRowHeightInPix;
+        if (autoFit)
         {
-            var picture = worksheet.Drawings.AddPicture($"image_{DateTime.Now.Ticks}", image);
-            var cell = worksheet.Cells[rowNum, columnNum];
-            var cellColumnWidthInPix = GetWidthInPixels(cell);
-            var cellRowHeightInPix = GetHeightInPixels(cell);
-            var adjustImageWidthInPix = cellColumnWidthInPix;
-            var adjustImageHeightInPix = cellRowHeightInPix;
-            if (autoFit)
+            using (var image = Image.FromStream(stream))
             {
                 //图片尺寸适应单元格
                 var adjustImageSize = GetAdjustImageSize(image, cellColumnWidthInPix, cellRowHeightInPix);
                 adjustImageWidthInPix = adjustImageSize.Item1;
                 adjustImageHeightInPix = adjustImageSize.Item2;
             }
-
-            //设置为居中显示
-            var columnOffsetPixels = (int)((cellColumnWidthInPix - adjustImageWidthInPix) / 2.0);
-            var rowOffsetPixels = (int)((cellRowHeightInPix - adjustImageHeightInPix) / 2.0);
-            picture.SetSize(adjustImageWidthInPix, adjustImageHeightInPix);
-            picture.SetPosition(rowNum - 1, rowOffsetPixels, columnNum - 1, columnOffsetPixels);
         }
+
+        //设置为居中显示
+        var columnOffsetPixels = (int)((cellColumnWidthInPix - adjustImageWidthInPix) / 2.0);
+        var rowOffsetPixels = (int)((cellRowHeightInPix - adjustImageHeightInPix) / 2.0);
+        picture.SetSize(adjustImageWidthInPix, adjustImageHeightInPix);
+        picture.SetPosition(rowNum - 1, rowOffsetPixels, columnNum - 1, columnOffsetPixels);
     }
 
     /// <summary>
