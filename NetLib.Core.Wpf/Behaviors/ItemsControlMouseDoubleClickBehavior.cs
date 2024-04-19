@@ -2,8 +2,8 @@
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 using FrHello.NetLib.Core.Wpf.Helpers;
+using Microsoft.Xaml.Behaviors;
 
 namespace FrHello.NetLib.Core.Wpf.Behaviors
 {

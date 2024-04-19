@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using Microsoft.Xaml.Behaviors;
+using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interactivity;
 using System.Windows.Media;
 
 namespace FrHello.NetLib.Core.Wpf.Behaviors
