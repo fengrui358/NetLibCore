@@ -31,7 +31,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NHotkey" Version="3.0.0" />
-    <PackageReference Include="NHotkey.Wpf" Version="2.1.0" />
+    <PackageReference Include="NHotkey.Wpf" Version="3.0.0" />
     <PackageReference Include="OpenCvSharp4" Version="4.5.0.20201013" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <Reference Include="PresentationCore" />
