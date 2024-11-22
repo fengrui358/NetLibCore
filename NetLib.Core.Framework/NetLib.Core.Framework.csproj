@@ -34,7 +34,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    <PackageReference Include="EPPlus" Version="7.5.0" />
+    <PackageReference Include="EPPlus" Version="7.5.1" />
     <ProjectReference Include="..\NetLib.Core.IO\NetLib.Core.IO.csproj" />
     <ProjectReference Include="..\NetLib.Core.Serialization\NetLib.Core.Serialization.csproj" />
     <ProjectReference Include="..\NetLib.Core\NetLib.Core.csproj" />
